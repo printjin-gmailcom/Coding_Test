@@ -1008,3 +1008,68 @@ def solution(board, k):
             if (i + j) <= k :
                 answer += board[i][j]
     return answer
+
+
+def solution(arr, idx):
+    for i in range(idx, len(arr)): 
+        if arr[i] == 1:        
+            return i
+    return -1 
+
+
+def solution(arr, query):
+    for i in range(len(query)):
+        if i % 2 == 0:
+            arr = arr[:query[i]+1]  
+        else:
+            arr = arr[query[i]:]
+    return arr
+
+def solution(code):
+    answer = ''
+    mode = 0
+    for idx in range(len(code)):
+        if code[idx] == '1':
+            mode = 1 - mode
+        else:
+            if mode == 0 and idx % 2 == 0:
+                answer += code[idx]
+            elif mode == 1 and idx % 2 == 1:
+                answer += code[idx]
+    return answer if answer else "EMPTY"
+
+
+def solution(arr):
+    count = 0
+    while True:
+        next_arr = [x // 2 if x >= 50 and x % 2 == 0 else 2 * x + 1 if x < 50 and x % 2 == 1 else x for x in arr]
+        if arr == next_arr:
+            return count
+        arr = next_arr
+        count += 1
+
+
+def solution(n):
+    answer = [[0] * n for _ in range(n)]
+    num = 1
+    top, bottom, left, right = 0, n - 1, 0, n - 1
+    while top <= bottom and left <= right:
+        for i in range(left, right + 1):
+            answer[top][i] = num
+            num += 1
+        top += 1
+        for i in range(top, bottom + 1):
+            answer[i][right] = num
+            num += 1
+        right -= 1
+        for i in range(right, left - 1, -1):
+            answer[bottom][i] = num
+            num += 1
+        bottom -= 1
+        for i in range(bottom, top - 1, -1):
+            answer[i][left] = num
+            num += 1
+        left += 1
+    return answer
+
+

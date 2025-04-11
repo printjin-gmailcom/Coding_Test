@@ -719,3 +719,7 @@ def solution(number, limit, power):
     return answer
 
 
+def solution(x, n):
+    return [x * i for i in range(1, n + 1)]
+
+
