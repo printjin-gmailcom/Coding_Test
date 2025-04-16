@@ -4098,3 +4098,181 @@ for walls in combinations(empty, 3):
 print(max_safe)
 
 
+n = int(input())
+lis = []
+for _ in range(n):
+    i = int(input())
+    lis.append(i)
+lis.sort() 
+for li in lis:
+    print(li)
+
+
+import sys
+n = int(sys.stdin.readline())
+lis = [int(sys.stdin.readline()) for _ in range(n)]
+for num in sorted(lis):
+    print(num)
+
+
+import sys
+input = sys.stdin.readline
+count = [0] * 10001
+n = int(input())
+for _ in range(n):
+    num = int(input())
+    count[num] += 1
+for i in range(10001):
+    if count[i]:
+        for _ in range(count[i]):
+            print(i)
+
+
+import sys
+import math
+input = sys.stdin.readline
+n = int(input())
+positions = [int(input()) for _ in range(n)]
+distances = [positions[i+1] - positions[i] for i in range(n-1)]
+gcd = distances[0]
+for d in distances[1:]:
+    gcd = math.gcd(gcd, d)
+trees_to_plant = 0
+for d in distances:
+    trees_to_plant += (d // gcd) - 1
+print(trees_to_plant)
+
+
+def check_brackets(sen):
+    stack = []
+    for ch in sen:
+        if ch in '([':
+            stack.append(ch)
+        elif ch == ')':
+            if not stack or stack[-1] != '(':
+                return "no"
+            stack.pop()
+        elif ch == ']':
+            if not stack or stack[-1] != '[':
+                return "no"
+            stack.pop()
+    return "yes" if not stack else "no"
+while True:
+    line = input()
+    if line == '.':
+        break
+    print(check_brackets(line))
+
+
+from collections import deque
+n = int(input())
+nums = list(map(int, input().split()))
+balloons = deque((i + 1, num) for i, num in enumerate(nums))
+result = []
+while balloons:
+    idx, move = balloons.popleft()
+    result.append(idx)
+    if not balloons:
+        break
+    if move > 0:
+        balloons.rotate(-(move - 1))
+    else:
+        balloons.rotate(-move)
+print(*result)
+
+
+from collections import deque
+N = int(input())
+A = list(map(int, input().split()))
+B = list(map(int, input().split()))
+M = int(input())
+C = list(map(int, input().split()))
+structures = []
+for i in range(N):
+    if A[i] == 0:
+        structures.append(deque([B[i]]))
+    else:
+        structures.append([B[i]])
+result = []
+for c in C:
+    for i in range(N):
+        if A[i] == 0:
+            structures[i].append(c)
+            popped_value = structures[i].popleft()
+        else:
+            structures[i].append(c)
+            popped_value = structures[i].pop()
+        
+        result.append(popped_value)
+print(*result)
+
+
+from collections import deque
+N = int(input())
+A = list(map(int, input().split()))
+B = list(map(int, input().split()))
+M = int(input())
+C = list(map(int, input().split()))
+structures = []
+for i in range(N):
+    if A[i] == 0:
+        structures.append(deque([B[i]]))
+    else:
+        structures.append([B[i]])
+result = []
+for c in C:
+    for i in range(N):
+        if A[i] == 0:
+            structures[i].append(c)
+            popped_value = structures[i].popleft()
+        else:
+            structures[i].append(c)
+            popped_value = structures[i].pop()
+        
+        result.append(popped_value)
+print(*result)
+
+
+import sys
+from collections import deque
+input = sys.stdin.readline
+N = int(input())
+sequence_A = list(map(int, input().split()))
+sequence_B = list(map(int, input().split()))
+M = int(input())
+sequence_C = list(map(int, input().split()))
+queue = deque([])
+for i in range(N):
+    if sequence_A[i] == 0:
+        queue.appendleft(sequence_B[i])
+for i in range(M):
+    queue.append(sequence_C[i])
+    print(queue.popleft(), end=" ")
+
+
+n= int(input())
+print(n*(n-1))
+
+
+n= int(input())
+print(2**n)
+
+
+n = int(input())
+a = 1
+for i in range(1, n+1):
+    a *= i
+print(a)
+
+
+import math
+print(math.factorial(int(input())))
+
+
+import math
+T = int(input())
+for _ in range(T):
+    N, M = map(int, input().split())
+    print(math.comb(M, N))
+
+
