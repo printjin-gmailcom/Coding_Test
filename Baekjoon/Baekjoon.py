@@ -4276,3 +4276,57 @@ for _ in range(T):
     print(math.comb(M, N))
 
 
+a = [input() for _ in range(3)]
+def fb(x):
+    if x % 15 == 0:
+        return 'FizzBuzz'
+    if x % 3 == 0:
+        return 'Fizz'
+    if x % 5 == 0:
+        return 'Buzz'
+    return str(x)
+i = 1
+while True:
+    if [fb(i), fb(i+1), fb(i+2)] == a:
+        print(fb(i+3))
+        break
+    i += 1
+
+
+for i in range(3, 0, -1):
+    x = input()
+    if x not in ['Fizz', 'Buzz', 'FizzBuzz']:
+        n = int(x) + i
+print('Fizz'*(n % 3 == 0) + 'Buzz'*(n % 5 == 0) or n)
+
+
+import sys
+def roundUp(num):
+    if(num - int(num)) >= 0.5:
+        return int(num) + 1
+    else:
+        return int(num)
+n = int(sys.stdin.readline().rstrip())
+if n == 0:
+    print(0)
+else:
+    arr = []
+    for i in range(n):
+        arr.append(int(sys.stdin.readline().rstrip()))
+    arr.sort()
+    border = roundUp(n * 0.15)
+    if len(arr) <= 2 * border:
+        print(0)
+    else:
+        print(roundUp(sum(arr[border:n-border]) / len(arr[border:n-border])))
+
+
+L = int(input())
+string = input()
+r = 31
+M = 1234567891
+hash_value = 0
+for i in range(L):
+    char_value = ord(string[i]) - ord('a') + 1
+    hash_value = (hash_value + char_value * pow(r, i, M)) % M
+print(hash_value)
