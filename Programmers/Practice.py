@@ -723,3 +723,22 @@ def solution(x, n):
     return [x * i for i in range(1, n + 1)]
 
 
+def solution(keymap, targets):
+    answer = []
+    key_positions = {}
+    for i, key in enumerate(keymap):
+        for j, char in enumerate(key):
+            if char not in key_positions:
+                key_positions[char] = j + 1
+            else:
+                key_positions[char] = min(key_positions[char], j + 1)
+    for target in targets:
+        total_count = 0
+        for char in target:
+            if char in key_positions:
+                total_count += key_positions[char] 
+            else:
+                total_count = -1
+                break
+        answer.append(total_count)
+    return answer

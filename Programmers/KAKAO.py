@@ -471,3 +471,26 @@ def solution(friends, gifts):
                 elif ab[i] < ab[j]:
                     pre_nm[j] += 1
     return max(pre_nm)
+
+
+import re
+def solution(dartResult):
+    dart = re.findall(r'(\d{1,2})([SDT])([*#]?)', dartResult)
+    scores = []
+    for i, (num, bonus, option) in enumerate(dart):
+        num = int(num)
+        if bonus == 'S':
+            num = num ** 1
+        elif bonus == 'D':
+            num = num ** 2
+        elif bonus == 'T':
+            num = num ** 3
+        if option == '*':
+            num *= 2
+            if i > 0:
+                scores[i - 1] *= 2
+        elif option == '#':
+            num *= -1
+        scores.append(num)
+    return sum(scores)
+

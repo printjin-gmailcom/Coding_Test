@@ -218,3 +218,30 @@ ban = ['a', 'b', 'd', 'w', 'z', 'aa', 'bb']
 m = 'ah'
 result = find_position(m, ban)
 print(result)
+
+
+def solution(n, w, num):
+    layers = (n + w - 1) // w
+    grid = [[-1] * w for _ in range(layers)]
+    count = 1
+    for i in range(layers):
+        if i % 2 == 0:
+            for j in range(w):
+                if count <= n:
+                    grid[i][j] = count
+                    count += 1
+        else:
+            for j in range(w - 1, -1, -1):
+                if count <= n:
+                    grid[i][j] = count
+                    count += 1
+    for r in range(layers):
+        for c in range(w):
+            if grid[r][c] == num:
+                target_r, target_c = r, c
+                break
+    result = 1
+    for r in range(target_r + 1, layers):
+        if grid[r][target_c] != -1:
+            result += 1
+    return result
