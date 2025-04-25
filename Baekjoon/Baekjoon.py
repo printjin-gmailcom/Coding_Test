@@ -4397,3 +4397,99 @@ def z(n, r, c):
     else:
         return 3 * half * half + z(n - 1, r - half, c - half)
 print(z(n, r, c))
+
+
+n, m = map(int, input().split())
+nums = sorted(map(int, input().split()))
+visited = [False] * n
+result = []
+def backtrack(path):
+    if len(path) == m:
+        print(*path)
+        return
+    prev = 0
+    for i in range(n):
+        if not visited[i] and nums[i] != prev:
+            visited[i] = True
+            path.append(nums[i])
+            backtrack(path)
+            path.pop()
+            visited[i] = False
+            prev = nums[i]
+backtrack([])
+
+
+from collections import deque
+n, k = map(int, input().split())
+MAX = 100001
+dist = [-1] * MAX
+dq = deque()
+dq.append(n)
+dist[n] = 0
+while dq:
+    current = dq.popleft()
+    if current == k:
+        print(dist[current])
+        break
+    for next_pos in (current * 2, current - 1, current + 1):
+        if 0 <= next_pos < MAX and dist[next_pos] == -1:
+            if next_pos == current * 2:
+                dist[next_pos] = dist[current]
+                dq.appendleft(next_pos) 
+            else:
+                dist[next_pos] = dist[current] + 1
+                dq.append(next_pos)
+
+
+n = int(input())
+count = 0
+cols = [0] * n
+def is_safe(row):
+    for i in range(row):
+        if cols[i] == cols[row] or abs(cols[i] - cols[row]) == row - i:
+            return False
+    return True
+def solve(row):
+    global count
+    if row == n:
+        count += 1
+        return
+    for i in range(n):
+        cols[row] = i
+        if is_safe(row):
+            solve(row + 1)
+solve(0)
+print(count)
+
+
+import sys
+input = sys.stdin.readline
+def has_negative_cycle(n, edges):
+    INF = 1e9
+    dist = [INF] * (n + 1)
+    dist[1] = 0
+
+    for i in range(n):
+        for u, v, w in edges:
+            if dist[v] > dist[u] + w:
+                dist[v] = dist[u] + w
+                if i == n - 1:
+                    return True
+    return False
+tc = int(input())
+for _ in range(tc):
+    n, m, w = map(int, input().split())
+    edges = []
+    for _ in range(m):
+        s, e, t = map(int, input().split())
+        edges.append((s, e, t))
+        edges.append((e, s, t))
+    for _ in range(w):
+        s, e, t = map(int, input().split())
+        edges.append((s, e, -t))
+    if has_negative_cycle(n, edges):
+        print("YES")
+    else:
+        print("NO")
+
+
