@@ -4493,3 +4493,128 @@ for _ in range(tc):
         print("NO")
 
 
+def multiply(a, b):
+    return [
+        [(a[0][0]*b[0][0] + a[0][1]*b[1][0]) % MOD, (a[0][0]*b[0][1] + a[0][1]*b[1][1]) % MOD],
+        [(a[1][0]*b[0][0] + a[1][1]*b[1][0]) % MOD, (a[1][0]*b[0][1] + a[1][1]*b[1][1]) % MOD]]
+def matrix_power(matrix, n):
+    result = [[1, 0], [0, 1]] 
+    while n > 0:
+        if n % 2 == 1:
+            result = multiply(result, matrix)
+        matrix = multiply(matrix, matrix)
+        n //= 2
+    return result
+def fibonacci(n):
+    if n == 0:
+        return 0
+    base = [[1, 1], [1, 0]]
+    result = matrix_power(base, n-1)
+    return result[0][0]  # F(n)
+MOD = 1000000007
+n = int(input())
+print(fibonacci(n))
+
+
+import sys
+input = sys.stdin.readline
+n = int(input())
+p = 1000000007
+def mul(A, B):
+    n = len(A)
+    Z = [[0]*n for _ in range(n)]
+    for row in range(n):
+        for col in range(n):
+            e = 0
+            for i in range(n):
+                e += A[row][i] * B[i][col]
+            Z[row][col] = e % p            
+    return Z
+def square(A, k):
+    if k == 1:
+        for x in range(len(A)):
+            for y in range(len(A)):
+                A[x][y] %= p
+        return A    
+    tmp = square(A, k//2)
+    if k % 2:
+        return mul(mul(tmp, tmp), A)
+    else:
+        return mul(tmp, tmp)    
+fib_matrix = [[1, 1], [1, 0]]
+print(square(fib_matrix, n)[0][1])
+
+
+N = int(input())
+count = 0
+row = [0] * N
+def is_safe(x):
+    for i in range(x):
+        if row[x] == row[i] or abs(row[x] - row[i]) == x - i:
+            return False
+    return True
+def solve(x):
+    global count
+    if x == N:
+        count += 1
+        return
+    for i in range(N):
+        row[x] = i
+        if is_safe(x):
+            solve(x + 1)
+solve(0)
+print(count)
+
+
+N = int(input())
+count = 0
+col = [False] * N
+diag1 = [False] * (2 * N - 1)
+diag2 = [False] * (2 * N - 1)
+def solve(row):
+    global count
+    if row == N:
+        count += 1
+        return
+    for i in range(N):
+        if not col[i] and not diag1[row + i] and not diag2[row - i + N - 1]:
+            col[i] = diag1[row + i] = diag2[row - i + N - 1] = True
+            solve(row + 1)
+            col[i] = diag1[row + i] = diag2[row - i + N - 1] = False
+solve(0)
+print(count)
+
+
+from collections import deque
+n, m = map(int, input().split())
+graph = [list(map(int, input().strip())) for _ in range(n)]
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
+visited = [[[0] * 2 for _ in range(m)] for _ in range(n)]
+queue = deque()
+queue.append((0, 0, 0))
+visited[0][0][0] = 1
+while queue:
+    x, y, broken = queue.popleft()
+    for i in range(4):
+        nx = x + dx[i]
+        ny = y + dy[i]
+        if 0 <= nx < n and 0 <= ny < m:
+            if graph[nx][ny] == 0 and visited[nx][ny][broken] == 0:
+                visited[nx][ny][broken] = visited[x][y][broken] + 1
+                queue.append((nx, ny, broken))
+            if graph[nx][ny] == 1 and broken == 0 and visited[nx][ny][1] == 0:
+                visited[nx][ny][1] = visited[x][y][broken] + 1
+                queue.append((nx, ny, 1))
+res1 = visited[n - 1][m - 1][0]
+res2 = visited[n - 1][m - 1][1]
+if res1 and res2:
+    print(min(res1, res2))
+elif res1:
+    print(res1)
+elif res2:
+    print(res2)
+else:
+    print(-1)
+
+
