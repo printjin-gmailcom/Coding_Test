@@ -4618,3 +4618,31 @@ else:
     print(-1)
 
 
+import sys
+input = sys.stdin.read
+def solve():
+    data = input().split()
+    T = int(data[0])
+    idx = 1
+    results = []
+    for _ in range(T):
+        M = int(data[idx])
+        N = int(data[idx+1])
+        x = int(data[idx+2])
+        y = int(data[idx+3])
+        idx += 4
+        found = False
+        k = x
+        while k <= M * N:
+            if (k - y) % N == 0:
+                results.append(k)
+                found = True
+                break
+            k += M
+        if not found:
+            results.append(-1)
+    for r in results:
+        print(r)
+solve()
+
+
