@@ -4646,3 +4646,176 @@ def solve():
 solve()
 
 
+t = int(input())
+ns = [int(input()) for _ in range(t)]
+max_n = max(ns)
+p = [0] * (max_n + 1)
+p[1] = p[2] = p[3] = 1
+for i in range(4, max_n + 1):
+    p[i] = p[i - 2] + p[i - 3]
+for n in ns:
+    print(p[n])
+
+
+import sys
+n = int(sys.stdin.readline())
+dp = [0] * (n + 1)
+for i in range(1, n + 1):
+    dp[i] = i
+    j = 1
+    while j * j <= i:
+        dp[i] = min(dp[i], dp[i - j * j] + 1)
+        j += 1
+print(dp[n])
+
+
+n = int(input())
+dp = [0] * (n + 1)
+for i in range(1, n + 1):
+    min_val = i
+    j = 1
+    while j * j <= i:
+        min_val = min(min_val, dp[i - j * j] + 1)
+        j += 1
+    dp[i] = min_val
+print(dp[n])
+
+
+import sys
+N, M, B = map(int, input().split())
+land = [list(map(int, input().split())) for _ in range(N)]
+min_time = sys.maxsize
+best_height = -1
+for target_height in range(257):
+    inventory = B
+    time = 0
+    for i in range(N):
+        for j in range(M):
+            diff = land[i][j] - target_height
+            if diff > 0:
+                inventory += diff
+                time += 2 * diff
+            elif diff < 0:
+                inventory -= (-diff)
+                time += (-diff)
+    if inventory < 0:
+        continue
+    if time < min_time:
+        min_time = time
+        best_height = target_height
+    elif time == min_time and target_height > best_height:
+        best_height = target_height
+print(min_time, best_height)
+
+
+N = int(input())
+M = int(input())
+S = input()
+i = 0
+count = 0
+result = 0
+while i < M - 1:
+    if S[i] == 'I':
+        cnt = 0
+        while i + 2 < M and S[i+1] == 'O' and S[i+2] == 'I':
+            cnt += 1
+            i += 2
+            if cnt == N:
+                result += 1
+                cnt -= 1
+        i += 1
+    else:
+        i += 1
+print(result)
+
+
+import sys
+input = sys.stdin.readline
+move = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+N, M = map(int, input().split())
+board = [list(map(int,input().split())) for _ in range(N)]
+visited = [[False] * M for _ in range(N)]
+maxValue = 0
+def dfs(i, j, dsum, cnt):
+    global maxValue
+    if cnt == 4:
+        maxValue = max(maxValue, dsum)
+        return
+    for n in range(4):
+        ni = i+move[n][0]
+        nj = j+move[n][1]
+        if 0 <= ni < N and 0 <= nj < M and not visited[ni][nj]:
+            visited[ni][nj] = True
+            dfs(ni, nj, dsum + board[ni][nj], cnt+1)
+            visited[ni][nj] = False
+def exce(i, j):
+    global maxValue
+    for n in range(4):
+        tmp = board[i][j]
+        for k in range(3):
+            t = (n+k)%4
+            ni = i+move[t][0]
+            nj = j+move[t][1]
+            if not (0 <= ni < N and 0 <= nj < M):
+                tmp = 0
+                break
+            tmp += board[ni][nj]
+        maxValue = max(maxValue, tmp)
+for i in range(N):
+    for j in range(M):
+        visited[i][j] = True
+        dfs(i, j, board[i][j], 1)
+        visited[i][j] = False
+        exce(i, j)
+print(maxValue)
+
+
+import sys
+import heapq
+
+def isEmpty(nums):
+    for item in nums:
+        if item[1] > 0:
+            return False
+    return True
+
+t = int(sys.stdin.readline())
+for i in range(t):
+    min_heap = []
+    max_heap = []
+    nums = dict()
+    k = int(sys.stdin.readline())
+    for j in range(k):
+        oprt, oprd = sys.stdin.readline().split()
+        num = int(oprd)
+        if oprt == 'I':
+            if num in nums:
+                nums[num] += 1
+            else:
+                nums[num] = 1
+                heapq.heappush(min_heap, num)
+                heapq.heappush(max_heap, -num)
+        elif oprt == 'D':
+            if not isEmpty(nums.items()):
+                if num == 1:
+                    while -max_heap[0] not in nums or nums[-max_heap[0]] < 1:
+                        temp = -heapq.heappop(max_heap)
+                        if temp in nums:
+                            del(nums[temp])
+                    nums[-max_heap[0]] -= 1
+                else:
+                    while min_heap[0] not in nums or nums[min_heap[0]] < 1:
+                        temp = heapq.heappop(min_heap)
+                        if temp in nums:
+                            del(nums[temp])
+                    nums[min_heap[0]] -= 1
+    if isEmpty(nums.items()):
+        print('EMPTY')
+    else:
+        while min_heap[0] not in nums or nums[min_heap[0]] < 1:
+            heapq.heappop(min_heap)
+        while -max_heap[0] not in nums or nums[-max_heap[0]] < 1:
+            heapq.heappop(max_heap)
+        print(-max_heap[0], min_heap[0])
+
+
