@@ -4819,3 +4819,222 @@ for i in range(t):
         print(-max_heap[0], min_heap[0])
 
 
+import heapq
+INF = int(1e9)
+def dijkstra(start, graph, N):
+    distance = [INF] * (N + 1)
+    distance[start] = 0
+    q = []
+    heapq.heappush(q, (0, start))
+    while q:
+        dist, now = heapq.heappop(q)
+        if distance[now] < dist:
+            continue
+        for next_node, cost in graph[now]:
+            new_cost = dist + cost
+            if new_cost < distance[next_node]:
+                distance[next_node] = new_cost
+                heapq.heappush(q, (new_cost, next_node))
+    return distance
+N, E = map(int, input().split())
+graph = [[] for _ in range(N + 1)]
+for _ in range(E):
+    a, b, c = map(int, input().split())
+    graph[a].append((b, c))
+    graph[b].append((a, c))
+v1, v2 = map(int, input().split())
+d1 = dijkstra(1, graph, N)
+dv1 = dijkstra(v1, graph, N)
+dv2 = dijkstra(v2, graph, N)
+route1 = d1[v1] + dv1[v2] + dv2[N]
+route2 = d1[v2] + dv2[v1] + dv1[N]
+result = min(route1, route2)
+print(result if result < INF else -1)
+
+
+r, c = map(int, input().split())
+maps = []
+for _ in range(r):
+    maps.append(list(input()))
+ans = 0
+alphas = set()
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
+def dfs(x, y, count):
+    global ans
+    ans = max(ans, count)
+    for i in range(4):
+        nx = x + dx[i]
+        ny = y + dy[i]
+        if 0 <= nx < r and 0 <= ny < c and not maps[nx][ny] in alphas:
+            alphas.add(maps[nx][ny])
+            dfs(nx, ny, count+1)
+            alphas.remove(maps[nx][ny])
+alphas.add(maps[0][0])
+dfs(0, 0, 1)
+print(ans)
+
+
+# 모듈러
+MOD = 1000000007
+def mod_inverse(x, mod):
+    return pow(x, mod - 2, mod)
+M = int(input())
+total = 0
+for _ in range(M):
+    N, S = map(int, input().split())
+    inv_N = mod_inverse(N, MOD)
+    total = (total + S * inv_N) % MOD
+print(total)
+
+
+INF = float('inf')
+def floyd_warshall(n, dist):
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if dist[i][j] > dist[i][k] + dist[k][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+n, m, r = map(int, input().split())
+items = list(map(int, input().split()))
+dist = [[INF] * n for _ in range(n)]
+for i in range(n):
+    dist[i][i] = 0
+for _ in range(r):
+    a, b, l = map(int, input().split())
+    a -= 1
+    b -= 1
+    dist[a][b] = min(dist[a][b], l)
+    dist[b][a] = min(dist[b][a], l)
+floyd_warshall(n, dist)
+max_items = 0
+for i in range(n):
+    total_items = items[i]
+    for j in range(n):
+        if i != j and dist[i][j] <= m:
+            total_items += items[j]
+    max_items = max(max_items, total_items)
+print(max_items)
+
+
+import sys
+input = sys.stdin.readline
+def diffuse():
+    directions = [(1, 0), (-1, 0), (0, -1), (0, 1)]
+    amount = [[board[i][j] // 5 for j in range(C)] for i in range(R)]
+    updated = [[0] * C for _ in range(R)]
+    filter = []
+    for i in range(R):
+        for j in range(C):
+            if board[i][j] == -1:
+                filter.append(i)
+                updated[i][j] = -1
+                continue
+            count = 4
+            added = 0
+            for d in directions:
+                x, y = i + d[0], j + d[1]
+                if x < 0 or x >= R or y < 0 or y >= C or board[x][y] == -1:
+                    count -= 1
+                else:
+                    added += amount[x][y]
+            updated[i][j] = board[i][j] - (amount[i][j] * count) + added
+    return filter[0], filter[1], updated
+def activate(filter_x, filter_y):
+    for r in range(filter_x - 1, 0, -1):
+        board[r][0] = board[r - 1][0]
+    for c in range(C - 1):
+        board[0][c] = board[0][c + 1]
+    for r in range(filter_x):
+        board[r][-1] = board[r + 1][-1]
+    for c in range(C - 1, 0, -1):
+        board[filter_x][c] = board[filter_x][c - 1]
+    board[filter_x][1] = 0
+    for r in range(filter_y + 1, R - 1):
+        board[r][0] = board[r + 1][0]
+    for c in range(C - 1):
+        board[-1][c] = board[-1][c + 1]
+    for r in range(R - 1, filter_y, - 1):
+        board[r][-1] = board[r - 1][-1]
+    for c in range(C - 1, 0, -1):
+        board[filter_y][c] = board[filter_y][c - 1]
+    board[filter_y][1] = 0
+def sum_dust():
+    result = 0
+    for row in board:
+        result += sum(row)
+    return result + 2
+R, C, T = map(int, input().split())
+board = [list(map(int, input().split())) for _ in range(R)]
+for _ in range(T):
+    x, y, board = diffuse()
+    activate(x, y)
+print(sum_dust())
+
+
+def sol(arr1, arr2, res = []):
+    if (not arr1) or (not arr2):
+        return res
+    tmp1, tmp2 = max(arr1), max(arr2)
+    idx1, idx2 = arr1.index(tmp1), arr2.index(tmp2)
+    if tmp1 == tmp2:
+        res.append(tmp1)
+        return sol(arr1[idx1 + 1:], arr2[idx2 + 1:], res)
+    elif tmp1 > tmp2:
+        arr1.pop(idx1)
+        return sol(arr1, arr2, res)
+    else:
+        arr2.pop(idx2)
+        return sol(arr1, arr2, res)
+n = int(input())
+arr1 = list(map(int, input().split()))
+m = int(input())
+arr2 = list(map(int, input().split()))
+ans = sol(arr1, arr2)
+print(len(ans))
+if ans:
+    print(*ans)
+
+
+from collections import deque
+import sys
+input = sys.stdin.readline
+n, m = map(int, input().split())
+cheeze = [list(map(int, input().split())) for _ in range(n)]
+dx = [1, -1, 0, 0]
+dy = [0, 0, 1, -1]
+def bfs():
+    visited = [[False] * m for _ in range(n)]
+    q = deque()
+    q.append((0, 0))
+    visited[0][0] = True
+    while q:
+        x, y = q.popleft()
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if 0 <= nx < n and 0 <= ny < m and not visited[nx][ny]:
+                if cheeze[nx][ny] >= 1: 
+                    cheeze[nx][ny] += 1
+                else:
+                    q.append((nx, ny))
+                    visited[nx][ny] = True
+def melt_cheeze():
+    melted = 0
+    for i in range(n):
+        for j in range(m):
+            if cheeze[i][j] >= 3:
+                cheeze[i][j] = 0
+                melted += 1
+            elif cheeze[i][j] >= 2:
+                cheeze[i][j] = 1
+    return melted
+time = 0
+while True:
+    bfs()
+    melted = melt_cheeze()
+    if melted:
+        time += 1
+    else:
+        print(time)
+        break
