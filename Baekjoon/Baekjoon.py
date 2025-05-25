@@ -5050,3 +5050,32 @@ for i in range(n - 1):
         min_price = prices[i]
     total_cost += min_price * distances[i]
 print(total_cost)
+
+
+n, m = map(int, input().split())
+print(abs(n - m))
+
+
+st = input()
+answer = ''
+for s in st:
+    if s.islower():
+        answer += s.upper()
+    else:
+        answer += s.lower()
+print(answer)
+
+
+grade = input()
+grade_to_score = {
+    'A+': 4.3, 'A0': 4.0, 'A-': 3.7, 'B+': 3.3, 'B0': 3.0, 'B-': 2.7, 'C+': 2.3, 'C0': 2.0, 'C-': 1.7, 'D+': 1.3, 'D0': 1.0, 'D-': 0.7, 'F': 0.0
+print(grade_to_score[grade])
+
+
+n, m = map(int, input().split())
+print((n+m)*(n-m))
+
+
+n, m = map(int, input().split())
+print(n**2 - m**2)
+
