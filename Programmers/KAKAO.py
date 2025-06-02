@@ -494,3 +494,23 @@ def solution(dartResult):
         scores.append(num)
     return sum(scores)
 
+def solution(record):
+    answer = []
+    user_nick = {}
+    actions = []
+    for entry in record:
+        parts = entry.split()
+        action = parts[0]
+        uid = parts[1]
+        if action in ("Enter", "Change"):
+            nickname = parts[2]
+            user_nick[uid] = nickname
+        if action in ("Enter", "Leave"):
+            actions.append((action, uid))
+    for action, uid in actions:
+        nickname = user_nick[uid]
+        if action == "Enter":
+            answer.append(f"{nickname}님이 들어왔습니다.")
+        elif action == "Leave":
+            answer.append(f"{nickname}님이 나갔습니다.")
+    return answer
