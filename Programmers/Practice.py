@@ -759,3 +759,50 @@ def solution(x, y, n):
                 visited.add(next_value)
                 queue.append((next_value, count + 1))
     return -1
+
+
+import heapq
+def solution(n, works):
+    if sum(works) <= n:
+        return 0  
+    works = [-w for w in works]
+    heapq.heapify(works)
+    
+    for _ in range(n):
+        max_work = heapq.heappop(works)
+        if max_work == 0:
+            break
+        heapq.heappush(works, max_work + 1)  
+    return sum(w ** 2 for w in works)  
+
+
+def solution(storey):
+    answer = 0
+    while storey > 0:
+        digit = storey % 10
+        if digit > 5:
+            answer += (10 - digit)
+            storey = storey // 10 + 1
+        elif digit < 5:
+            answer += digit
+            storey = storey // 10
+        else: 
+            next_digit = (storey // 10) % 10
+            if next_digit >= 5:
+                answer += 5
+                storey = storey // 10 + 1
+            else:
+                answer += 5
+                storey = storey // 10
+    return answer
+
+
+def solution(n):
+    answer = ''
+    while n > 0:
+        n, remainder = divmod(n, 3)
+        if remainder == 0:
+            remainder = 4
+            n -= 1
+        answer = str(remainder) + answer
+    return answer
