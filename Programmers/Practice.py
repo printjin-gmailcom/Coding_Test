@@ -806,3 +806,49 @@ def solution(n):
             n -= 1
         answer = str(remainder) + answer
     return answer
+
+
+from collections import deque
+def solution(board):
+    n, m = len(board), len(board[0])
+    visited = [[False] * m for _ in range(n)]
+    for i in range(n):
+        for j in range(m):
+            if board[i][j] == 'R':
+                start = (i, j)
+            if board[i][j] == 'G':
+                goal = (i, j)
+    queue = deque()
+    queue.append((start[0], start[1], 0))
+    visited[start[0]][start[1]] = True
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    while queue:
+        x, y, cnt = queue.popleft()
+        if (x, y) == goal:
+            return cnt
+        for dx, dy in directions:
+            nx, ny = x, y
+            while True:
+                tx, ty = nx + dx, ny + dy
+                if 0 <= tx < n and 0 <= ty < m and board[tx][ty] != 'D':
+                    nx, ny = tx, ty
+                else:
+                    break
+            if not visited[nx][ny]:
+                visited[nx][ny] = True
+                queue.append((nx, ny, cnt + 1))
+    return -1
+
+
+import math
+def solution(n, k):
+    numbers = list(range(1, n + 1))
+    answer = []
+    k -= 1
+    for i in range(n, 0, -1):
+        fact = math.factorial(i - 1)
+        index = k // fact
+        answer.append(numbers[index])  
+        numbers.pop(index)            
+        k %= fact
+    return answer
