@@ -514,3 +514,52 @@ def solution(record):
         elif action == "Leave":
             answer.append(f"{nickname}님이 나갔습니다.")
     return answer
+
+
+from itertools import combinations
+from collections import Counter
+def solution(orders, course):
+    result = []
+    for c in course:
+        combs = []
+        for order in orders:
+            order = sorted(order)
+            combs += combinations(order, c)
+        combs_counter = Counter(combs)
+        if combs_counter:
+            max_count = max(combs_counter.values())
+            if max_count >= 2:
+                for comb in combs_counter:
+                    if combs_counter[comb] == max_count:
+                        result.append(''.join(comb))
+    return sorted(result)
+
+
+def solution(m, musicinfos):
+    def time_to_minutes(time_str):
+        hour, minute = map(int, time_str.split(':'))
+        return hour * 60 + minute
+    def convert_melody(melody):
+        converted = ''
+        i = 0
+        while i < len(melody):
+            if i + 1 < len(melody) and melody[i + 1] == '#':
+                converted += melody[i].lower()
+                i += 2
+            else:
+                converted += melody[i]
+                i += 1
+        return converted
+    answer = '(None)'
+    max_play_time = -1
+    m_converted = convert_melody(m)
+    for info in musicinfos:
+        start, end, title, melody = info.split(',')
+        play_time = time_to_minutes(end) - time_to_minutes(start)
+        melody_converted = convert_melody(melody)
+        full_melody = (melody_converted * (play_time // len(melody_converted))) + melody_converted[:play_time % len(melody_converted)]
+        if m_converted in full_melody:
+            if play_time > max_play_time:
+                max_play_time = play_time
+                answer = title
+    return answer
