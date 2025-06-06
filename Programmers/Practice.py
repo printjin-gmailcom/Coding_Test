@@ -852,3 +852,39 @@ def solution(n, k):
         numbers.pop(index)            
         k %= fact
     return answer
+
+
+import heapq
+def solution(book_time):
+    times = []
+    for start, end in book_time:
+        s_h, s_m = map(int, start.split(':'))
+        e_h, e_m = map(int, end.split(':'))
+        s = s_h * 60 + s_m
+        e = e_h * 60 + e_m + 10
+        times.append((s, e))
+    times.sort()
+    rooms = []
+    for s, e in times:
+        if rooms and rooms[0] <= s:
+            heapq.heappop(rooms)
+        heapq.heappush(rooms, e)
+    return len(rooms)
+
+
+import heapq
+def solution(n, k, enemy):
+    heap = []
+    total_soldiers_used = 0
+    for round_number, e in enumerate(enemy):
+        heapq.heappush(heap, -e)  
+        total_soldiers_used += e
+        if total_soldiers_used > n:
+            if k > 0:
+                max_enemy = -heapq.heappop(heap)
+                total_soldiers_used -= max_enemy 
+                k -= 1
+            else:
+                return round_number  
+    return len(enemy) 
+
