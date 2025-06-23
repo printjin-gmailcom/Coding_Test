@@ -888,3 +888,46 @@ def solution(n, k, enemy):
                 return round_number  
     return len(enemy) 
 
+
+def solution(n):
+    result = []
+    def hanoi(n, start, mid, end):
+        if n == 1:
+            result.append([start, end])
+            return
+        hanoi(n - 1, start, end, mid)
+        result.append([start, end])
+        hanoi(n - 1, mid, start, end)
+    hanoi(n, 1, 2, 3)
+    return result
+
+
+def solution(picks, minerals):
+    fatigue_table = {
+        'diamond': [1, 5, 25],
+        'iron': [1, 1, 5],
+        'stone': [1, 1, 1]
+    }
+    tool_limit = sum(picks)
+    minerals = minerals[:tool_limit * 5]
+    blocks = [minerals[i:i+5] for i in range(0, len(minerals), 5)]
+    def calc_stress(block):
+        stress = [0, 0, 0]
+        for m in block:
+            stress[0] += fatigue_table[m][0]
+            stress[1] += fatigue_table[m][1]
+            stress[2] += fatigue_table[m][2]
+        return stress
+    stress_blocks = [calc_stress(block) for block in blocks]
+    stress_blocks.sort(key=lambda x: (-x[2], -x[1], -x[0]))  # stone 피로도 기준 정렬
+    answer = 0
+    idx = 0
+    for i in range(3):
+        for _ in range(picks[i]):
+            if idx >= len(stress_blocks):
+                break
+            answer += stress_blocks[idx][i]
+            idx += 1
+    return answer
+
+
