@@ -931,3 +931,15 @@ def solution(picks, minerals):
     return answer
 
 
+from math import gcd
+from functools import reduce
+def get_valid_gcd(arr1, arr2):
+    g = reduce(gcd, arr1)
+    for num in arr2:
+        if num % g == 0:
+            return 0
+    return g
+def solution(arrayA, arrayB):
+    return max(get_valid_gcd(arrayA, arrayB), get_valid_gcd(arrayB, arrayA))
+
+
