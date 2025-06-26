@@ -943,3 +943,62 @@ def solution(arrayA, arrayB):
     return max(get_valid_gcd(arrayA, arrayB), get_valid_gcd(arrayB, arrayA))
 
 
+def solution(sequence, k):
+    left = 0
+    right = 0
+    total = sequence[0]
+    min_len = float('inf')
+    answer = [0, 0]
+    while right < len(sequence):
+        if total < k:
+            right += 1
+            if right < len(sequence):
+                total += sequence[right]
+        elif total > k:
+            total -= sequence[left]
+            left += 1
+        else:
+            if right - left < min_len:
+                min_len = right - left
+                answer = [left, right]
+            total -= sequence[left]
+            left += 1
+    return answer
+
+
+def solution(data, col, row_begin, row_end):
+    data.sort(key=lambda x: (x[col - 1], -x[0]))
+    xor_result = 0
+    for i in range(row_begin - 1, row_end):
+        s_i = sum(value % (i + 1) for value in data[i])
+        xor_result ^= s_i
+    return xor_result
+
+
+def solution(maps):
+    from collections import deque
+    n, m = len(maps), len(maps[0])
+    visited = [[False]*m for _ in range(n)]
+    answer = []
+    def bfs(x, y):
+        queue = deque()
+        queue.append((x, y))
+        visited[x][y] = True
+        total = int(maps[x][y])
+        directions = [(-1,0), (1,0), (0,-1), (0,1)]
+        while queue:
+            cx, cy = queue.popleft()
+            for dx, dy in directions:
+                nx, ny = cx + dx, cy + dy
+                if 0 <= nx < n and 0 <= ny < m and not visited[nx][ny] and maps[nx][ny] != 'X':
+                    visited[nx][ny] = True
+                    total += int(maps[nx][ny])
+                    queue.append((nx, ny))
+        return total
+    for i in range(n):
+        for j in range(m):
+            if not visited[i][j] and maps[i][j] != 'X':
+                answer.append(bfs(i, j))
+    return sorted(answer) if answer else [-1]
+
+
