@@ -563,3 +563,36 @@ def solution(m, musicinfos):
                 max_play_time = play_time
                 answer = title
     return answer
+
+
+import re
+def solution(files):
+    def parse(file):
+        head, number = re.match(r'([^\d]+)(\d{1,5})', file).groups()
+        return (head.lower(), int(number))
+    return sorted(files, key=lambda file: parse(file))
+
+
+def solution(m, n, board):
+    board = [list(row) for row in board]
+    total_removed = 0
+    while True:
+        remove = set()
+        for i in range(m - 1):
+            for j in range(n - 1):
+                block = board[i][j]
+                if block == '0':
+                    continue
+                if block == board[i][j+1] and block == board[i+1][j] and block == board[i+1][j+1]:
+                    remove |= {(i, j), (i, j+1), (i+1, j), (i+1, j+1)}
+        if not remove:
+            break
+        total_removed += len(remove)
+        for i, j in remove:
+            board[i][j] = '0'
+        for j in range(n):
+            stack = [board[i][j] for i in range(m) if board[i][j] != '0']
+            for i in range(m - 1, -1, -1):
+                board[i][j] = stack.pop() if stack else '0'
+    return total_removed
+
