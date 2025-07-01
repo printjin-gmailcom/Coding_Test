@@ -596,3 +596,41 @@ def solution(m, n, board):
                 board[i][j] = stack.pop() if stack else '0'
     return total_removed
 
+
+def solution(s):
+    if len(s) == 1:
+        return 1
+    min_len = len(s)
+    for step in range(1, len(s) // 2 + 1):
+        compressed = ""
+        prev = s[:step]
+        count = 1
+        for i in range(step, len(s), step):
+            curr = s[i:i+step]
+            if curr == prev:
+                count += 1
+            else:
+                compressed += (str(count) + prev) if count > 1 else prev
+                prev = curr
+                count = 1
+        compressed += (str(count) + prev) if count > 1 else prev
+        min_len = min(min_len, len(compressed))
+    return min_len
+
+
+from itertools import combinations
+def solution(relation):
+    n_col = len(relation[0])
+    candidates = []
+    for i in range(1, n_col + 1):
+        for comb in combinations(range(n_col), i):
+            tmp = [tuple(item[col] for col in comb) for item in relation]
+            if len(set(tmp)) == len(relation):
+                is_minimal = True
+                for c in candidates:
+                    if set(c).issubset(set(comb)):
+                        is_minimal = False
+                        break
+                if is_minimal:
+                    candidates.append(comb)
+    return len(candidates)
