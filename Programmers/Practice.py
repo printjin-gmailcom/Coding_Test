@@ -1002,3 +1002,32 @@ def solution(maps):
     return sorted(answer) if answer else [-1]
 
 
+def solution(k, ranges):
+    seq = [k]
+    while k != 1:
+        k = k // 2 if k % 2 == 0 else k * 3 + 1
+        seq.append(k)
+    areas = []
+    for i in range(len(seq) - 1):
+        areas.append((seq[i] + seq[i + 1]) / 2)
+    n = len(areas)
+    result = []
+    for a, b in ranges:
+        end = n + b
+        if a > end:
+            result.append(-1.0)
+        else:
+            result.append(sum(areas[a:end]))
+    return result
+
+
+from collections import Counter
+def solution(want, number, discount):
+    want_dict = dict(zip(want, number))
+    answer = 0
+    for i in range(len(discount) - 9):
+        window = discount[i:i+10]
+        if Counter(window) == want_dict:
+            answer += 1
+    return answer
+

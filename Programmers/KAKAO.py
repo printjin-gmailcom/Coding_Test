@@ -634,3 +634,28 @@ def solution(relation):
                 if is_minimal:
                     candidates.append(comb)
     return len(candidates)
+
+
+def solution(places):
+    def is_valid(place):
+        for i in range(5):
+            for j in range(5):
+                if place[i][j] != 'P':
+                    continue
+                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]: 
+                    ni, nj = i + dx, j + dy
+                    if 0 <= ni < 5 and 0 <= nj < 5 and place[ni][nj] == 'P':
+                        return 0
+                for dx, dy in [(-2, 0), (2, 0), (0, -2), (0, 2)]: 
+                    ni, nj = i + dx, j + dy
+                    mi, mj = i + dx // 2, j + dy // 2
+                    if 0 <= ni < 5 and 0 <= nj < 5 and place[ni][nj] == 'P':
+                        if place[mi][mj] != 'X':
+                            return 0
+                for dx, dy in [(-1, -1), (-1, 1), (1, -1), (1, 1)]: 
+                    ni, nj = i + dx, j + dy
+                    if 0 <= ni < 5 and 0 <= nj < 5 and place[ni][nj] == 'P':
+                        if place[i][nj] != 'X' or place[ni][j] != 'X':
+                            return 0
+        return 1
+    return [is_valid(place) for place in places]
