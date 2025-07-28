@@ -659,3 +659,41 @@ def solution(places):
                             return 0
         return 1
     return [is_valid(place) for place in places]
+
+
+from itertools import permutations
+def solution(expression):
+    tokens = []
+    num = ''
+    for ch in expression:
+        if ch in '+-*':
+            tokens.append(int(num))
+            tokens.append(ch)
+            num = ''
+        else:
+            num += ch
+    tokens.append(int(num))
+    operators = set([t for t in tokens if isinstance(t, str)])
+    max_val = 0
+    for order in permutations(operators):
+        temp = tokens[:]
+        for op in order:
+            stack = []
+            i = 0
+            while i < len(temp):
+                if temp[i] == op:
+                    prev = stack.pop()
+                    next_num = temp[i + 1]
+                    if op == '+':
+                        stack.append(prev + next_num)
+                    elif op == '-':
+                        stack.append(prev - next_num)
+                    else:
+                        stack.append(prev * next_num)
+                    i += 2
+                else:
+                    stack.append(temp[i])
+                    i += 1
+            temp = stack
+        max_val = max(max_val, abs(temp[0]))
+    return max_val
