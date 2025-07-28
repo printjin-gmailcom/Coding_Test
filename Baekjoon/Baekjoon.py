@@ -5079,3 +5079,45 @@ print((n+m)*(n-m))
 n, m = map(int, input().split())
 print(n**2 - m**2)
 
+
+n = int(input())
+divisors = list(map(int, input().split()))
+print(min(divisors) * max(divisors))
+
+
+
+n = int(input())
+cnt = 0
+users = set()
+for _ in range(n):
+    line = input()
+    if line == "ENTER":
+        users.clear()
+    elif line not in users:
+        users.add(line)
+        cnt += 1
+print(cnt)
+
+
+import sys
+from collections import defaultdict
+n, m = map(int, sys.stdin.readline().split())
+words = defaultdict(int)
+for _ in range(n):
+    word = sys.stdin.readline().rstrip()
+    if len(word) >= m:
+        words[word] += 1
+sorted_words = sorted(words.items(), key=lambda x: (-x[1], -len(x[0]), x[0]))
+for word, _ in sorted_words:
+    print(word)
+
+
+import sys
+n = int(sys.stdin.readline())
+dance = set(['ChongChong'])
+for _ in range(n):
+    a, b = sys.stdin.readline().split()
+    if a in dance or b in dance:
+        dance.add(a)
+        dance.add(b)
+print(len(dance))
