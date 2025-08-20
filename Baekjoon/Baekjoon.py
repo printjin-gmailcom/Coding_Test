@@ -5121,3 +5121,19 @@ for _ in range(n):
         dance.add(a)
         dance.add(b)
 print(len(dance))
+
+
+isbn = input().strip()
+m = int(isbn[-1])
+weights = [1 if i % 2 == 0 else 3 for i in range(12)]
+missing_index = -1
+total = 0
+for i in range(12):
+    if isbn[i] == '*':
+        missing_index = i
+    else:
+        total += int(isbn[i]) * weights[i]
+for digit in range(10):
+    if (total + digit * weights[missing_index] + m) % 10 == 0:
+        print(digit)
+        break
