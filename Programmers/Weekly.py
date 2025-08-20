@@ -26,3 +26,47 @@ def solution(arr):
         else:
             return [0, 1]
     return compress(0, 0, len(arr))
+
+
+def solution(s):
+    def is_valid(brackets):
+        stack = []
+        pairs = {')': '(', ']': '[', '}': '{'}
+        for ch in brackets:
+            if ch in '([{':
+                stack.append(ch)
+            else:
+                if not stack or stack[-1] != pairs[ch]:
+                    return False
+                stack.pop()
+        return not stack
+    n = len(s)
+    count = 0
+    for i in range(n):
+        rotated = s[i:] + s[:i]
+        if is_valid(rotated):
+            count += 1
+    return count
+
+
+def solution(n):
+    triangle = [[0] * (i + 1) for i in range(n)]
+    num = 1
+    x, y = -1, 0
+    
+    for i in range(n):
+        for j in range(i, n):
+            if i % 3 == 0:  
+                x += 1
+            elif i % 3 == 1:  
+                y += 1
+            else: 
+                x -= 1
+                y -= 1
+            triangle[x][y] = num
+            num += 1
+    answer = []
+    for row in triangle:
+        answer.extend(row)
+    return answer
+
