@@ -59,3 +59,26 @@ def solution(numbers, target):
                 return 0
         return dfs(index + 1, current_sum + numbers[index]) + dfs(index + 1, current_sum - numbers[index])
     return dfs(0, 0)
+
+
+def solution(n, wires):
+    def dfs(node, visited, graph):
+        visited[node] = True
+        count = 1 
+        for nxt in graph[node]:
+            if not visited[nxt]:
+                count += dfs(nxt, visited, graph)
+        return count
+    answer = n
+    for cut in wires:
+        graph = [[] for _ in range(n+1)]
+        for v1, v2 in wires:
+            if [v1, v2] == cut or [v2, v1] == cut:
+                continue
+            graph[v1].append(v2)
+            graph[v2].append(v1)
+        visited = [False] * (n+1)
+        cnt = dfs(cut[0], visited, graph)
+        diff = abs((n - cnt) - cnt)
+        answer = min(answer, diff)
+    return answer
