@@ -697,3 +697,50 @@ def solution(expression):
             temp = stack
         max_val = max(max_val, abs(temp[0]))
     return max_val
+
+
+def solution(gems):
+    total_types = len(set(gems))
+    gem_counter = {}
+    answer = [0, len(gems) - 1]
+    start, end = 0, 0
+    gem_counter[gems[0]] = 1
+    while start < len(gems) and end < len(gems):
+        if len(gem_counter) == total_types:
+            if (end - start) < (answer[1] - answer[0]):
+                answer = [start, end]
+            gem_counter[gems[start]] -= 1
+            if gem_counter[gems[start]] == 0:
+                del gem_counter[gems[start]]
+            start += 1
+        else:
+            end += 1
+            if end == len(gems):
+                break
+            gem_counter[gems[end]] = gem_counter.get(gems[end], 0) + 1
+    return [answer[0] + 1, answer[1] + 1]
+
+
+def solution(stones, k):
+    left, right = 1, max(stones)
+    answer = 0
+    while left <= right:
+        mid = (left + right) // 2 
+        cnt = 0
+        possible = True
+        for s in stones:
+            if s - mid < 0:
+                cnt += 1
+                if cnt >= k:
+                    possible = False
+                    break
+            else:
+                cnt = 0
+        if possible:  
+            answer = mid
+            left = mid + 1
+        else:  
+            right = mid - 1
+    return answer
+
+

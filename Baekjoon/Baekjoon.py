@@ -5137,3 +5137,28 @@ for digit in range(10):
     if (total + digit * weights[missing_index] + m) % 10 == 0:
         print(digit)
         break
+
+
+print("강한친구 대한육군")
+print("강한친구 대한육군")
+
+
+N = int(input())
+for i in range(N, 0, -1):
+    print(i)
+
+
+N = int(input())
+num = N
+count = 0
+while True:
+    a = num // 10
+    b = num % 10
+    new_num = (b * 10) + ((a + b) % 10)
+    count += 1
+    num = new_num
+    if num == N:
+        break
+print(count)
+
+
