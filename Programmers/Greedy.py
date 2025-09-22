@@ -34,3 +34,31 @@ def solution(number, k):
     return ''.join(stack[:len(number) - k])
 
 
+def solution(n, costs):
+    costs.sort(key=lambda x: x[2]) 
+    connected = set([0])  
+    total = 0
+    while len(connected) < n:
+        for a, b, c in costs:
+            if a in connected and b not in connected:
+                connected.add(b)
+                total += c
+                break
+            elif b in connected and a not in connected:
+                connected.add(a)
+                total += c
+                break
+    return total
+
+
+def solution(routes):
+    routes.sort(key=lambda x: x[1]) 
+    cameras = []
+    count = 0
+    for route in routes:
+        if not cameras or cameras[-1] < route[0]:  
+            cameras.append(route[1])  
+            count += 1
+    return count
+
+

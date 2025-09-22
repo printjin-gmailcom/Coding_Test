@@ -1031,3 +1031,27 @@ def solution(want, number, discount):
             answer += 1
     return answer
 
+
+def solution(n):
+    answer = 0
+    board = [] 
+    def is_ok(row, col):
+        for r in range(row):
+            c = board[r]
+            if c == col or abs(c - col) == abs(r - row):  
+                return False
+        return True
+    def backtrack(row):
+        nonlocal answer
+        if row == n: 
+            answer += 1
+            return
+        for col in range(n):
+            if is_ok(row, col):
+                board.append(col)
+                backtrack(row + 1)
+                board.pop()
+    backtrack(0)
+    return answer
+
+
