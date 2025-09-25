@@ -1055,3 +1055,96 @@ def solution(n):
     return answer
 
 
+def solution(k, d):
+    answer = 0
+    for x in range(0, d + 1, k):
+        max_y = int((d**2 - x**2)**0.5)
+        answer += (max_y // k) + 1
+    return answer
+
+
+def solution(plans):
+    def to_minutes(t):
+        h, m = map(int, t.split(":"))
+        return h * 60 + m
+    plans = [(n, to_minutes(s), int(p)) for n, s, p in plans]
+    plans.sort(key=lambda x: x[1])
+    answer = []
+    stack = []
+    for i in range(len(plans)):
+        name, start, playtime = plans[i]
+        if i < len(plans) - 1:
+            next_start = plans[i + 1][1]
+        else:
+            next_start = float('inf')
+        stack.append([name, playtime])
+        available = next_start - start
+        while available > 0 and stack:
+            cur, remain = stack.pop()
+            if remain <= available:
+                available -= remain
+                answer.append(cur)
+            else:
+                stack.append([cur, remain - available])
+                available = 0
+    while stack:
+        answer.append(stack.pop()[0])
+    return answer
+
+
+def solution(board):
+    n, m = len(board), len(board[0])
+    for i in range(1, n):
+        for j in range(1, m):
+            if board[i][j] == 1:
+                board[i][j] = min(board[i-1][j], board[i][j-1], board[i-1][j-1]) + 1
+    return max(map(max, board)) ** 2
+
+
+def solution(targets):
+    targets.sort(key=lambda x: x[1])
+    answer = 0
+    last = -1
+    for s, e in targets:
+        if last <= s:
+            answer += 1
+            last = e
+    return answer
+
+
+def solution(cards):
+    n = len(cards)
+    visited = [False] * n
+    groups = []
+    for i in range(n):
+        if not visited[i]:
+            cnt = 0
+            cur = i
+            while not visited[cur]:
+                visited[cur] = True
+                cur = cards[cur] - 1
+                cnt += 1
+            groups.append(cnt)
+    groups.sort(reverse=True)
+    if len(groups) < 2:
+        return 0
+    return groups[0] * groups[1]
+
+
+def solution(begin, end):
+    answer = []
+    for i in range(begin, end + 1):
+        if i == 1:
+            answer.append(0)
+            continue
+        block = 1
+        for d in range(2, int(i ** 0.5) + 1):
+            if i % d == 0:
+                if i // d <= 10_000_000:
+                    block = max(block, i // d)
+                else:
+                    block = max(block, d)
+        answer.append(block)
+    return answer
+
+
