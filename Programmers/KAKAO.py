@@ -744,3 +744,120 @@ def solution(stones, k):
     return answer
 
 
+def solution(p):
+    if not p:
+        return ""
+    def is_correct(s):
+        stack = []
+        for ch in s:
+            if ch == '(':
+                stack.append(ch)
+            else:
+                if not stack:
+                    return False
+                stack.pop()
+        return not stack
+    def split_uv(w):
+        left, right = 0, 0
+        for i, ch in enumerate(w):
+            if ch == '(':
+                left += 1
+            else:
+                right += 1
+            if left == right:
+                return w[:i+1], w[i+1:]
+    u, v = split_uv(p)
+    if is_correct(u):
+        return u + solution(v)
+    else:
+        return "(" + solution(v) + ")" + "".join('(' if c == ')' else ')' for c in u[1:-1])
+
+
+def solution(board):
+    from heapq import heappush, heappop
+    n = len(board)
+    INF = 10**9
+    dist = [[[INF]*4 for _ in range(n)] for __ in range(n)]
+    dirs = [(-1,0),(1,0),(0,-1),(0,1)]
+    heap = []
+    for d,(dr,dc) in enumerate(dirs):
+        nr, nc = dr, dc
+        if 0 <= nr < n and 0 <= nc < n and board[nr][nc] == 0:
+            dist[nr][nc][d] = 100
+            heappush(heap, (100, nr, nc, d))
+    while heap:
+        cost, r, c, dir0 = heappop(heap)
+        if cost > dist[r][c][dir0]:
+            continue
+        if r == n-1 and c == n-1:
+            return cost
+        for nd,(dr,dc) in enumerate(dirs):
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < n and 0 <= nc < n and board[nr][nc] == 0:
+                nc_cost = cost + (100 if nd == dir0 else 600)
+                if nc_cost < dist[nr][nc][nd]:
+                    dist[nr][nc][nd] = nc_cost
+                    heappush(heap, (nc_cost, nr, nc, nd))
+    ans = min(dist[n-1][n-1])
+    return ans if ans != INF else 0
+
+
+from collections import deque
+def solution(cacheSize, cities):
+    if cacheSize == 0:
+        return len(cities) * 5
+    cache = deque()
+    time = 0
+    for city in cities:
+        city = city.lower()
+        if city in cache:
+            cache.remove(city)
+            cache.append(city)
+            time += 1
+        else:
+            if len(cache) == cacheSize:
+                cache.popleft()
+            cache.append(city)
+            time += 5
+    return time
+
+
+from itertools import product
+def solution(users, emoticons):
+    answer = [0, 0]
+    discounts = [10, 20, 30, 40]
+    for rates in product(discounts, repeat=len(emoticons)):
+        subs, sales = 0, 0
+        for perc, limit in users:
+            total = 0
+            for rate, price in zip(rates, emoticons):
+                if rate >= perc:
+                    total += price * (100 - rate) // 100
+            if total >= limit:
+                subs += 1
+            else:
+                sales += total
+        if subs > answer[0] or (subs == answer[0] and sales > answer[1]):
+            answer = [subs, sales]
+    return answer
+
+
+def solution(n, s, a, b, fares):
+    INF = 10**9
+    dist = [[INF] * (n+1) for _ in range(n+1)]
+    for i in range(1, n+1):
+        dist[i][i] = 0
+    for c, d, f in fares:
+        dist[c][d] = f
+        dist[d][c] = f
+    for k in range(1, n+1):
+        for i in range(1, n+1):
+            for j in range(1, n+1):
+                if dist[i][j] > dist[i][k] + dist[k][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    answer = INF
+    for k in range(1, n+1):
+        cost = dist[s][k] + dist[k][a] + dist[k][b]
+        if cost < answer:
+            answer = cost
+    return answer
