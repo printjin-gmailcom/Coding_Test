@@ -67,3 +67,23 @@ def solution(operations):
         return [0, 0]
     else:
         return [-max_heap[0][0], min_heap[0][0]]
+
+
+import heapq
+def solution(jobs):
+    jobs.sort(key=lambda x: x[0])
+    n = len(jobs)
+    heap = []
+    time, idx, total_turnaround = 0, 0, 0
+    while idx < n or heap:
+        while idx < n and jobs[idx][0] <= time:
+            start, length = jobs[idx]
+            heapq.heappush(heap, (length, start)) 
+            idx += 1
+        if heap:
+            length, start = heapq.heappop(heap)
+            time += length
+            total_turnaround += time - start
+        else:
+            time = jobs[idx][0]
+    return total_turnaround // n

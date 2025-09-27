@@ -100,3 +100,21 @@ def solution(n, roads, sources, destination):
                 dist[nxt] = dist[now] + 1
                 q.append(nxt)
     return [dist[s] for s in sources]
+
+
+from itertools import permutations
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+def solution(numbers):
+    candidates = set()
+    for i in range(1, len(numbers)+1):
+        for perm in permutations(numbers, i):
+            num = int(''.join(perm)) 
+            candidates.add(num)
+    answer = sum(1 for num in candidates if is_prime(num))
+    return answer
