@@ -57,3 +57,38 @@ def solution(sticker):
     for i in range(2, n):
         dp2[i] = max(dp2[i-1], dp2[i-2] + sticker[i])
     return max(dp1[n-2], dp2[n-1])
+
+
+def solution(dirs):
+    x, y = 0, 0
+    his = set()
+    moves = {"U": (0, 1), "D": (0, -1), "R": (1, 0), "L": (-1, 0)}
+    for d in dirs:
+        dx, dy = moves[d]
+        nx, ny = x + dx, y + dy
+        if -5 <= nx <= 5 and -5 <= ny <= 5:
+            his.add(((x, y), (nx, ny)))
+            his.add(((nx, ny), (x, y)))
+            x, y = nx, ny
+    return len(his) // 2
+
+
+def solution(A, B):
+    A.sort()
+    B.sort()
+    i = j = 0
+    n = len(A)
+    wins = 0
+    while i < n and j < n:
+        if B[j] > A[i]:
+            wins += 1
+            i += 1
+            j += 1
+        else:
+            j += 1
+    return wins
+
+
+import math
+def solution(w, h):
+    return w * h - (w + h - math.gcd(w, h))
