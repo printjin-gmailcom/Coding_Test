@@ -1148,3 +1148,29 @@ def solution(begin, end):
     return answer
 
 
+def solution(scores):
+    arr = [(a, b, i == 0) for i, (a, b) in enumerate(scores)]
+    arr.sort(key=lambda x: (-x[0], x[1]))
+    max_b = -1
+    sums = []
+    wanho_sum = scores[0][0] + scores[0][1]
+    for a, b, is_wanho in arr:
+        if b < max_b:
+            if is_wanho:
+                return -1
+            continue
+        max_b = max(max_b, b)
+        sums.append(a + b)
+    sums.sort(reverse=True)
+    prev = None
+    rank = 0
+    for i, s in enumerate(sums):
+        if i == 0:
+            rank = 1
+        else:
+            if s < prev:
+                rank = i + 1
+        if s == wanho_sum:
+            return rank
+        prev = s
+    return -1
