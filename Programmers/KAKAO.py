@@ -861,3 +861,21 @@ def solution(n, s, a, b, fares):
         if cost < answer:
             answer = cost
     return answer
+
+
+def solution(n, t, m, timetable):
+    crew = sorted([int(x[:2]) * 60 + int(x[3:]) for x in timetable])
+    bus_time = 540
+    idx = 0 
+    for i in range(n):
+        cnt = 0  
+        while cnt < m and idx < len(crew) and crew[idx] <= bus_time:
+            last = crew[idx]
+            idx += 1
+            cnt += 1
+        if i == n - 1:
+            if cnt < m: 
+                return f"{bus_time // 60:02d}:{bus_time % 60:02d}"
+            else: 
+                return f"{(last - 1) // 60:02d}:{(last - 1) % 60:02d}"
+        bus_time += t
