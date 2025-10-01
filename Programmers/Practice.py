@@ -1174,3 +1174,40 @@ def solution(scores):
             return rank
         prev = s
     return -1
+
+
+def solution(board):
+    O_count = sum(row.count("O") for row in board)
+    X_count = sum(row.count("X") for row in board)
+    def win(player):
+        for i in range(3):
+            if all(board[i][j] == player for j in range(3)):
+                return True
+            if all(board[j][i] == player for j in range(3)):
+                return True
+        if all(board[i][i] == player for i in range(3)):
+            return True
+        if all(board[i][2-i] == player for i in range(3)):
+            return True
+        return False
+    O_win = win("O")
+    X_win = win("X")
+    if X_count > O_count or O_count > X_count + 1:
+        return 0
+    if O_win and O_count != X_count + 1:
+        return 0
+    if X_win and O_count != X_count:
+        return 0
+    if O_win and X_win:
+        return 0
+    return 1
+
+
+def solution(r1, r2):
+    answer = 0
+    for x in range(-r2, r2 + 1):
+        for y in range(-r2, r2 + 1):
+            dist2 = x*x + y*y
+            if r1*r1 <= dist2 <= r2*r2:
+                answer += 1
+    return answer

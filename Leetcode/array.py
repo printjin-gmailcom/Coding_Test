@@ -86,3 +86,62 @@ class Solution:
             row.append(1)
             res.append(row)
         return res
+
+
+class Solution:
+    def addBinary(self, a, b):
+        i, j = len(a) - 1, len(b) - 1
+        carry = 0
+        res = []
+        while i >= 0 or j >= 0 or carry:
+            total = carry
+            if i >= 0:
+                total += int(a[i])
+                i -= 1
+            if j >= 0:
+                total += int(b[j])
+                j -= 1
+            res.append(str(total % 2))
+            carry = total // 2
+        return ''.join(res[::-1])
+
+
+class Solution:
+    def strStr(self, haystack, needle):
+        return haystack.find(needle)
+
+
+class Solution:
+    def strStr(self, haystack, needle):
+        n, m = len(haystack), len(needle)
+        if m == 0:
+            return 0 
+        for i in range(n - m + 1):
+            if haystack[i:i+m] == needle:
+                return i
+        return -1
+
+
+class Solution:
+    def longestCommonPrefix(self, strs):
+        if not strs:
+            return ""
+        for i in range(len(strs[0])):
+            char = strs[0][i]
+            for s in strs[1:]:
+                if i >= len(s) or s[i] != char:
+                    return strs[0][:i]
+        return strs[0]
+
+
+class Solution:
+    def longestCommonPrefix(self, strs):
+        if not strs:
+            return ""
+        prefix = strs[0]
+        for s in strs[1:]:
+            while not s.startswith(prefix):
+                prefix = prefix[:-1]
+                if not prefix:
+                    return ""
+        return prefix
