@@ -145,3 +145,118 @@ class Solution:
                 if not prefix:
                     return ""
         return prefix
+
+
+from typing import List
+
+class Solution:
+    def reverseString(self, s):
+        left, right = 0, len(s) - 1
+        while left < right:
+            s[left], s[right] = s[right], s[left]
+            left += 1
+            right -= 1
+
+
+from typing import List
+class Solution:
+    def twoSum(self, numbers, target):
+        left, right = 0, len(numbers) - 1
+        while left < right:
+            current_sum = numbers[left] + numbers[right]
+            if current_sum == target:
+                return [left + 1, right + 1] 
+            elif current_sum < target:
+                left += 1
+            else:
+                right -= 1
+
+
+from typing import List
+class Solution:
+    def removeElement(self, nums, val):
+        k = 0
+        for i in range(len(nums)):
+            if nums[i] != val:
+                nums[k] = nums[i]
+                k += 1
+        return k
+
+
+from typing import List
+class Solution:
+    def findMaxConsecutiveOnes(self, nums):
+        max_count = 0
+        current_count = 0
+        for num in nums:
+            if num == 1:
+                current_count += 1
+                max_count = max(max_count, current_count)
+            else:
+                current_count = 0
+        return max_count
+
+
+from typing import List
+class Solution:
+    def minSubArrayLen(self, target, nums):
+        n = len(nums)
+        left = 0
+        current_sum = 0
+        min_len = float('inf')
+        for right in range(n):
+            current_sum += nums[right]
+            while current_sum >= target:
+                min_len = min(min_len, right - left + 1)
+                current_sum -= nums[left]
+                left += 1
+        return 0 if min_len == float('inf') else min_len
+
+
+from typing import List
+class Solution:
+    def rotate(self, nums, k):
+        n = len(nums)
+        k %= n
+        nums[:] = nums[-k:] + nums[:-k]
+
+
+from typing import List
+class Solution:
+    def getRow(self, rowIndex):
+        row = [1] + [0] * rowIndex
+        for i in range(1, rowIndex + 1):
+            for j in range(i, 0, -1):
+                row[j] += row[j - 1]
+        return row
+
+
+class Solution:
+    def reverseWords(self, s):
+        return ' '.join(s.split()[::-1])
+
+
+class Solution:
+    def reverseWords(self, s):
+        return ' '.join(word[::-1] for word in s.split(' '))
+
+
+class Solution:
+    def removeDuplicates(self, nums):
+        if not nums:
+            return 0
+        i = 0
+        for j in range(1, len(nums)):
+            if nums[j] != nums[i]:
+                i += 1
+                nums[i] = nums[j]
+        return i + 1
+
+
+class Solution:
+    def moveZeroes(self, nums):
+        last_non_zero = 0
+        for i in range(len(nums)):
+            if nums[i] != 0:
+                nums[last_non_zero], nums[i] = nums[i], nums[last_non_zero]
+                last_non_zero += 1
