@@ -5162,3 +5162,57 @@ while True:
 print(count)
 
 
+N, C = map(int, input().split())
+houses = [int(input()) for _ in range(N)]
+houses.sort()
+def can_place(distance):
+    count = 1
+    last = houses[0]
+    for i in range(1, N):
+        if houses[i] - last >= distance:
+            count += 1
+            last = houses[i]
+    return count >= C
+left, right = 1, houses[-1] - houses[0]
+result = 0
+while left <= right:
+    mid = (left + right) // 2
+    if can_place(mid):
+        result = mid
+        left = mid + 1
+    else:
+        right = mid - 1
+print(result)
+
+
+N = int(input())
+K = int(input())
+left, right = 1, N * N
+answer = 0
+while left <= right:
+    mid = (left + right) // 2
+    count = 0
+    for i in range(1, N+1):
+        count += min(N, mid // i)
+    if count >= K:
+        answer = mid
+        right = mid - 1
+    else:
+        left = mid + 1
+print(answer)
+
+
+import sys
+import bisect
+input = sys.stdin.readline
+N = int(input())
+A = list(map(int, input().split()))
+sub = []
+for x in A:
+    pos = bisect.bisect_left(sub, x)
+    if pos == len(sub):
+        sub.append(x)
+    else:
+        sub[pos] = x
+print(len(sub))
+
