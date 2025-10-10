@@ -5216,3 +5216,56 @@ for x in A:
         sub[pos] = x
 print(len(sub))
 
+
+import sys
+import heapq
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    M = int(input())
+    nums = []
+    while len(nums) < M:
+        nums += list(map(int, input().split()))
+    left_heap = []   
+    right_heap = []
+    result = []
+    for i, num in enumerate(nums):
+        if not left_heap or num <= -left_heap[0]:
+            heapq.heappush(left_heap, -num)
+        else:
+            heapq.heappush(right_heap, num)
+        if len(left_heap) > len(right_heap) + 1:
+            heapq.heappush(right_heap, -heapq.heappop(left_heap))
+        elif len(right_heap) > len(left_heap):
+            heapq.heappush(left_heap, -heapq.heappop(right_heap))
+        if (i + 1) % 2 == 1:
+            result.append(-left_heap[0])
+    print(len(result))
+    for i in range(0, len(result), 10):
+        print(*result[i:i+10])
+
+
+import sys
+import heapq
+input = sys.stdin.readline
+N, K = map(int, input().split())
+jewels = []
+bags = []
+for _ in range(N):
+    m, v = map(int, input().split())
+    jewels.append((m, v)) 
+for _ in range(K):
+    c = int(input())
+    bags.append(c)
+jewels.sort()    
+bags.sort()     
+result = 0
+heap = []
+idx = 0
+for c in bags:
+    while idx < N and jewels[idx][0] <= c:
+        heapq.heappush(heap, -jewels[idx][1])
+        idx += 1
+    if heap:
+        result += -heapq.heappop(heap) 
+print(result)
