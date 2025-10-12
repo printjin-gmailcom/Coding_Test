@@ -1211,3 +1211,26 @@ def solution(r1, r2):
             if r1*r1 <= dist2 <= r2*r2:
                 answer += 1
     return answer
+
+
+def solution(s):
+    def expand(left, right):
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            left -= 1
+            right += 1
+        return right - left - 1
+    max_len = 0
+    for i in range(len(s)):
+        len1 = expand(i, i)
+        len2 = expand(i, i + 1)
+        max_len = max(max_len, len1, len2)
+    return max_len
+
+
+def solution(n):
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    for i in range(1, n + 1):
+        for j in range(i):
+            dp[i] += dp[j] * dp[i - 1 - j]
+    return dp[n]
