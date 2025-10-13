@@ -977,3 +977,49 @@ def solution(nodeinfo):
         postorder.append(node[2])
     post(root)
     return [preorder, postorder]
+
+
+def solution(n, k, cmd):
+    prev = [i-1 for i in range(n)]
+    next = [i+1 for i in range(n)]
+    next[-1] = -1
+    removed = []
+    for c in cmd:
+        if c[0] == 'U':
+            x = int(c.split()[1])
+            for _ in range(x):
+                k = prev[k]
+        elif c[0] == 'D':
+            x = int(c.split()[1])
+            for _ in range(x):
+                k = next[k]
+        elif c[0] == 'C':
+            removed.append((k, prev[k], next[k]))
+            if prev[k] != -1:
+                next[prev[k]] = next[k]
+            if next[k] != -1:
+                prev[next[k]] = prev[k]
+            k = next[k] if next[k] != -1 else prev[k]
+        else: 
+            idx, p, q = removed.pop()
+            if p != -1:
+                next[p] = idx
+            if q != -1:
+                prev[q] = idx
+    ans = ['O'] * n
+    for idx, _, _ in removed:
+        ans[idx] = 'X'
+    return ''.join(ans)
+
+
+def solution(cap, n, deliveries, pickups):
+    answer = 0
+    d, p = 0, 0 
+    for i in range(n - 1, -1, -1):
+        d += deliveries[i]
+        p += pickups[i]
+        while d > 0 or p > 0:
+            d -= cap
+            p -= cap
+            answer += (i + 1) * 2  
+    return answer
