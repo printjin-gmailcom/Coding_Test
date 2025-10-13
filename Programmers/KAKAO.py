@@ -937,3 +937,43 @@ def solution(board, skill):
                 cnt += 1
     return cnt
 
+
+import sys
+sys.setrecursionlimit(10000)
+def solution(nodeinfo):
+    nodes = sorted([(x, y, i+1) for i, (x, y) in enumerate(nodeinfo)], key=lambda x: (-x[1], x[0]))
+    root = [*nodes[0], None, None] 
+    for n in nodes[1:]:
+        node = [*n, None, None]
+        cur = root
+        while True:
+            if node[0] < cur[0]:  
+                if cur[3] is None:
+                    cur[3] = node
+                    break
+                else:
+                    cur = cur[3]
+            else:  
+                if cur[4] is None:
+                    cur[4] = node
+                    break
+                else:
+                    cur = cur[4]
+    preorder, postorder = [], []
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if node is None:
+            continue
+        preorder.append(node[2])
+        if node[4]:
+            stack.append(node[4])
+        if node[3]:
+            stack.append(node[3])
+    def post(node):
+        if node is None: return
+        post(node[3])
+        post(node[4])
+        postorder.append(node[2])
+    post(root)
+    return [preorder, postorder]
