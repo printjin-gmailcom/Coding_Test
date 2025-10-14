@@ -98,3 +98,36 @@ def solution(diffs, times, limit):
         else:
             left = mid + 1
     return answer
+
+
+def solution(points, routes):
+    from collections import defaultdict
+    robot_paths = []
+    for route in routes:
+        path = []
+        for i in range(len(route) - 1):
+            sr, sc = points[route[i] - 1]
+            er, ec = points[route[i + 1] - 1]
+            while sr != er:
+                path.append((sr, sc))
+                sr += 1 if sr < er else -1
+            while sc != ec:
+                path.append((sr, sc))
+                sc += 1 if sc < ec else -1
+        path.append((er, ec))
+        robot_paths.append(path)
+    t = 0
+    danger_count = 0
+    active = True
+    while active:
+        pos_count = defaultdict(int)
+        active = False
+        for path in robot_paths:
+            if t < len(path):
+                pos_count[path[t]] += 1
+                active = True
+        for v in pos_count.values():
+            if v >= 2:
+                danger_count += 1
+        t += 1
+    return danger_count
