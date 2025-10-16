@@ -118,3 +118,20 @@ def solution(numbers):
             candidates.add(num)
     answer = sum(1 for num in candidates if is_prime(num))
     return answer
+
+
+from collections import deque
+def solution(begin, target, words):
+    if target not in words:
+        return 0
+    q = deque([(begin, 0)])
+    visited = set()
+    while q:
+        word, count = q.popleft()
+        if word == target:
+            return count
+        for w in words:
+            if w not in visited and sum(a != b for a, b in zip(word, w)) == 1:
+                visited.add(w)
+                q.append((w, count + 1)) 
+    return 0
