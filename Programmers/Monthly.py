@@ -101,3 +101,23 @@ def solution(numbers):
 
 def solution(numbers): 
     return [((num ^ (num+1)) >> 2) + num + 1 for num in numbers]
+
+
+def solution(s):
+    answer = []
+    for x in s:
+        stack = []
+        cnt = 0
+        for c in x:
+            stack.append(c)
+            if len(stack) >= 3 and ''.join(stack[-3:]) == '110':
+                stack.pop()
+                stack.pop()
+                stack.pop()
+                cnt += 1
+        i = len(stack) - 1
+        while i >= 0 and stack[i] == '1':
+            i -= 1
+        result = ''.join(stack[:i+1]) + '110'*cnt + ''.join(stack[i+1:])
+        answer.append(result)
+    return answer
