@@ -1050,3 +1050,37 @@ def solution(n, paths, gates, summits):
                 heapq.heappush(pq, (new_intensity, nxt))
     result = min([(dist[s], s) for s in summits])
     return [result[1], result[0]]
+
+
+from itertools import combinations
+from bisect import bisect_left
+def solution(info, query):
+    data = {}
+    for i in info:
+        parts = i.split()
+        score = int(parts[-1])
+        conditions = parts[:-1]
+        for n in range(5):
+            for comb in combinations(range(4), n):
+                temp = conditions.copy()
+                for idx in comb:
+                    temp[idx] = '-'
+                key = ' '.join(temp)
+                if key not in data:
+                    data[key] = []
+                data[key].append(score)
+    for k in data:
+        data[k].sort()
+    answer = []
+    for q in query:
+        q = q.replace(' and', '')
+        parts = q.split()
+        key = ' '.join(parts[:-1])
+        score = int(parts[-1])
+        if key in data:
+            scores = data[key]
+            idx = bisect_left(scores, score)
+            answer.append(len(scores) - idx)
+        else:
+            answer.append(0)
+    return answer
