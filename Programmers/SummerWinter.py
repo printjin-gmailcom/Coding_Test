@@ -92,3 +92,26 @@ def solution(A, B):
 import math
 def solution(w, h):
     return w * h - (w + h - math.gcd(w, h))
+
+
+def solution(cookie):
+    n = len(cookie)
+    answer = 0
+    for m in range(n - 1):  
+        left = m
+        right = m + 1
+        left_sum = cookie[left]
+        right_sum = cookie[right]
+        while True:
+            if left_sum == right_sum:
+                answer = max(answer, left_sum)
+            
+            if left > 0 and left_sum <= right_sum:
+                left -= 1
+                left_sum += cookie[left]
+            elif right < n - 1 and right_sum <= left_sum:
+                right += 1
+                right_sum += cookie[right]
+            else:
+                break    
+    return answer

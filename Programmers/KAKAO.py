@@ -1023,3 +1023,30 @@ def solution(cap, n, deliveries, pickups):
             p -= cap
             answer += (i + 1) * 2  
     return answer
+
+
+import heapq
+def solution(n, paths, gates, summits):
+    graph = [[] for _ in range(n+1)]
+    for a, b, w in paths:
+        graph[a].append((b, w))
+        graph[b].append((a, w))
+    gates, summits = set(gates), set(summits)
+    dist = [float('inf')] * (n+1)
+    pq = []
+    for g in gates:
+        dist[g] = 0
+        heapq.heappush(pq, (0, g))
+    while pq:
+        intensity, node = heapq.heappop(pq)
+        if node in summits or intensity > dist[node]:
+            continue
+        for nxt, w in graph[node]:
+            if nxt in gates:
+                continue
+            new_intensity = max(intensity, w)
+            if new_intensity < dist[nxt]:
+                dist[nxt] = new_intensity
+                heapq.heappush(pq, (new_intensity, nxt))
+    result = min([(dist[s], s) for s in summits])
+    return [result[1], result[0]]
