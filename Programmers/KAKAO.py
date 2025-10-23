@@ -1084,3 +1084,42 @@ def solution(info, query):
         else:
             answer.append(0)
     return answer
+
+
+import heapq
+def solution(food_times, k):
+    if sum(food_times) <= k:
+        return -1
+    q = []
+    for i in range(len(food_times)):
+        heapq.heappush(q, (food_times[i], i + 1))
+    sum_value = 0 
+    previous = 0  
+    length = len(food_times)
+    while q:
+        time = (q[0][0] - previous) * length
+        if sum_value + time > k:
+            break
+        sum_value += time
+        now = heapq.heappop(q)[0]
+        length -= 1
+        previous = now
+    result = sorted(q, key=lambda x: x[1])
+    return result[(k - sum_value) % length][1]
+
+
+def solution(enroll, referral, seller, amount):
+    parent = {}
+    profit = {}
+    for e, r in zip(enroll, referral):
+        parent[e] = r
+        profit[e] = 0
+    for s, a in zip(seller, amount):
+        money = a * 100  
+        cur = s
+        while cur != "-" and money > 0:
+            give = money // 10  
+            profit[cur] += money - give  
+            cur = parent[cur]
+            money = give  
+    return [profit[name] for name in enroll]
