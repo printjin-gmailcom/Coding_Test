@@ -1247,3 +1247,40 @@ def solution(n):
     for i in range(4, n + 1, 2):
         dp[i] = (4 * dp[i-2] - dp[i-4]) % MOD
     return dp[n] % MOD
+
+
+def solution(matrix_sizes):
+    n = len(matrix_sizes)
+    p = [matrix_sizes[0][0]] + [m[1] for m in matrix_sizes]
+    dp = [[0] * n for _ in range(n)]
+    for length in range(2, n + 1):  
+        for i in range(n - length + 1):
+            j = i + length - 1
+            dp[i][j] = float('inf')
+            for k in range(i, j):
+                cost = dp[i][k] + dp[k + 1][j] + p[i] * p[k + 1] * p[j + 1]
+                dp[i][j] = min(dp[i][j], cost)
+    return dp[0][n - 1]
+
+
+import sys
+sys.setrecursionlimit(200000)
+def solution(n, lighthouse):
+    graph = [[] for _ in range(n + 1)]
+    for a, b in lighthouse:
+        graph[a].append(b)
+        graph[b].append(a)
+    dp = [[0, 0] for _ in range(n + 1)]
+    visited = [False] * (n + 1)
+    def dfs(node):
+        visited[node] = True
+        dp[node][0] = 0    
+        dp[node][1] = 1     
+        for nxt in graph[node]:
+            if not visited[nxt]:
+                dfs(nxt)
+                dp[node][0] += dp[nxt][1]
+                dp[node][1] += min(dp[nxt][0], dp[nxt][1])
+    dfs(1)
+    return min(dp[1][0], dp[1][1])
+
