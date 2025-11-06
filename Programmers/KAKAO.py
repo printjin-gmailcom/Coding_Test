@@ -1123,3 +1123,75 @@ def solution(enroll, referral, seller, amount):
             cur = parent[cur]
             money = give  
     return [profit[name] for name in enroll]
+
+
+def solution(n, tops):
+    MOD = 10007
+    if n == 0:
+        return 1
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    dp[1] = (3 + tops[0]) % MOD
+    for i in range(2, n + 1):
+        dp[i] = (dp[i-1] * (3 + tops[i-1]) - dp[i-2]) % MOD
+        if dp[i] < 0:
+            dp[i] += MOD
+    return dp[n]
+
+
+def solution(n, build_frame):
+    def possible(structure):
+        for x, y, a in structure:
+            if a == 0:  
+                if (
+                    y == 0 or
+                    [x, y - 1, 0] in structure or
+                    [x - 1, y, 1] in structure or
+                    [x, y, 1] in structure
+                ):
+                    continue
+                return False
+            else:  
+                if (
+                    [x, y - 1, 0] in structure or
+                    [x + 1, y - 1, 0] in structure or
+                    ([x - 1, y, 1] in structure and [x + 1, y, 1] in structure)
+                ):
+                    continue
+                return False
+        return True
+    structure = []
+    for x, y, a, b in build_frame:
+        if b == 1: 
+            structure.append([x, y, a])
+            if not possible(structure):
+                structure.remove([x, y, a])
+        else: 
+            structure.remove([x, y, a])
+            if not possible(structure):
+                structure.append([x, y, a])
+    return sorted(structure)
+
+
+def solution(n, t, m, p):
+    digits = "0123456789ABCDEF"
+    seq = ""
+    num = 0
+    while len(seq) < t * m:
+        x = num
+        if x == 0:
+            seq += "0"
+        else:
+            s = ""
+            while x > 0:
+                x, r = divmod(x, n)
+                s = digits[r] + s
+            seq += s
+        num += 1
+    answer = ""
+    for i in range(p - 1, t * m, m):
+        answer += seq[i]
+        if len(answer) == t:
+            break
+    return answer
+    
