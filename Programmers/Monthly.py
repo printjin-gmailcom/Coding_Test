@@ -121,3 +121,44 @@ def solution(s):
         result = ''.join(stack[:i+1]) + '110'*cnt + ''.join(stack[i+1:])
         answer.append(result)
     return answer
+
+
+def solution(a):
+    n = len(a)
+    if n <= 2:
+        return n  
+    left_min = [0] * n
+    right_min = [0] * n
+    left_min[0] = a[0]
+    for i in range(1, n):
+        left_min[i] = min(left_min[i-1], a[i])
+    right_min[n-1] = a[n-1]
+    for i in range(n-2, -1, -1):
+        right_min[i] = min(right_min[i+1], a[i])
+    answer = 0
+    for i in range(n):
+        if i == 0 or i == n-1:
+            answer += 1
+        elif a[i] <= left_min[i-1] or a[i] <= right_min[i+1]:
+            answer += 1
+    return answer
+
+
+from collections import Counter
+def solution(a):
+    count = Counter(a)
+    max_len = 0
+    for v in count:
+        if count[v] <= max_len // 2:
+            continue
+        pairs = 0
+        i = 0
+        n = len(a)
+        while i < n - 1:
+            if (a[i] == v and a[i+1] != v) or (a[i] != v and a[i+1] == v):
+                pairs += 1
+                i += 2 
+            else:
+                i += 1
+        max_len = max(max_len, pairs * 2)
+    return max_len
