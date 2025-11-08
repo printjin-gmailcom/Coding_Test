@@ -1195,3 +1195,46 @@ def solution(n, t, m, p):
             break
     return answer
     
+
+def solution(commands):
+    parent = {(r, c): (r, c) for r in range(1, 51) for c in range(1, 51)}
+    value = {(r, c): "" for r in range(1, 51) for c in range(1, 51)}
+    ans = []
+    def f(x):
+        if parent[x] != x:
+            parent[x] = f(parent[x])
+        return parent[x]
+    for cmd in commands:
+        p = cmd.split()
+        if p[0] == "UPDATE":
+            if len(p) == 4:
+                r, c, v = int(p[1]), int(p[2]), p[3]
+                value[f((r, c))] = v
+            else:
+                v1, v2 = p[1], p[2]
+                for k in value:
+                    if value[f(k)] == v1:
+                        value[f(k)] = v2
+        elif p[0] == "MERGE":
+            r1, c1, r2, c2 = map(int, p[1:])
+            a, b = f((r1, c1)), f((r2, c2))
+            if a != b:
+                va, vb = value[a], value[b]
+                parent[b] = a
+                value[b] = ""
+                if va == "" and vb != "":
+                    value[a] = vb
+        elif p[0] == "UNMERGE":
+            r, c = int(p[1]), int(p[2])
+            root = f((r, c))
+            v = value[root]
+            cells = [k for k in parent if f(k) == root]
+            for k in cells:
+                parent[k] = k
+                value[k] = ""
+            value[(r, c)] = v
+        else: 
+            r, c = int(p[1]), int(p[2])
+            v = value[f((r, c))]
+            ans.append(v if v else "EMPTY")
+    return ans
