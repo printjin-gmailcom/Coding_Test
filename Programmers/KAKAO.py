@@ -1238,3 +1238,24 @@ def solution(commands):
             v = value[f((r, c))]
             ans.append(v if v else "EMPTY")
     return ans
+
+
+from itertools import permutations
+def solution(n, weak, dist):
+    wlen = len(weak)
+    extended = weak + [x + n for x in weak]
+    for k in range(1, len(dist) + 1):
+        for friends in permutations(dist, k):
+            for start in range(wlen):
+                targets = extended[start:start + wlen]
+                coverage = targets[0] + friends[0]
+                friend_idx = 0
+                for t in targets:
+                    if t > coverage:
+                        friend_idx += 1
+                        if friend_idx >= k:
+                            break
+                        coverage = t + friends[friend_idx]
+                else:
+                    return k
+    return -1
