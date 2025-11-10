@@ -1259,3 +1259,72 @@ def solution(n, weak, dist):
                 else:
                     return k
     return -1
+
+
+def solution(k, room_number):
+    room_dict = {}
+    def find_room(n):
+        if n not in room_dict:
+            room_dict[n] = n + 1
+            return n
+        next_room = find_room(room_dict[n])
+        room_dict[n] = next_room
+        return next_room
+    answer = []
+    for num in room_number:
+        assigned = find_room(num)
+        answer.append(assigned)
+    return answer
+
+
+def solution(k, room_number):
+    room_dict = {}
+    def find_room(n):
+        path = []
+        while n in room_dict:
+            path.append(n)
+            n = room_dict[n]
+        for p in path:
+            room_dict[p] = n + 1
+        room_dict[n] = n + 1
+        return n
+    answer = []
+    for num in room_number:
+        assigned = find_room(num)
+        answer.append(assigned)
+    return answer
+
+
+def solution(play_time, adv_time, logs):
+    def to_sec(t):
+        h,m,s = map(int, t.split(':'))
+        return h*3600 + m*60 + s
+    def to_hms(s):
+        h = s//3600
+        m = (s%3600)//60
+        sec = s%60
+        return f"{h:02d}:{m:02d}:{sec:02d}"
+    P = to_sec(play_time)
+    A = to_sec(adv_time)
+    arr = [0] * (P + 1)
+    for log in logs:
+        s, e = log.split('-')
+        ss = to_sec(s)
+        ee = to_sec(e)
+        arr[ss] += 1
+        if ee <= P:
+            arr[ee] -= 1
+    for i in range(1, P):
+        arr[i] += arr[i-1]
+    prefix = [0] * (P + 1)
+    prefix[0] = arr[0]
+    for i in range(1, P):
+        prefix[i] = prefix[i-1] + arr[i]
+    max_sum = prefix[A-1]
+    max_start = 0
+    for start in range(1, P - A + 1):
+        cur = prefix[start + A - 1] - prefix[start - 1]
+        if cur > max_sum:
+            max_sum = cur
+            max_start = start
+    return to_hms(max_start)
