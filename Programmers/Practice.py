@@ -1284,3 +1284,25 @@ def solution(n, lighthouse):
     dfs(1)
     return min(dp[1][0], dp[1][1])
 
+
+def solution(beginning, target):
+    from copy import deepcopy
+    n, m = len(beginning), len(beginning[0])
+    min_count = float('inf')
+    for mask in range(1 << n):  
+        board = deepcopy(beginning)
+        row_flip_count = 0
+        for i in range(n):
+            if mask & (1 << i):
+                row_flip_count += 1
+                for j in range(m):
+                    board[i][j] ^= 1  
+        col_flip_count = 0
+        for j in range(m):
+            if any(board[i][j] != target[i][j] for i in range(n)):
+                col_flip_count += 1
+                for i in range(n):
+                    board[i][j] ^= 1
+        if board == target:
+            min_count = min(min_count, row_flip_count + col_flip_count)
+    return min_count if min_count != float('inf') else -1
