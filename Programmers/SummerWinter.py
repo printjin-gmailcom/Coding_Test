@@ -115,3 +115,21 @@ def solution(cookie):
             else:
                 break    
     return answer
+
+
+import math
+def solution(N, stations, W):
+    answer = 0
+    cover = 2 * W + 1
+    last = 0  
+    for s in stations:
+        start = s - W 
+        if start > last + 1: 
+            length = start - (last + 1)
+            answer += math.ceil(length / cover)
+        last = s + W
+    if last < N:  
+        length = N - last
+        answer += math.ceil(length / cover)
+    return answer
+
