@@ -1328,3 +1328,38 @@ def solution(play_time, adv_time, logs):
             max_sum = cur
             max_start = start
     return to_hms(max_start)
+
+
+from bisect import bisect_left, bisect_right
+def solution(words, queries):
+    words_by_length = {}
+    reversed_words_by_length = {}
+    for w in words:
+        l = len(w)
+        if l not in words_by_length:
+            words_by_length[l] = []
+            reversed_words_by_length[l] = []
+        words_by_length[l].append(w)
+        reversed_words_by_length[l].append(w[::-1])
+    for l in words_by_length:
+        words_by_length[l].sort()
+        reversed_words_by_length[l].sort()
+    def count_by_range(arr, left, right):
+        return bisect_right(arr, right) - bisect_left(arr, left)
+    answer = []
+    for q in queries:
+        l = len(q)
+        if l not in words_by_length:  
+            answer.append(0)
+            continue
+        if q[0] != '?':
+            left = q.replace('?', 'a')
+            right = q.replace('?', 'z')
+            cnt = count_by_range(words_by_length[l], left, right)
+        else:
+            rq = q[::-1]
+            left = rq.replace('?', 'a')
+            right = rq.replace('?', 'z')
+            cnt = count_by_range(reversed_words_by_length[l], left, right)
+        answer.append(cnt)
+    return answer
