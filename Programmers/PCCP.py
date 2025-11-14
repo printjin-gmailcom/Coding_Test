@@ -131,3 +131,49 @@ def solution(points, routes):
                 danger_count += 1
         t += 1
     return danger_count
+
+
+from collections import deque
+def solution(maze):
+    n, m = len(maze), len(maze[0])
+    dirs = [(-1,0),(1,0),(0,-1),(0,1),(0,0)]
+    rs = bs = re = be = None
+    for i in range(n):
+        for j in range(m):
+            if maze[i][j] == 1: rs = (i,j)
+            elif maze[i][j] == 2: bs = (i,j)
+            elif maze[i][j] == 3: re = (i,j)
+            elif maze[i][j] == 4: be = (i,j)
+    def inside(x,y):
+        return 0 <= x < n and 0 <= y < m and maze[x][y] != 5
+    encode = lambda x,y: x*m+y
+    start = (rs[0],rs[1],bs[0],bs[1], 1<<encode(rs[0],rs[1]), 1<<encode(bs[0],bs[1]))
+    q = deque([(start,0)])
+    visited = set([start])
+    while q:
+        (rx,ry,bx,by, rv, bv), d = q.popleft()
+        if (rx,ry) == re and (bx,by) == be:
+            return d
+        for drx,dry in dirs:
+            nrx,nry = rx+drx, ry+dry
+            if (rx,ry)==re:
+                nrx,nry = rx,ry
+            else:
+                if not inside(nrx,nry): continue
+                if rv & (1<<encode(nrx,nry)): continue
+            for dbx,dby in dirs:
+                nbx,nby = bx+dbx, by+dby
+                if (bx,by)==be:
+                    nbx,nby = bx,by
+                else:
+                    if not inside(nbx,nby): continue
+                    if bv & (1<<encode(nbx,nby)): continue
+                if (nrx,nry)==(nbx,nby): continue
+                if (nrx,nry)==(bx,by) and (nbx,nby)==(rx,ry): continue
+                nrv = rv | (1<<encode(nrx,nry))
+                nbv = bv | (1<<encode(nbx,nby))
+                state = (nrx,nry,nbx,nby,nrv,nbv)
+                if state not in visited:
+                    visited.add(state)
+                    q.append((state,d+1))
+    return 0
