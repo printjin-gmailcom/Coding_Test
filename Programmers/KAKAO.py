@@ -1363,3 +1363,44 @@ def solution(words, queries):
             cnt = count_by_range(reversed_words_by_length[l], left, right)
         answer.append(cnt)
     return answer
+
+
+from collections import deque
+def solution(board):
+    n = len(board)
+    board = [[1]*(n+2)] + [[1] + row + [1] for row in board] + [[1]*(n+2)]
+    def get_next(pos):
+        pos = list(pos)
+        (x1, y1), (x2, y2) = pos
+        nxt = []
+        moves = [(1,0),(-1,0),(0,1),(0,-1)]
+        for dx, dy in moves:
+            nx1, ny1 = x1+dx, y1+dy
+            nx2, ny2 = x2+dx, y2+dy
+            if board[nx1][ny1] == 0 and board[nx2][ny2] == 0:
+                nxt.append({(nx1, ny1), (nx2, ny2)})
+        if x1 == x2:
+            for d in [-1,1]:
+                if board[x1+d][y1] == 0 and board[x2+d][y2] == 0:
+                    nxt.append({(x1, y1), (x1+d, y1)})
+                    nxt.append({(x2, y2), (x2+d, y2)})
+        if y1 == y2:
+            for d in [-1,1]:
+                if board[x1][y1+d] == 0 and board[x2][y2+d] == 0:
+                    nxt.append({(x1, y1), (x1, y1+d)})
+                    nxt.append({(x2, y2), (x2, y2+d)})
+        return nxt
+    start = {(1,1),(1,2)}
+    q = deque([(start, 0)])
+    visited = set()
+    visited.add(frozenset(start))
+    while q:
+        pos, cost = q.popleft()
+        if (n, n) in pos:
+            return cost
+        for nxt in get_next(pos):
+            f = frozenset(nxt)
+            if f not in visited:
+                visited.add(f)
+                q.append((nxt, cost+1))
+    return 0
