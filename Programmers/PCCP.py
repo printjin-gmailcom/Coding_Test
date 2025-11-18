@@ -177,3 +177,101 @@ def solution(maze):
                     visited.add(state)
                     q.append((state,d+1))
     return 0
+
+
+def solution(expressions):
+    def to10(s, base):
+        v = 0
+        for ch in s:
+            d = int(ch)
+            if d >= base:
+                return None
+            v = v * base + d
+        return v
+    parsed = []
+    nums = set()
+    for exp in expressions:
+        a, op, b, _, c = exp.split()
+        parsed.append((a, op, b, c))
+        for x in [a, b, c]:
+            if x != "X":
+                for ch in x:
+                    nums.add(int(ch))
+    min_base = max(nums) + 1
+    if min_base < 2:
+        min_base = 2
+    candidates = []
+    for base in range(min_base, 10):
+        ok = True
+        for a, op, b, c in parsed:
+            if c == "X":
+                continue
+            A = to10(a, base)
+            B = to10(b, base)
+            C = to10(c, base)
+            if A is None or B is None or C is None:
+                ok = False
+                break
+            if op == "+":
+                if A + B != C:
+                    ok = False
+                    break
+            else:
+                if A - B != C:
+                    ok = False
+                    break
+        if ok:
+            candidates.append(base)
+    res = []
+    for a, op, b, c in parsed:
+        if c != "X":
+            continue
+        vals = set()
+        for base in candidates:
+            A = to10(a, base)
+            B = to10(b, base)
+            if A is None or B is None:
+                continue
+            if op == "+":
+                v = A + B
+            else:
+                v = A - B
+            out = ""
+            if v == 0:
+                out = "0"
+            else:
+                tmp = []
+                while v > 0:
+                    tmp.append(str(v % base))
+                    v //= base
+                out = "".join(reversed(tmp))
+            vals.add(out)
+        if len(vals) == 1:
+            res.append(f"{a} {op} {b} = {vals.pop()}")
+        else:
+            res.append(f"{a} {op} {b} = ?")
+    return res
+
+
+from fractions import Fraction
+def solution(h1,m1,s1,h2,m2,s2):
+    t1 = h1*3600 + m1*60 + s1
+    t2 = h2*3600 + m2*60 + s2
+    p_sm = Fraction(3600,59)
+    p_sh = Fraction(43200,719)
+    def ceil_frac(fr):
+        n,d = fr.numerator, fr.denominator
+        return (n + d - 1) // d
+    def floor_frac(fr):
+        n,d = fr.numerator, fr.denominator
+        return n // d
+    times = set()
+    q1_min = ceil_frac(Fraction(t1,1) / p_sm)
+    q1_max = floor_frac(Fraction(t2,1) / p_sm)
+    for k in range(q1_min, q1_max+1):
+        times.add(k * p_sm)
+    q2_min = ceil_frac(Fraction(t1,1) / p_sh)
+    q2_max = floor_frac(Fraction(t2,1) / p_sh)
+    for k in range(q2_min, q2_max+1):
+        times.add(k * p_sh)
+    return sum(1 for tt in times if tt >= t1 and tt <= t2)
