@@ -162,3 +162,30 @@ def solution(a):
                 i += 1
         max_len = max(max_len, pairs * 2)
     return max_len
+
+
+import sys
+sys.setrecursionlimit(10**9)
+def solution(a, edges):
+    if sum(a) != 0:
+        return -1
+    n = len(a)
+    g = [[] for _ in range(n)]
+    for u, v in edges:
+        g[u].append(v)
+        g[v].append(u)
+    visited = [False]*n
+    ans = 0
+    def dfs(x):
+        nonlocal ans
+        visited[x] = True
+        s = a[x]
+        for nx in g[x]:
+            if not visited[nx]:
+                s_child = dfs(nx)
+                ans += abs(s_child)
+                s += s_child
+        return s
+    if dfs(0) != 0:
+        return -1
+    return ans
