@@ -135,3 +135,32 @@ def solution(begin, target, words):
                 visited.add(w)
                 q.append((w, count + 1)) 
     return 0
+
+
+from collections import deque
+def solution(rectangle, characterX, characterY, itemX, itemY):
+    board = [[0] * 102 for _ in range(102)]
+    for x1, y1, x2, y2 in rectangle:
+        for i in range(x1*2, x2*2+1):
+            for j in range(y1*2, y2*2+1):
+                board[i][j] = 1
+    for x1, y1, x2, y2 in rectangle:
+        for i in range(x1*2+1, x2*2):
+            for j in range(y1*2+1, y2*2):
+                board[i][j] = 0
+    visited = [[0]*102 for _ in range(102)]
+    dx = [0, 1, 0, -1]
+    dy = [1, 0, -1, 0]
+    queue = deque()
+    queue.append((characterX*2, characterY*2))
+    visited[characterX*2][characterY*2] = 1
+    while queue:
+        x, y = queue.popleft()
+        if x == itemX*2 and y == itemY*2:
+            return (visited[x][y] - 1) // 2
+        for dir in range(4):
+            nx = x + dx[dir]
+            ny = y + dy[dir]
+            if 0 <= nx < 102 and 0 <= ny < 102 and board[nx][ny] == 1 and visited[nx][ny] == 0:
+                visited[nx][ny] = visited[x][y] + 1
+                queue.append((nx, ny))
