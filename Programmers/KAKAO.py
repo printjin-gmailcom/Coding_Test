@@ -1404,3 +1404,54 @@ def solution(board):
                 visited.add(f)
                 q.append((nxt, cost+1))
     return 0
+
+
+def solution(edges):
+    from collections import defaultdict, deque
+    n = 0
+    for a, b in edges:
+        n = max(n, a, b)
+    outdeg = [0] * (n + 1)
+    indeg = [0] * (n + 1)
+    graph = defaultdict(list)
+    for a, b in edges:
+        graph[a].append(b)
+        outdeg[a] += 1
+        indeg[b] += 1
+    generated = 0
+    for node in range(1, n + 1):
+        if indeg[node] == 0 and outdeg[node] >= 2:
+            generated = node
+            break
+    donuts = 0
+    sticks = 0
+    eights = 0
+    visited = set()
+    for start in graph[generated]:
+        if start in visited:
+            continue
+        q = deque([start])
+        comp_nodes = set()
+        while q:
+            cur = q.popleft()
+            if cur in comp_nodes:
+                continue
+            comp_nodes.add(cur)
+            for nxt in graph[cur]:
+                if nxt not in comp_nodes:
+                    q.append(nxt)
+        visited |= comp_nodes
+        out0 = 0    
+        out2 = 0   
+        for node in comp_nodes:
+            if outdeg[node] == 0:
+                out0 += 1
+            if outdeg[node] >= 2:
+                out2 += 1
+        if out0 >= 1:
+            sticks += 1
+        elif out2 >= 1:
+            eights += 1
+        else:
+            donuts += 1
+    return [generated, donuts, sticks, eights]
