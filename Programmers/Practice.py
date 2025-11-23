@@ -1306,3 +1306,25 @@ def solution(beginning, target):
         if board == target:
             min_count = min(min_count, row_flip_count + col_flip_count)
     return min_count if min_count != float('inf') else -1
+
+
+def solution(n, l, r):
+    def count_ones(level, left, right):
+        if level == 0:
+            return 1
+        unit = pow(5, level - 1)
+        def get_block(idx):
+            return (idx - 1) // unit + 1
+        start_block = get_block(left)
+        end_block = get_block(right)
+        total = 0
+        for block in range(start_block, end_block + 1):
+            block_l = (block - 1) * unit + 1
+            block_r = block * unit
+            seg_l = max(left, block_l)
+            seg_r = min(right, block_r)
+            if block == 3:
+                continue
+            total += count_ones(level - 1, seg_l - block_l + 1, seg_r - block_l + 1)
+        return total
+    return count_ones(n, l, r)
