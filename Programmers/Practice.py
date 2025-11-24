@@ -1328,3 +1328,39 @@ def solution(n, l, r):
             total += count_ones(level - 1, seg_l - block_l + 1, seg_r - block_l + 1)
         return total
     return count_ones(n, l, r)
+
+
+def solution(target):
+    INF = 10**9
+    options = []
+    for n in range(1, 21):
+        options.append((n, False))
+        options.append((2*n, False))
+        options.append((3*n, False))
+    options.append((50, True))
+    options = [(v, True) if (1 <= v <= 20 and v in {n for n in range(1,21)}) else (v, is_single) for v, is_single in options]
+    options = []
+    for n in range(1,21):
+        options.append((n, True))
+        options.append((2*n, False))
+        options.append((3*n, False))
+    options.append((50, True))
+    dp_darts = [INF] * (target + 1)
+    dp_singles = [-1] * (target + 1)
+    dp_darts[0] = 0
+    dp_singles[0] = 0
+    for i in range(1, target + 1):
+        best_d = INF
+        best_s = -1
+        for score, is_single in options:
+            if score <= i:
+                prev = dp_darts[i - score]
+                if prev != INF:
+                    cand_d = prev + 1
+                    cand_s = dp_singles[i - score] + (1 if is_single else 0)
+                    if cand_d < best_d or (cand_d == best_d and cand_s > best_s):
+                        best_d = cand_d
+                        best_s = cand_s
+        dp_darts[i] = best_d
+        dp_singles[i] = best_s
+    return [dp_darts[target], dp_singles[target]]
