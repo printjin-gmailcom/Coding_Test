@@ -1364,3 +1364,59 @@ def solution(target):
         dp_darts[i] = best_d
         dp_singles[i] = best_s
     return [dp_darts[target], dp_singles[target]]
+
+
+def solution(numbers):
+    pos = {'1': (0,0),'2': (0,1),'3': (0,2), '4': (1,0),'5': (1,1),'6': (1,2), '7': (2,0),'8': (2,1),'9': (2,2), '0': (3,1)}
+    dirs = [(1,0),(-1,0),(0,1),(0,-1),(1,1),(1,-1),(-1,1),(-1,-1)]
+    from collections import deque
+    cost = [[0]*10 for _ in range(10)]
+    def bfs(start):
+        dist = [[10**9]*3 for _ in range(4)]
+        sx, sy = pos[str(start)]
+        q = deque([(sx, sy)])
+        dist[sx][sy] = 0
+        while q:
+            x, y = q.popleft()
+            for dx, dy in dirs:
+                nx, ny = x+dx, y+dy
+                if 0 <= nx < 4 and 0 <= ny < 3:
+                    if (nx,ny) not in pos.values():
+                        continue
+                    w = 1 if (nx,ny)==(x,y) else (2 if abs(dx)+abs(dy)==1 else 3)
+                    if dist[nx][ny] > dist[x][y] + w:
+                        dist[nx][ny] = dist[x][y] + w
+                        q.append((nx,ny))
+        return dist
+    for i in range(10):
+        d = bfs(i)
+        for j in range(10):
+            x,y = pos[str(j)]
+            cost[i][j] = d[x][y]
+    dp = {}
+    dp[(4,6)] = 0
+    for ch in numbers:
+        nxt = int(ch)
+        new = {}
+        for (l, r), c in dp.items():
+            if l == nxt:
+                v = (l, r)
+                nc = c + 1
+                if v not in new or new[v] > nc:
+                    new[v] = nc
+            elif r == nxt:
+                v = (l, r)
+                nc = c + 1
+                if v not in new or new[v] > nc:
+                    new[v] = nc
+            else:
+                nc = c + cost[l][nxt]
+                v = (nxt, r)
+                if v not in new or new[v] > nc:
+                    new[v] = nc
+                nc = c + cost[r][nxt]
+                v = (l, nxt)
+                if v not in new or new[v] > nc:
+                    new[v] = nc
+        dp = new
+    return min(dp.values())
