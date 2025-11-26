@@ -1420,3 +1420,28 @@ def solution(numbers):
                     new[v] = nc
         dp = new
     return min(dp.values())
+
+
+from itertools import permutations
+def solution(n, submit):
+    digits = '123456789'
+    candidates = [''.join(p) for p in permutations(digits, 4)]
+    for _ in range(n):
+        guess = candidates[0]
+        res = submit(int(guess))
+        s, b = map(int, res.replace('S', '').replace('B', '').split())
+        if s == 4:
+            return int(guess)
+        new_list = []
+        for cand in candidates:
+            ts = tb = 0
+            for i in range(4):
+                if cand[i] == guess[i]:
+                    ts += 1
+                elif cand[i] in guess:
+                    tb += 1
+            if ts == s and tb == b:
+                new_list.append(cand)
+        candidates = new_list
+    return int(candidates[0])
+
