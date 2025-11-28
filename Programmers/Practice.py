@@ -1445,3 +1445,17 @@ def solution(n, submit):
         candidates = new_list
     return int(candidates[0])
 
+
+def solution(e, starts):
+    d = [0] * (e + 1)
+    for i in range(1, e + 1):
+        for j in range(i, e + 1, i):
+            d[j] += 1
+    best = [0] * (e + 1)
+    best[e] = e
+    for i in range(e - 1, 0, -1):
+        if d[i] >= d[best[i + 1]]:
+            best[i] = i
+        else:
+            best[i] = best[i + 1]
+    return [best[s] for s in starts]
