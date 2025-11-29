@@ -1455,3 +1455,35 @@ def solution(edges):
         else:
             donuts += 1
     return [generated, donuts, sticks, eights]
+
+
+from itertools import combinations
+from bisect import bisect_left, bisect_right
+def solution(dice):
+    n = len(dice)
+    half = n // 2
+    idx = list(range(n))
+    best_win = -1
+    best_choice = None
+    def all_sums(selected):
+        sums = [0]
+        for d in selected:
+            nxt = []
+            for s in sums:
+                for v in dice[d]:
+                    nxt.append(s + v)
+            sums = nxt
+        sums.sort()
+        return sums
+    for comb in combinations(idx, half):
+        a = comb
+        b = [i for i in idx if i not in a]
+        A = all_sums(a)
+        B = all_sums(b)
+        win = 0
+        for s in A:
+            win += bisect_left(B, s)
+        if win > best_win:
+            best_win = win
+            best_choice = a
+    return [x + 1 for x in best_choice]
