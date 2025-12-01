@@ -1459,3 +1459,31 @@ def solution(e, starts):
         else:
             best[i] = best[i + 1]
     return [best[s] for s in starts]
+
+
+def solution(m, n, startX, startY, balls):
+    answer = []
+    for tx, ty in balls:
+        res = []
+        if not (tx == startX and ty < startY):
+            dx = tx
+            dy = -ty
+            val = (startX - dx) ** 2 + (startY - dy) ** 2
+            res.append(val)
+        if not (tx == startX and ty > startY):
+            dx = tx
+            dy = 2 * n - ty
+            val = (startX - dx) ** 2 + (startY - dy) ** 2
+            res.append(val)
+        if not (ty == startY and tx < startX):
+            dx = -tx
+            dy = ty
+            val = (startX - dx) ** 2 + (startY - dy) ** 2
+            res.append(val)
+        if not (ty == startY and tx > startX):
+            dx = 2 * m - tx
+            dy = ty
+            val = (startX - dx) ** 2 + (startY - dy) ** 2
+            res.append(val)
+        answer.append(min(res))
+    return answer
