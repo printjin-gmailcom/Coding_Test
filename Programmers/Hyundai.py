@@ -59,3 +59,49 @@ def solution(grid, d, k):
         s = sum(row) % MOD
         total = (total + s) % MOD
     return total
+
+
+from itertools import combinations_with_replacement, combinations, product
+import heapq
+def wait_time_for_type(requests, m):
+    if not requests:
+        return 0
+    heap = [0]*m
+    heapq.heapify(heap)
+    total_wait = 0
+    for a, b in requests:
+        earliest = heapq.heappop(heap)
+        if earliest <= a:
+            start = a
+            wait = 0
+        else:
+            start = earliest
+            wait = earliest - a
+        finish = start + b
+        heapq.heappush(heap, finish)
+        total_wait += wait
+    return total_wait
+def solution(k, n, reqs):
+    types = [[] for _ in range(k+1)]
+    for a,b,c in reqs:
+        types[c].append((a,b))
+    min_total = float('inf')
+    comp = []
+    def dfs(idx, remaining):
+        nonlocal min_total
+        if idx == k:
+            if remaining == 0:
+                total = 0
+                for i in range(1, k+1):
+                    total += wait_time_for_type(types[i], comp[i-1])
+                    if total >= min_total:
+                        break
+                if total < min_total:
+                    min_total = total
+            return
+        for x in range(1, remaining - (k - idx - 1) + 1):
+            comp.append(x)
+            dfs(idx+1, remaining-x)
+            comp.pop()
+    dfs(0, n)
+    return min_total
