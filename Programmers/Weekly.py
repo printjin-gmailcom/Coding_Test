@@ -70,3 +70,31 @@ def solution(n):
         answer.extend(row)
     return answer
 
+
+def solution(grid):
+    n = len(grid)
+    m = len(grid[0])
+    visited = [[[False] * 4 for _ in range(m)] for _ in range(n)]
+    dx = [-1, 0, 1, 0]
+    dy = [0, 1, 0, -1]
+    change = {
+        'S': [0, 1, 2, 3],
+        'L': [3, 0, 1, 2],
+        'R': [1, 2, 3, 0]}
+    answer = []
+    for i in range(n):
+        for j in range(m):
+            for d in range(4):
+                if visited[i][j][d]:
+                    continue 
+                x, y, dir = i, j, d
+                cnt = 0
+                while not visited[x][y][dir]:
+                    visited[x][y][dir] = True
+                    cnt += 1
+                    dir = change[grid[x][y]][dir]
+                    x = (x + dx[dir]) % n
+                    y = (y + dy[dir]) % m
+                if cnt > 0:
+                    answer.append(cnt)
+    return sorted(answer)
