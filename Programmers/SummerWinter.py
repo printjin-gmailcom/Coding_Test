@@ -133,3 +133,25 @@ def solution(N, stations, W):
         answer += math.ceil(length / cover)
     return answer
 
+
+import heapq
+def solution(land, height):
+    n = len(land)
+    visited = [[False] * n for _ in range(n)]
+    pq = [(0, 0, 0)]
+    answer = 0
+    while pq:
+        cost, x, y = heapq.heappop(pq)
+        if visited[x][y]:
+            continue
+        visited[x][y] = True
+        answer += cost
+        for dx, dy in ((1,0), (-1,0), (0,1), (0,-1)):
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < n and 0 <= ny < n and not visited[nx][ny]:
+                diff = abs(land[x][y] - land[nx][ny])
+                if diff > height:
+                    heapq.heappush(pq, (diff, nx, ny))
+                else:
+                    heapq.heappush(pq, (0, nx, ny))
+    return answer
