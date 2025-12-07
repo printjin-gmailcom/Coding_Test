@@ -1487,3 +1487,16 @@ def solution(m, n, startX, startY, balls):
             res.append(val)
         answer.append(min(res))
     return answer
+
+
+def solution(n):
+    mod = 1234567
+    if n == 1:
+        return 1
+    if n == 2:
+        return 2
+    a, b = 1, 2
+    for _ in range(3, n + 1):
+        a, b = b, (a + b) % mod
+    return b
+
