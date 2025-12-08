@@ -1487,3 +1487,28 @@ def solution(dice):
             best_win = win
             best_choice = a
     return [x + 1 for x in best_choice]
+
+
+import re
+from collections import defaultdict
+def solution(word, pages):
+    word = word.lower()
+    url_idx = {}
+    base = []
+    links = []
+    for i, page in enumerate(pages):
+        url = re.search(r'<meta property="og:url" content="(.*?)"/>', page).group(1)
+        url_idx[url] = i
+        text = re.sub(r'<[^>]*>', ' ', page).lower()
+        words = re.findall(r'[a-z]+', text)
+        base.append(words.count(word))
+        link = re.findall(r'<a href="(.*?)">', page)
+        links.append(link)
+    score = [float(b) for b in base]
+    for i in range(len(pages)):
+        if links[i]:
+            share = base[i] / len(links[i])
+            for l in links[i]:
+                if l in url_idx:
+                    score[url_idx[l]] += share
+    return score.index(max(score))
