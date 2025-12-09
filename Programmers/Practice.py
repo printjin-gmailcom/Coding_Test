@@ -1500,3 +1500,27 @@ def solution(n):
         a, b = b, (a + b) % mod
     return b
 
+
+def solution(n, cores):
+    if n <= len(cores):
+        return n
+    left, right = 1, max(cores) * n
+    while left < right:
+        mid = (left + right) // 2
+        done = len(cores)
+        for c in cores:
+            done += mid // c
+        if done >= n:
+            right = mid
+        else:
+            left = mid + 1
+    time = left
+    done = len(cores)
+    for c in cores:
+        done += (time - 1) // c
+    for i, c in enumerate(cores):
+        if time % c == 0:
+            done += 1
+            if done == n:
+                return i + 1
+
