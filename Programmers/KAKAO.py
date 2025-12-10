@@ -1512,3 +1512,70 @@ def solution(word, pages):
                 if l in url_idx:
                     score[url_idx[l]] += share
     return score.index(max(score))
+
+
+from collections import deque
+from itertools import permutations
+import copy
+dr = [-1, 1, 0, 0]
+dc = [0, 0, -1, 1]
+def bfs(board, sr, sc, tr, tc):
+    visited = [[False]*4 for _ in range(4)]
+    q = deque()
+    q.append((sr, sc, 0))
+    visited[sr][sc] = True
+    while q:
+        r, c, d = q.popleft()
+        if r == tr and c == tc:
+            return d
+        for i in range(4):
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if 0 <= nr < 4 and 0 <= nc < 4 and not visited[nr][nc]:
+                visited[nr][nc] = True
+                q.append((nr, nc, d + 1))
+        for i in range(4):
+            nr, nc = r, c
+            while True:
+                nr += dr[i]
+                nc += dc[i]
+                if not (0 <= nr < 4 and 0 <= nc < 4):
+                    nr -= dr[i]
+                    nc -= dc[i]
+                    break
+                if board[nr][nc] != 0:
+                    break
+            if not visited[nr][nc]:
+                visited[nr][nc] = True
+                q.append((nr, nc, d + 1))
+    return 10**9
+def solution(board, r, c):
+    card_pos = dict()
+    for i in range(4):
+        for j in range(4):
+            if board[i][j] != 0:
+                card_pos.setdefault(board[i][j], []).append((i, j))
+    cards = list(card_pos.keys())
+    min_count = 10**9
+    for order in permutations(cards):
+        tmp_board = copy.deepcopy(board)
+        cr, cc = r, c
+        count = 0
+        for card in order:
+            (r1, c1), (r2, c2) = card_pos[card]
+            d1 = bfs(tmp_board, cr, cc, r1, c1) + 1
+            d2 = bfs(tmp_board, r1, c1, r2, c2) + 1
+            cost1 = d1 + d2
+            d1 = bfs(tmp_board, cr, cc, r2, c2) + 1
+            d2 = bfs(tmp_board, r2, c2, r1, c1) + 1
+            cost2 = d1 + d2
+            if cost1 <= cost2:
+                count += cost1
+                cr, cc = r2, c2
+            else:
+                count += cost2
+                cr, cc = r1, c1
+            tmp_board[r1][c1] = 0
+            tmp_board[r2][c2] = 0
+        min_count = min(min_count, count)
+    return min_count
