@@ -155,3 +155,34 @@ def solution(land, height):
                 else:
                     heapq.heappush(pq, (0, nx, ny))
     return answer
+
+
+def solution(land, P, Q):
+    arr = []
+    for row in land:
+        for x in row:
+            arr.append(x)
+    arr.sort()
+    n = len(arr)
+    prefix = [0]*(n+1)
+    for i in range(n):
+        prefix[i+1] = prefix[i] + arr[i]
+    def cost(h):
+        import bisect
+        idx = bisect.bisect_left(arr, h)
+        remove = prefix[n] - prefix[idx] - (n-idx)*h
+        add = h*idx - prefix[idx]
+        return remove*Q + add*P
+    l, r = arr[0], arr[-1]
+    res = cost(arr[0])
+    while l <= r:
+        m1 = (l*2 + r)//3
+        m2 = (l + r*2)//3
+        c1 = cost(m1)
+        c2 = cost(m2)
+        res = min(res, c1, c2)
+        if c1 < c2:
+            r = m2 - 1
+        else:
+            l = m1 + 1
+    return res
