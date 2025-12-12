@@ -1579,3 +1579,40 @@ def solution(board, r, c):
             tmp_board[r2][c2] = 0
         min_count = min(min_count, count)
     return min_count
+
+
+from collections import defaultdict, deque
+def solution(n, path, order):
+    graph = [[] for _ in range(n)]
+    for a, b in path:
+        graph[a].append(b)
+        graph[b].append(a)
+    need = {}
+    unlock = {}
+    for a, b in order:
+        need[b] = a
+        unlock[a] = b
+    if 0 in need:
+        return False
+    visited = [False] * n
+    wait = {}
+    q = deque([0])
+    visited[0] = True
+    while q:
+        cur = q.popleft()
+        
+        if cur in unlock:
+            nxt = unlock[cur]
+            if nxt in wait:
+                q.append(nxt)
+                visited[nxt] = True
+                del wait[nxt]
+        for nxt in graph[cur]:
+            if visited[nxt]:
+                continue
+            if nxt in need and not visited[need[nxt]]:
+                wait[nxt] = True
+                continue
+            visited[nxt] = True
+            q.append(nxt)
+    return all(visited)
