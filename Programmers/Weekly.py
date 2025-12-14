@@ -98,3 +98,31 @@ def solution(grid):
                 if cnt > 0:
                     answer.append(cnt)
     return sorted(answer)
+
+
+def solution(a, b, g, s, w, t):
+    left, right = 0, 10**16
+    answer = right
+    while left <= right:
+        mid = (left + right) // 2
+        total_gold = 0
+        total_silver = 0
+        total = 0
+        for i in range(len(g)):
+            time = t[i]
+            weight = w[i]
+            cnt = mid // (2 * time)
+            if mid % (2 * time) >= time:
+                cnt += 1
+            max_move = cnt * weight
+            gold = min(g[i], max_move)
+            silver = min(s[i], max_move)
+            total_gold += gold
+            total_silver += silver
+            total += min(g[i] + s[i], max_move)
+        if total_gold >= a and total_silver >= b and total >= a + b:
+            answer = mid
+            right = mid - 1
+        else:
+            left = mid + 1
+    return answer
