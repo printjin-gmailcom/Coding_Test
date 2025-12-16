@@ -164,3 +164,57 @@ def solution(rectangle, characterX, characterY, itemX, itemY):
             if 0 <= nx < 102 and 0 <= ny < 102 and board[nx][ny] == 1 and visited[nx][ny] == 0:
                 visited[nx][ny] = visited[x][y] + 1
                 queue.append((nx, ny))
+
+
+from collections import deque
+def solution(game_board, table):
+    n = len(game_board)
+    visited_board = [[False]*n for _ in range(n)]
+    visited_table = [[False]*n for _ in range(n)]
+    def bfs(grid, visited, x, y, target):
+        q = deque([(x, y)])
+        visited[x][y] = True
+        cells = [(x, y)]
+        while q:
+            cx, cy = q.popleft()
+            for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:
+                nx, ny = cx+dx, cy+dy
+                if 0 <= nx < n and 0 <= ny < n:
+                    if not visited[nx][ny] and grid[nx][ny] == target:
+                        visited[nx][ny] = True
+                        q.append((nx, ny))
+                        cells.append((nx, ny))
+        return cells
+    def normalize(shape):
+        min_x = min(x for x, y in shape)
+        min_y = min(y for x, y in shape)
+        return sorted((x-min_x, y-min_y) for x, y in shape)
+    
+    def rotate(shape):
+        return [(y, -x) for x, y in shape]
+    blanks = []
+    for i in range(n):
+        for j in range(n):
+            if game_board[i][j] == 0 and not visited_board[i][j]:
+                blanks.append(normalize(bfs(game_board, visited_board, i, j, 0)))
+    blocks = []
+    for i in range(n):
+        for j in range(n):
+            if table[i][j] == 1 and not visited_table[i][j]:
+                blocks.append(bfs(table, visited_table, i, j, 1))
+    used = [False]*len(blocks)
+    answer = 0
+    for blank in blanks:
+        for i, block in enumerate(blocks):
+            if used[i] or len(block) != len(blank):
+                continue
+            cur = block[:]
+            for _ in range(4):
+                cur = rotate(cur)
+                if normalize(cur) == blank:
+                    used[i] = True
+                    answer += len(blank)
+                    break
+            if used[i]:
+                break
+    return answer
