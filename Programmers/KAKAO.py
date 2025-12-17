@@ -1616,3 +1616,41 @@ def solution(n, path, order):
             visited[nxt] = True
             q.append(nxt)
     return all(visited)
+
+
+def solution(board):
+    n = len(board)
+    answer = 0
+    def can_remove(num):
+        coords = [(i, j) for i in range(n) for j in range(n) if board[i][j] == num]
+        xs = [x for x, y in coords]
+        ys = [y for x, y in coords]
+        min_x, max_x = min(xs), max(xs)
+        min_y, max_y = min(ys), max(ys)
+        blanks = []
+        for i in range(min_x, max_x + 1):
+            for j in range(min_y, max_y + 1):
+                if board[i][j] == 0:
+                    blanks.append((i, j))
+                elif board[i][j] != num:
+                    return False
+        if len(blanks) != 2:
+            return False
+        for x, y in blanks:
+            for i in range(x):
+                if board[i][y] != 0:
+                    return False
+        for x, y in coords:
+            board[x][y] = 0
+        return True
+    while True:
+        removed = 0
+        nums = set(sum(board, []))
+        nums.discard(0)
+        for num in nums:
+            if can_remove(num):
+                removed += 1
+        if removed == 0:
+            break
+        answer += removed
+    return answer
