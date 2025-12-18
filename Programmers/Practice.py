@@ -1524,3 +1524,33 @@ def solution(n, cores):
             if done == n:
                 return i + 1
 
+
+def solution(clockHands):
+    n = len(clockHands)
+    dx = [0, 0, 0, 1, -1]
+    dy = [0, 1, -1, 0, 0]
+    def rotate(board, x, y, cnt):
+        for d in range(5):
+            nx = x + dx[d]
+            ny = y + dy[d]
+            if 0 <= nx < n and 0 <= ny < n:
+                board[nx][ny] = (board[nx][ny] + cnt) % 4
+    INF = 10**9
+    answer = INF
+    from itertools import product
+    for first in product(range(4), repeat=n):
+        board = [row[:] for row in clockHands]
+        cnt = 0
+        for j in range(n):
+            if first[j]:
+                rotate(board, 0, j, first[j])
+                cnt += first[j]
+        for i in range(1, n):
+            for j in range(n):
+                need = (4 - board[i-1][j]) % 4
+                if need:
+                    rotate(board, i, j, need)
+                    cnt += need
+        if all(board[n-1][j] == 0 for j in range(n)):
+            answer = min(answer, cnt)
+    return answer
