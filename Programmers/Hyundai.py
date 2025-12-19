@@ -105,3 +105,39 @@ def solution(k, n, reqs):
             comp.pop()
     dfs(0, n)
     return min_total
+
+
+def solution(temperature, t1, t2, a, b, onboard):
+    INF = 10**15
+    TMIN, TMAX = -10, 40
+    N = len(onboard)
+    dp = [[INF] * 51 for _ in range(N)]
+    dp[0][temperature - TMIN] = 0
+    for i in range(1, N):
+        for temp in range(TMIN, TMAX + 1):
+            prev = dp[i - 1][temp - TMIN]
+            if prev == INF:
+                continue
+            if temp < temperature:
+                nt = temp + 1
+            elif temp > temperature:
+                nt = temp - 1
+            else:
+                nt = temp
+            if not onboard[i] or (t1 <= nt <= t2):
+                dp[i][nt - TMIN] = min(dp[i][nt - TMIN], prev)
+            for target in range(t1, t2 + 1):
+                cost = b if temp == target else a
+                if temp < target:
+                    nt = temp + 1
+                elif temp > target:
+                    nt = temp - 1
+                else:
+                    nt = temp
+                if not onboard[i] or (t1 <= nt <= t2):
+                    dp[i][nt - TMIN] = min(dp[i][nt - TMIN],prev + cost)
+    answer = INF
+    for temp in range(TMIN, TMAX + 1):
+        if not onboard[-1] or (t1 <= temp <= t2):
+            answer = min(answer, dp[-1][temp - TMIN])
+    return answer
