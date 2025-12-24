@@ -1654,3 +1654,35 @@ def solution(board):
             break
         answer += removed
     return answer
+
+
+def solution(board, aloc, bloc):
+    R, C = len(board), len(board[0])
+    dr = [1, -1, 0, 0]
+    dc = [0, 0, 1, -1]
+    def dfs(r, c, or_, oc):
+        if board[r][c] == 0:
+            return False, 0
+        can_move = False
+        win_min = float('inf')
+        lose_max = 0
+        for i in range(4):
+            nr, nc = r + dr[i], c + dc[i]
+            if nr < 0 or nc < 0 or nr >= R or nc >= C:
+                continue
+            if board[nr][nc] == 0:
+                continue
+            can_move = True
+            board[r][c] = 0
+            win, cnt = dfs(or_, oc, nr, nc)
+            board[r][c] = 1
+            if not win:
+                win_min = min(win_min, cnt + 1)
+            else:
+                lose_max = max(lose_max, cnt + 1)
+        if not can_move:
+            return False, 0
+        if win_min != float('inf'):
+            return True, win_min
+        return False, lose_max
+    return dfs(aloc[0], aloc[1], bloc[0], bloc[1])[1]
