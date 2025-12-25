@@ -1686,3 +1686,54 @@ def solution(board, aloc, bloc):
             return True, win_min
         return False, lose_max
     return dfs(aloc[0], aloc[1], bloc[0], bloc[1])[1]
+
+
+def solution(edges, target):
+    from collections import defaultdict
+    import math
+    n = len(target)
+    children = defaultdict(list)
+    for p, c in edges:
+        children[p - 1].append(c - 1)
+    for k in children:
+        children[k].sort()
+    idx = {i: 0 for i in children}
+    def drop():
+        cur = 0
+        path = []
+        while cur in children:
+            path.append(cur)
+            cur = children[cur][idx[cur]]
+        for p in path:
+            idx[p] = (idx[p] + 1) % len(children[p])
+        return cur
+    need = [math.ceil(t / 3) for t in target]
+    cnt = [0] * n
+    order = []
+    while True:
+        leaf = drop()
+        order.append(leaf)
+        cnt[leaf] += 1
+        ok = True
+        for i in range(n):
+            if cnt[i] < need[i]:
+                ok = False
+                break
+        if ok:
+            break
+        if cnt[leaf] > target[leaf]:
+            return [-1]
+    remain = target[:]
+    answer = []
+    for leaf in order:
+        for x in (1, 2, 3):
+            if remain[leaf] - x < 0:
+                continue
+            future = cnt[leaf] - 1
+            if future <= remain[leaf] - x <= future * 3:
+                answer.append(x)
+                remain[leaf] -= x
+                cnt[leaf] -= 1
+                break
+    return answer
+
