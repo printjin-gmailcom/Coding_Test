@@ -1737,3 +1737,23 @@ def solution(edges, target):
                 break
     return answer
 
+
+def solution(numbers):
+    def is_valid(tree):
+        if len(tree) == 1:
+            return True
+        mid = len(tree) // 2
+        left = tree[:mid]
+        right = tree[mid+1:]
+        if tree[mid] == '0' and ('1' in left or '1' in right):
+            return False
+        return is_valid(left) and is_valid(right)
+    answer = []
+    for num in numbers:
+        b = bin(num)[2:]
+        length = 1
+        while length < len(b):
+            length = length * 2 + 1
+        b = b.zfill(length)
+        answer.append(1 if is_valid(b) else 0)
+    return answer
