@@ -1773,3 +1773,36 @@ def solution(lines):
         count = sum(1 for s, e in times if s < end + timedelta(seconds=1) and e >= end)
         max_count = max(max_count, count)
     return max_count
+
+
+from collections import deque
+def solution(rc, operations):
+    R, C = len(rc), len(rc[0])
+    left = deque()
+    right = deque()
+    mid = deque()
+    for r in rc:
+        left.append(r[0])
+        right.append(r[-1])
+        mid.append(deque(r[1:-1]))
+    for op in operations:
+        if op == "ShiftRow":
+            left.rotate(1)
+            right.rotate(1)
+            mid.rotate(1)
+        else:
+            if C > 2:
+                mid[0].appendleft(left.popleft())
+                right.appendleft(mid[0].pop())
+                mid[-1].append(right.pop())
+                left.append(mid[-1].popleft())
+            else:
+                right.appendleft(left.popleft())
+                left.append(right.pop())
+    answer = []
+    for i in range(R):
+        row = [left[i]]
+        row.extend(mid[i])
+        row.append(right[i])
+        answer.append(row)
+    return answer
