@@ -1757,3 +1757,19 @@ def solution(numbers):
         b = b.zfill(length)
         answer.append(1 if is_valid(b) else 0)
     return answer
+
+
+from datetime import datetime, timedelta
+def solution(lines):
+    times = []
+    for line in lines:
+        date_str, time_str, duration_str = line.split()
+        end_time = datetime.strptime(date_str + ' ' + time_str, "%Y-%m-%d %H:%M:%S.%f")
+        duration = float(duration_str[:-1])
+        start_time = end_time - timedelta(seconds=duration) + timedelta(milliseconds=1)
+        times.append((start_time, end_time))
+    max_count = 0
+    for start, end in times:
+        count = sum(1 for s, e in times if s < end + timedelta(seconds=1) and e >= end)
+        max_count = max(max_count, count)
+    return max_count
