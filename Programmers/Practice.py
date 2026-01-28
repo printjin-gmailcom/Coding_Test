@@ -1571,3 +1571,42 @@ def solution(n):
     for i in range(7, n + 1):
         dp[i] = (dp[i - 1] + 2 * dp[i - 2] + 6 * dp[i - 3] + dp[i - 4] - dp[i - 6]) % MOD
     return dp[n] % MOD
+
+
+def solution(r1, r2):
+    import math
+    count = 0
+    for x in range(0, r2 + 1):
+        y2_max = int(math.sqrt(r2 * r2 - x * x))
+        if x < r1:
+            y2_min = int(math.sqrt(r1 * r1 - x * x))
+            if y2_min * y2_min + x * x < r1 * r1:
+                y2_min += 1
+        else:
+            y2_min = 0
+        count += max(0, y2_max - y2_min + 1)
+    return count * 4 - (r2 - r1 + 1) * 4
+    
+    
+    def solution(n):
+    mod = 1234567
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, (a + b) % mod
+    return b
+    
+    
+    def solution(s):
+    result = []
+    new_word = True
+    for ch in s:
+        if ch == ' ':
+            result.append(ch)
+            new_word = True
+        else:
+            if new_word:
+                result.append(ch.upper())
+                new_word = False
+            else:
+                result.append(ch.lower())
+    return ''.join(result)
