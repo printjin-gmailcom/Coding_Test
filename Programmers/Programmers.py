@@ -245,3 +245,63 @@ def solution(n, w, num):
         if grid[r][target_c] != -1:
             result += 1
     return result
+
+
+def solution(info, n, m):
+    INF = 10**9
+    dp = [INF] * m
+    dp[0] = 0
+    for a, b in info:
+        new_dp = [INF] * m
+        for b_trace in range(m):
+            if dp[b_trace] == INF:
+                continue
+            if dp[b_trace] + a < n:
+                new_dp[b_trace] = min(new_dp[b_trace], dp[b_trace] + a)
+            if b_trace + b < m:
+                new_dp[b_trace + b] = min(new_dp[b_trace + b], dp[b_trace])
+        dp = new_dp
+    ans = min(dp)
+    return ans if ans < INF else -1
+    
+    
+    def solution(n, bans):
+    pow26 = [1]
+    for _ in range(12):
+        pow26.append(pow26[-1] * 26)
+    def rank(s):
+        l = len(s)
+        r = sum(pow26[i] for i in range(1, l))
+        cur = 0
+        for c in s:
+            cur = cur * 26 + (ord(c) - 97)
+        return r + cur + 1
+    banned = sorted(rank(b) for b in bans)
+    def count_banned(x):
+        lo, hi = 0, len(banned)
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if banned[mid] <= x:
+                lo = mid + 1
+            else:
+                hi = mid
+        return lo
+    lo, hi = n, n + len(banned)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if mid - count_banned(mid) >= n:
+            hi = mid
+        else:
+            lo = mid + 1
+    x = lo
+    length = 1
+    while x > pow26[length]:
+        x -= pow26[length]
+        length += 1
+    x -= 1
+    res = []
+    for _ in range(length):
+        res.append(chr(97 + x % 26))
+        x //= 26
+    return ''.join(reversed(res))
+
