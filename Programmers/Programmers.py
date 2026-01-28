@@ -12,16 +12,12 @@ def count_paid_employees(n, timelogs, startday, time):
         if paid:
             paid_count += 1
     return paid_count
-
 n = 2
 timelogs = [[510, 500, 510, 500, 510, 500, 600], [700, 620, 510, 500, 700, 705, 659]]
 startday = 5
 time = [500, 700]
 result = count_paid_employees(n, timelogs, startday, time)
 print(result)
-
-
-
 
 
 from itertools import combinations
@@ -34,15 +30,11 @@ def find_real_answer(n, tries, ans):
                 new_possible_answers.add(candidate)
         possible_answers = new_possible_answers
     return possible_answers, len(possible_answers)
-
 n = 8
 tries = [[1, 2, 3, 4, 5], [2, 5, 6, 7, 8]]
 ans = [2, 1]
 result, count = find_real_answer(n, tries, ans)
 print(result, count)
-
-
-
 
 
 def count_remaining_items(warehouse, requests):
@@ -60,14 +52,10 @@ def count_remaining_items(warehouse, requests):
         use_crane = len(req) > 1
         find_and_remove(req, use_crane)
     return sum(row.count(None) for row in warehouse)
-
 warehouse = [['a', 'b', 'a'], ['a', 'd', 'e'], ['a', 'b', 'c']]
 requests = ['a', 'bb', 'a']
 result = count_remaining_items(warehouse, requests)
 print(result)
-
-
-
 
 
 from itertools import permutations
@@ -114,14 +102,10 @@ def classify_trees(nodes, edges):
         elif (is_y_hol or is_y_jjak) and not (is_jjak_jjak and is_y_hol):
             total_y_hol_y_jjak += 1
     return total_hol_jjak, total_y_hol_y_jjak
-
 nodes = [9, 11, 4, 5, 16]
 edges = [[9, 11], [4, 5], [5, 16]]
 result = classify_trees(nodes, edges)
 print(result[0], result[1])
-
-
-
 
 
 def find_boxes(m, n, k):
@@ -132,12 +116,8 @@ def find_boxes(m, n, k):
         return col_idx + 1
     else:
         return n - col_idx
-    
 result = find_boxes(7, 2, 4)
 print(result)
-
-
-
 
 
 def minimize_a_traces(traces, m, n):
@@ -152,15 +132,11 @@ def minimize_a_traces(traces, m, n):
         else:
             return -1
     return a_traces if a_traces < m else -1
-
 traces = [[1, 2], [1, 1]]
 m = 3
 n = 3
 result = minimize_a_traces(traces, m, n)
 print(result)
-
-
-
 
 
 def server_addition(visitors, k, m):
@@ -173,13 +149,11 @@ def server_addition(visitors, k, m):
                 servers_added += 1
                 active_servers.append(i + m - 1)        
     return servers_added
-
 visitors = [0, 0, 0, 0, 0, 0, 0, 4, 5, 0, 0, 0, 0, 0, 0, 4, 1, 0, 0, 1, 1, 1]
 k = 3
 m = 5
 result = server_addition(visitors, k, m)
 print(result)
-
 
 
 def server_addition(visitors, k, m):
@@ -190,15 +164,11 @@ def server_addition(visitors, k, m):
             servers_added += 1
             last_added_time = i + m - 1 
     return servers_added
-
 visitors = [0, 0, 0, 0, 0, 0, 0, 4, 5, 0, 0, 0, 0, 0, 0, 4, 1, 0, 0, 1, 1, 1]
 k = 3
 m = 5
 result = server_addition(visitors, k, m)
 print(result)
-
-
-
 
 
 def find_position(m, ban):
@@ -213,7 +183,6 @@ def find_position(m, ban):
         num_combinations //= len(available_chars) 
         position += char_index * num_combinations
     return position + 1
-
 ban = ['a', 'b', 'd', 'w', 'z', 'aa', 'bb']
 m = 'ah'
 result = find_position(m, ban)
@@ -263,7 +232,6 @@ def solution(info, n, m):
         dp = new_dp
     ans = min(dp)
     return ans if ans < INF else -1
-    
     
     def solution(n, bans):
     pow26 = [1]
