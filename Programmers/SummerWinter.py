@@ -186,3 +186,19 @@ def solution(land, P, Q):
         else:
             l = m1 + 1
     return res
+
+
+def solution(skill, skill_trees):
+    count = 0
+    for tree in skill_trees:
+        idx = 0
+        valid = True
+        for ch in tree:
+            if ch in skill:
+                if ch != skill[idx]:
+                    valid = False
+                    break
+                idx += 1
+        if valid:
+            count += 1
+    return count
