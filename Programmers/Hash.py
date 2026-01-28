@@ -34,3 +34,13 @@ def solution(phone_book):
         if phone_book[i+1].startswith(phone_book[i]):
             return False
     return True
+
+
+def solution(clothes):
+    from collections import Counter
+    counter = Counter(kind for _, kind in clothes)
+    result = 1
+    for cnt in counter.values():
+        result *= (cnt + 1)
+    return result - 1
+
