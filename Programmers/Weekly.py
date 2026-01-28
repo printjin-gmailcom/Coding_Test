@@ -126,3 +126,36 @@ def solution(a, b, g, s, w, t):
         else:
             left = mid + 1
     return answer
+
+
+def solution(line):
+    points = set()
+    INF = 10**18
+    min_x, min_y = INF, INF
+    max_x, max_y = -INF, -INF
+    n = len(line)
+    for i in range(n):
+        A, B, C = line[i]
+        for j in range(i + 1, n):
+            D, E, F = line[j]
+            denom = A * E - B * D
+            if denom == 0:
+                continue
+            x_num = B * F - C * E
+            y_num = C * D - A * F
+            if x_num % denom != 0 or y_num % denom != 0:
+                continue
+            x = x_num // denom
+            y = y_num // denom
+            points.add((x, y))
+            min_x = min(min_x, x)
+            max_x = max(max_x, x)
+            min_y = min(min_y, y)
+            max_y = max(max_y, y)
+    width = max_x - min_x + 1
+    height = max_y - min_y + 1
+    grid = [['.'] * width for _ in range(height)]
+    for x, y in points:
+        grid[max_y - y][x - min_x] = '*'
+    return [''.join(row) for row in grid]
+   
