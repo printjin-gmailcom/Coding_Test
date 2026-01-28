@@ -1806,3 +1806,50 @@ def solution(rc, operations):
         row.append(right[i])
         answer.append(row)
     return answer
+
+
+def solution(n, k):
+    def to_base(n, k):
+        s = ""
+        while n:
+            s = str(n % k) + s
+            n //= k
+        return s
+    def is_prime(x):
+        if x < 2:
+            return False
+        i = 2
+        while i * i <= x:
+            if x % i == 0:
+                return False
+            i += 1
+        return True
+    base_k = to_base(n, k)
+    count = 0
+    for part in base_k.split('0'):
+        if part and is_prime(int(part)):
+            count += 1
+    return count
+
+
+def solution(words):
+    trie = {}
+    for word in words:
+        node = trie
+        for c in word:
+            if c not in node:
+                node[c] = [0, {}]
+            node[c][0] += 1
+            node = node[c][1]
+    answer = 0
+    for word in words:
+        node = trie
+        cnt = 0
+        for c in word:
+            cnt += 1
+            node = node[c]
+            if node[0] == 1:
+                break
+            node = node[1]
+        answer += cnt
+    return answer
