@@ -218,3 +218,12 @@ def solution(game_board, table):
             if used[i]:
                 break
     return answer
+
+
+def solution(word):
+    weights = [781, 156, 31, 6, 1]
+    order = {'A': 0, 'E': 1, 'I': 2, 'O': 3, 'U': 4}
+    answer = 0
+    for i, ch in enumerate(word):
+        answer += order[ch] * weights[i] + 1
+    return answer
