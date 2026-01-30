@@ -273,3 +273,48 @@ def solution(info, n, m):
         x //= 26
     return ''.join(reversed(res))
 
+
+from collections import deque
+def solution(storage, requests):
+    n = len(storage)
+    m = len(storage[0])
+    grid = [list(row) for row in storage]
+    def outside_air():
+        air = [[False]*m for _ in range(n)]
+        q = deque()
+        for i in range(n):
+            for j in range(m):
+                if i == 0 or i == n-1 or j == 0 or j == m-1:
+                    if grid[i][j] == '.' and not air[i][j]:
+                        air[i][j] = True
+                        q.append((i, j))
+        while q:
+            x, y = q.popleft()
+            for dx, dy in ((1,0),(-1,0),(0,1),(0,-1)):
+                nx, ny = x+dx, y+dy
+                if 0 <= nx < n and 0 <= ny < m:
+                    if grid[nx][ny] == '.' and not air[nx][ny]:
+                        air[nx][ny] = True
+                        q.append((nx, ny))
+        return air
+    for req in requests:
+        c = req[0]
+        if len(req) == 2:
+            for i in range(n):
+                for j in range(m):
+                    if grid[i][j] == c:
+                        grid[i][j] = '.'
+        else:
+            air = outside_air()
+            remove = []
+            for i in range(n):
+                for j in range(m):
+                    if grid[i][j] == c:
+                        for dx, dy in ((1,0),(-1,0),(0,1),(0,-1)):
+                            ni, nj = i+dx, j+dy
+                            if not (0 <= ni < n and 0 <= nj < m) or air[ni][nj]:
+                                remove.append((i, j))
+                                break
+            for i, j in remove:
+                grid[i][j] = '.'
+    return sum(grid[i][j] != '.' for i in range(n) for j in range(m))
