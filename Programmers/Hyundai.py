@@ -141,3 +141,82 @@ def solution(temperature, t1, t2, a, b, onboard):
         if not onboard[-1] or (t1 <= temp <= t2):
             answer = min(answer, dp[-1][temp - TMIN])
     return answer
+
+
+import heapq
+from collections import deque
+def solution(n, roads):
+    INF = 10**30
+    g = [[] for _ in range(n+1)]
+    for i, (u, v, l, t) in enumerate(roads):
+        w = l + t
+        g[u].append((v, w, i+1))
+        g[v].append((u, w, i+1))
+    def dijkstra(s):
+        dist = [INF]*(n+1)
+        dist[s] = 0
+        pq = [(0, s)]
+        while pq:
+            d, u = heapq.heappop(pq)
+            if d > dist[u]: continue
+            for v, w, _ in g[u]:
+                nd = d + w
+                if nd < dist[v]:
+                    dist[v] = nd
+                    heapq.heappush(pq, (nd, v))
+        return dist
+    d1 = dijkstra(1)
+    dn = dijkstra(n)
+    best = d1[n]
+    dec = set()
+    for i, (u, v, l, _) in enumerate(roads):
+        if d1[u] + l + dn[v] < best or d1[v] + l + dn[u] < best:
+            dec.add(i+1)
+    dag = [[] for _ in range(n+1)]
+    rdag = [[] for _ in range(n+1)]
+    indeg = [0]*(n+1)
+    outdeg = [0]*(n+1)
+    edge_id = {}
+    for i, (u, v, l, t) in enumerate(roads):
+        w = l + t
+        if d1[u] + w + dn[v] == best:
+            dag[u].append(v)
+            rdag[v].append(u)
+            indeg[v] += 1
+            outdeg[u] += 1
+            edge_id[(u, v)] = i+1
+        if d1[v] + w + dn[u] == best:
+            dag[v].append(u)
+            rdag[u].append(v)
+            indeg[u] += 1
+            outdeg[v] += 1
+            edge_id[(v, u)] = i+1
+    from_start = [0]*(n+1)
+    q = deque()
+    from_start[1] = 1
+    q.append(1)
+    while q:
+        u = q.popleft()
+        for v in dag[u]:
+            from_start[v] += from_start[u]
+            indeg[v] -= 1
+            if indeg[v] == 0:
+                q.append(v)
+    to_end = [0]*(n+1)
+    q = deque()
+    to_end[n] = 1
+    q.append(n)
+    while q:
+        u = q.popleft()
+        for v in rdag[u]:
+            to_end[v] += to_end[u]
+            outdeg[v] -= 1
+            if outdeg[v] == 0:
+                q.append(v)
+    total = from_start[n]
+    inc = set()
+    for (u, v), idx in edge_id.items():
+        if from_start[u] * to_end[v] == total:
+            inc.add(idx)
+    ans = sorted(dec | inc)
+    return ans if ans else [-1]
