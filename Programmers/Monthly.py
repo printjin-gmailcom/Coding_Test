@@ -189,3 +189,31 @@ def solution(a, edges):
     if dfs(0) != 0:
         return -1
     return ans
+
+
+def solution(a):
+    MOD = 10000019
+    n = len(a)
+    m = len(a[0])
+    col_sums = [0] * m
+    for row in a:
+        for j, v in enumerate(row):
+            col_sums[j] += v
+    C = [[0] * (n + 1) for _ in range(n + 1)]
+    for i in range(n + 1):
+        C[i][0] = C[i][i] = 1
+        for j in range(1, i):
+            C[i][j] = (C[i - 1][j - 1] + C[i - 1][j]) % MOD
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    for c in col_sums:
+        new_dp = [0] * (n + 1)
+        for k in range(n + 1):
+            if dp[k] == 0:
+                continue
+            for x in range(max(0, c - (n - k)), min(c, k) + 1):
+                nk = k + c - 2 * x
+                ways = (C[k][x] * C[n - k][c - x]) % MOD
+                new_dp[nk] = (new_dp[nk] + dp[k] * ways) % MOD
+        dp = new_dp
+    return dp[0]
