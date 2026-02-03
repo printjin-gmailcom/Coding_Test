@@ -1853,3 +1853,40 @@ def solution(words):
             node = node[1]
         answer += cnt
     return answer
+
+
+import heapq
+def solution(n, start, end, roads, traps):
+    INF = float('inf')
+    graph = [[INF] * (n + 1) for _ in range(n + 1)]
+    for u, v, w in roads:
+        if w < graph[u][v]:
+            graph[u][v] = w
+    trap_indices = {trap: i for i, trap in enumerate(traps)}
+    max_state = 1 << len(traps)
+    visited = [[False] * max_state for _ in range(n + 1)]
+    hq = []
+    heapq.heappush(hq, (0, start, 0))
+    while hq:
+        cost, cur, state = heapq.heappop(hq)
+        if cur == end:
+            return cost
+        if visited[cur][state]:
+            continue
+        visited[cur][state] = True
+        cur_state = state
+        if cur in trap_indices:
+            cur_state ^= (1 << trap_indices[cur])
+        for nxt in range(1, n + 1):
+            if nxt == cur:
+                continue
+            rev = False
+            cur_trap_on = (cur_state & (1 << trap_indices[cur])) if cur in trap_indices else 0
+            nxt_trap_on = (cur_state & (1 << trap_indices[nxt])) if nxt in trap_indices else 0
+            if bool(cur_trap_on) ^ bool(nxt_trap_on):
+                rev = True
+            w = graph[nxt][cur] if rev else graph[cur][nxt]
+            if w == INF:
+                continue
+            heapq.heappush(hq, (cost + w, nxt, cur_state))
+    return -1  
