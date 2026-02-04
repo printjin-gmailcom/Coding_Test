@@ -318,3 +318,16 @@ def solution(storage, requests):
             for i, j in remove:
                 grid[i][j] = '.'
     return sum(grid[i][j] != '.' for i in range(n) for j in range(m))
+
+
+def solution(players, m, k):
+    answer = 0
+    server=[0]*len(players)
+    for i in range(len(players)):
+        if i-k+1>=0:
+            if sum(server[i-k+1:i])<players[i]//m:
+                server[i]=(players[i]//m)-sum(server[i-k+1:i])
+        else:
+            if sum(server[:i])<players[i]//m:
+                server[i]=(players[i]//m)-sum(server[:i])
+    return sum(server)
