@@ -1890,3 +1890,46 @@ def solution(n, start, end, roads, traps):
                 continue
             heapq.heappush(hq, (cost + w, nxt, cur_state))
     return -1  
+
+
+def solution(coin, cards):
+    n = len(cards)
+    target = n + 1
+    hand = set(cards[:n//3])    
+    future = set()              
+    idx = n // 3
+    round_cnt = 0
+    while True:
+        if idx >= n:
+            return round_cnt + 1
+        future.add(cards[idx])
+        future.add(cards[idx + 1])
+        idx += 2
+        success = False
+        for x in hand:
+            if target - x in hand and target - x != x:
+                hand.remove(x)
+                hand.remove(target - x)
+                success = True
+                break
+        if not success and coin >= 1:
+            for x in hand:
+                y = target - x
+                if y in future:
+                    coin -= 1
+                    hand.remove(x)
+                    future.remove(y)
+                    success = True
+                    break
+        if not success and coin >= 2:
+            for x in future:
+                y = target - x
+                if y in future and y != x:
+                    coin -= 2
+                    future.remove(x)
+                    future.remove(y)
+                    success = True
+                    break
+        if not success:
+            return round_cnt + 1
+        round_cnt += 1
