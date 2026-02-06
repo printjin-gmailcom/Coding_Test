@@ -1933,3 +1933,38 @@ def solution(coin, cards):
         if not success:
             return round_cnt + 1
         round_cnt += 1
+
+
+from collections import defaultdict
+import sys
+sys.setrecursionlimit(300000)
+def solution(sales, links):
+    tree = defaultdict(list)
+    n = len(sales)
+    dp = [[-1, -1] for _ in range(n + 1)]
+    sum_child = [0 for _ in range(n + 1)]
+    for a, b in links:
+        tree[a].append(b)
+    def dfs(node: int):
+        dp[node][1] = sales[node-1] 
+        dp[node][0] = 0  
+        if not tree[node]: 
+            return
+        flag = False  
+        M = sys.maxsize
+        for nxt in tree[node]:
+            dfs(nxt)
+        for nxt in tree[node]:
+            if dp[nxt][0] > dp[nxt][1]:
+                flag = True
+                sum_child[node] += dp[nxt][1]
+            else:
+                sum_child[node] += dp[nxt][0]
+            M = min(M, dp[nxt][1] - dp[nxt][0])
+        dp[node][1] = sales[node-1] + sum_child[node
+        if flag:
+            dp[node][0] = sum_child[node]
+        else:
+            dp[node][0] = sum_child[node] + M
+    dfs(1)
+    return min(dp[1])
