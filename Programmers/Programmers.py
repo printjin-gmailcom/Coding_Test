@@ -331,3 +331,60 @@ def solution(players, m, k):
             if sum(server[:i])<players[i]//m:
                 server[i]=(players[i]//m)-sum(server[:i])
     return sum(server)
+
+
+import sys
+sys.setrecursionlimit(10**7)
+def find(x, parents):
+    if parents[x] != x:
+        parents[x] = find(parents[x], parents)
+    return parents[x]
+def union(a, b, parents, cnts):
+    a_root = find(a, parents)
+    b_root = find(b, parents)
+    if a_root == b_root:
+        return
+    if a_root < b_root:
+        parents[b_root] = a_root
+        cnts[a_root][0] += cnts[b_root][0]
+        cnts[a_root][1] += cnts[b_root][1]
+    else:
+        parents[a_root] = b_root
+        cnts[b_root][0] += cnts[a_root][0]
+        cnts[b_root][1] += cnts[a_root][1]
+def dfs(node, graph, parents, visited, cnts):
+    if node % 2 == len(graph[node]) % 2:
+        cnts[find(node, parents)][0] += 1  
+    else:
+        cnts[find(node, parents)][1] += 1  
+    for neighbor in graph[node]:
+        if not visited[neighbor]:
+            visited[neighbor] = True
+            union(node, neighbor, parents, cnts)
+            dfs(neighbor, graph, parents, visited, cnts)
+def solution(nodes, edges):
+    m = max(nodes)
+    graph = [[] for _ in range(m+1)]
+    visited = [False] * (m+1)
+    parents = list(range(m+1))
+    cnts = [[0, 0] for _ in range(m+1)] 
+    for u, v in edges:
+        graph[u].append(v)
+        graph[v].append(u)
+    for node in nodes:
+        if not visited[node]:
+            visited[node] = True
+            dfs(node, graph, parents, visited, cnts)
+    answer = [0, 0] 
+    for node in nodes:
+        root = find(node, parents)
+        hj_count, rhj_count = cnts[root]
+        total = hj_count + rhj_count
+        if node % 2 == len(graph[node]) % 2:
+            if rhj_count == total - 1:
+                answer[0] += 1
+        else:
+            if hj_count == total - 1:
+                answer[1] += 1
+    return answer
+
