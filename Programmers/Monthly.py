@@ -217,3 +217,39 @@ def solution(a):
                 new_dp[nk] = (new_dp[nk] + dp[k] * ways) % MOD
         dp = new_dp
     return dp[0]
+
+
+from collections import defaultdict
+import sys; sys.setrecursionlimit(1000000)
+def dfs(u, A, d, visited):
+    if all(v in visited for v in A[u]):
+        return u, d, 1
+    farthestnode, maxdepth, maxdepthcnt = None, -1, 0
+    for v in A[u]:
+        if v in visited:
+            continue
+        visited.add(v)
+        node, depth, depthcnt = dfs(v, A, d+1, visited)
+        if depth > maxdepth:
+            farthestnode, maxdepth, maxdepthcnt = node, depth, depthcnt
+        elif depth == maxdepth:
+            maxdepthcnt += depthcnt
+    return farthestnode, maxdepth, maxdepthcnt
+def solution(n, edges):
+    A = defaultdict(list)
+    for u, v in edges:
+        A[u].append(v)
+        A[v].append(u)
+    visited = set()
+    visited.add(1)
+    farthest, _, _ = dfs(1, A, 0, visited)
+    visited = set()
+    visited.add(farthest)
+    farthest, diameter, cnt1 = dfs(farthest, A, 0, visited)
+    visited = set()
+    visited.add(farthest)
+    farthest, diameter, cnt2 = dfs(farthest, A, 0, visited)
+    if cnt1 == 1 and cnt2 == 1:
+        return diameter - 1
+    else:
+        return diameter
