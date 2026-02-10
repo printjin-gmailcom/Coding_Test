@@ -1968,3 +1968,70 @@ def solution(sales, links):
             dp[node][0] = sum_child[node] + M
     dfs(1)
     return min(dp[1])
+
+
+import sys
+sys.setrecursionlimit(200000)
+def solution(k, num, links):
+    n = len(num)
+    has_parent = [False] * n
+    for l, r in links:
+        if l != -1:
+            has_parent[l] = True
+        if r != -1:
+            has_parent[r] = True
+    root = 0
+    for i in range(n):
+        if not has_parent[i]:
+            root = i
+            break
+    left = [l for l, _ in links]
+    right = [r for _, r in links]
+    def needed_groups(limit):
+        cuts = 0
+        def dfs(node):
+            nonlocal cuts
+            if node == -1:
+                return 0
+            w = num[node]
+            ls = dfs(left[node])
+            rs = dfs(right[node])
+            if w > limit:
+                cuts = k + 1
+                return 0
+            sums = []
+            if left[node] != -1:
+                sums.append(("L", ls))
+            if right[node] != -1:
+                sums.append(("R", rs))
+            if not sums:
+                return w
+            if len(sums) == 1:
+                _, s = sums[0]
+                if w + s <= limit:
+                    return w + s
+                cuts += 1
+                return w
+            (_, s1), (_, s2) = sums
+            if w + s1 + s2 <= limit:
+                return w + s1 + s2
+            small, large = sorted([s1, s2])
+            if w + small <= limit:
+                cuts += 1
+                return w + small
+            cuts += 2
+            return w
+        dfs(root)
+        return cuts + 1
+    lo = max(num)
+    hi = sum(num)
+    ans = hi
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        if needed_groups(mid) <= k:
+            ans = mid
+            hi = mid - 1
+        else:
+            lo = mid + 1
+    return ans
+
