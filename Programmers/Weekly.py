@@ -159,3 +159,43 @@ def solution(line):
         grid[max_y - y][x - min_x] = '*'
     return [''.join(row) for row in grid]
    
+
+def Calc(s_len, e_len):
+    if s_len > e_len:
+        N, K = e_len, s_len
+    else:
+        N, K = s_len, e_len
+    if N == 1:
+        return N * K
+    return ((N + K + 1) * (N + 1) * N // 2) - ((N + 1) * N * (2 * N + 1) // 3)
+def MaxBeauty(size):
+    if size == 1:
+        return 0
+    return (size * size * (size - 1) // 2) - ((size - 1) * size * (2 * size - 1) // 6)
+def solution(s):
+    n = len(s)
+    if n == 0:
+        return 0
+    answer = MaxBeauty(n)
+    nodes = []
+    cur_char = s[0]
+    length = 1
+    for c in s[1:]:
+        if c == cur_char:
+            length += 1
+        else:
+            nodes.append((cur_char, length))
+            cur_char = c
+            length = 1
+    nodes.append((cur_char, length))
+    if len(nodes) == 1:
+        return 0
+    tables = [{} for _ in range(26)]
+    for ch, seg_len in nodes:
+        idx = ord(ch) - ord('a')
+        answer -= MaxBeauty(seg_len)
+        table = tables[idx]
+        for prev_len, cnt in table.items():
+            answer -= cnt * Calc(prev_len, seg_len)
+        table[seg_len] = table.get(seg_len, 0) + 1
+    return answer
