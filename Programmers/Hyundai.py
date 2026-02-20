@@ -220,3 +220,21 @@ def solution(n, roads):
             inc.add(idx)
     ans = sorted(dec | inc)
     return ans if ans else [-1]
+
+
+def solution(heights):
+    heights.sort()
+    minusV = []
+    n = len(heights)
+    half = n // 2
+    if n % 2 == 1:  
+        for i in range(half):
+            minusV.append(heights[i + half] - heights[i])
+        minusV.append(heights[-1] - heights[half])
+        minusV.sort()
+        return minusV[1]
+    else: 
+        for i in range(half):
+            minusV.append(heights[i + half] - heights[i])
+        minusV.sort()
+        return minusV[0]
