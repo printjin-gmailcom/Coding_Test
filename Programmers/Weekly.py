@@ -199,3 +199,124 @@ def solution(s):
             answer -= cnt * Calc(prev_len, seg_len)
         table[seg_len] = table.get(seg_len, 0) + 1
     return answer
+
+
+import sys
+sys.setrecursionlimit(400000)
+from collections import defaultdict
+def set_depth_subtree(node, prev):
+    sub_trees = []
+    depths = []
+    for child in graph[node]:
+        if child == prev:
+            continue
+        set_depth_subtree(child, node)
+        sub_trees.append((sub_tree[child], child))
+        depths.append((depth[child], child))
+        depth[node] = max(depth[node], depth[child] + 1)
+    sub_trees.sort(reverse=True)
+    depths.sort(reverse=True)
+    if len(sub_trees) >= 2:
+        if sub_trees[0][1] != depths[0][1]:
+            sub_tree[node] = sub_trees[0][0] + depths[0][0] + 1
+        else:
+            sub_tree[node] = max(
+                sub_trees[0][0] + depths[1][0] + 1,
+                sub_trees[1][0] + depths[0][0] + 1)
+    elif len(sub_trees) == 1:
+        sub_tree[node] = sub_trees[0][0] + 1
+def DFS(node, prev, height):
+    global answer
+    sub_trees = []
+    depths = []
+    for child in graph[node]:
+        if child == prev:
+            continue
+        sub_trees.append((sub_tree[child], child))
+        depths.append((depth[child], child))
+    sub_trees.sort(reverse=True)
+    depths.sort(reverse=True)
+    for child in graph[node]:
+        if child == prev:
+            continue
+        next_height = height + 1
+        if depths[0][1] != child:
+            next_height = max(next_height, depths[0][0] + 2)
+        elif len(depths) >= 2 and depths[0][1] == child:
+            next_height = max(next_height, depths[1][0] + 2)
+        DFS(child, node, next_height)
+    if len(sub_trees) >= 3:
+        answer = max(
+            answer,
+            sub_trees[0][0] + sub_trees[1][0] + height,
+            sub_trees[0][0] + sub_trees[2][0] + depths[1][0] + 1,
+            sub_trees[0][0] + sub_trees[1][0] + depths[2][0] + 1)
+    elif len(sub_trees) == 2:
+        answer = max(
+            answer,
+            sub_trees[0][0] + sub_trees[1][0] + height)
+def solution(t):
+    global answer, N, graph, sub_tree, depth
+    N = len(t) + 1
+    graph = defaultdict(list)
+    sub_tree = [1] * N
+    depth = [1] * N
+    answer = 0
+    for v1, v2 in t:
+        graph[v1].append(v2)
+        graph[v2].append(v1)
+    set_depth_subtree(0, -1)
+    DFS(0, -1, 1)
+    return answer
+
+
+import math
+import bisect
+MOD = int(1e9 + 7)
+def binary_search(arr, x):
+    idx = bisect.bisect_left(arr, x)
+    if idx == 0 and arr[idx] != x:
+        return -1
+    elif idx == len(arr):
+        return -1
+    else:
+        return idx
+def solve(b):
+    maxb, n = max(b), len(b)
+    ps = [0, b[0]]
+    for i in range(1, n):
+        ps.append(ps[-1] + b[i])
+    maxe = math.ceil(math.log2(ps[-1]))
+    dp = [[0] * (maxe + 1) for _ in range(n)]
+    dp[0][0] = 1
+    for i in range(1, n):
+        dp[i][0] = sum(dp[i-1])
+        for e in range(1, maxe + 1):
+            if dp[i][e-1] == 0:
+                continue
+            target = ps[i + 1] - b[i] * 2**(e-1)
+            jhalf = binary_search(ps, target)
+            if jhalf == -1:
+                continue
+            eprime = math.log2(b[i] / b[jhalf - 1]) + (e - 1)
+            if not eprime.is_integer() or eprime < 0:
+                continue
+            if not dp[jhalf - 1][int(eprime)] > 0:
+                continue.
+            target = ps[i + 1] - b[i] * 2**e
+            jfull = binary_search(ps, target)
+            if jfull == -1:
+                continue
+            if jfull == 0:
+                dp[i][e] = 1
+            else:
+            	dp[i][e] = sum(dp[jfull - 1]) % MOD
+    return sum(dp[-1]) % MOD
+def solution(a, s):
+    answer = []
+    start = 0
+    for l in s:
+        b = a[start:start+l]
+        answer.append(solve(b))
+        start += l
+    return answer
