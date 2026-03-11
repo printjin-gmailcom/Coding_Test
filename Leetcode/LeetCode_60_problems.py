@@ -71,3 +71,29 @@ class Solution:
             if l2:
                 l2 = l2.next
         return dummy.next
+
+
+class Solution:
+    def isValid(self, s: str) -> bool:
+        stack = []
+        pairs = {')':'(', '}':'{', ']':'['}
+        for c in s:
+            if c in pairs.values():
+                stack.append(c)
+            else:
+                if not stack or stack[-1] != pairs[c]:
+                    return False
+                stack.pop()
+        return len(stack) == 0
+
+
+class Solution:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        prev = None
+        curr = head
+        while curr:
+            nxt = curr.next
+            curr.next = prev
+            prev = curr
+            curr = nxt
+        return prev
