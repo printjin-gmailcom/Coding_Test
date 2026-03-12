@@ -97,3 +97,31 @@ class Solution:
             prev = curr
             curr = nxt
         return prev
+
+
+import heapq
+class KthLargest:
+    def __init__(self, k, nums):
+        self.k = k
+        self.heap = nums
+        heapq.heapify(self.heap)
+        while len(self.heap) > k:
+            heapq.heappop(self.heap)
+    def add(self, val):
+        heapq.heappush(self.heap, val)
+        if len(self.heap) > self.k:
+            heapq.heappop(self.heap)
+        return self.heap[0]
+
+
+from collections import Counter
+import heapq
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        count = Counter(nums)
+        heap = []
+        for num, freq in count.items():
+            heapq.heappush(heap, (freq, num))
+            if len(heap) > k:
+                heapq.heappop(heap)
+        return [num for freq, num in heap]
