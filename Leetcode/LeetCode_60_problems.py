@@ -142,3 +142,23 @@ class Solution:
             if j + 1 < len(nums2):
                 heapq.heappush(heap, (nums1[i] + nums2[j+1], i, j+1))
         return res
+
+
+from collections import defaultdict
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        groups = defaultdict(list)
+        for s in strs:
+            key = "".join(sorted(s))
+            groups[key].append(s)
+        return list(groups.values())
+
+
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        seen = {}
+        for i, num in enumerate(nums):
+            diff = target - num
+            if diff in seen:
+                return [seen[diff], i]
+            seen[num] = i
