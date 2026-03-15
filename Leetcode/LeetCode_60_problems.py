@@ -162,3 +162,20 @@ class Solution:
             if diff in seen:
                 return [seen[diff], i]
             seen[num] = i
+
+
+class Solution:
+    def intersection(self, nums1, nums2):
+        return list(set(nums1) & set(nums2))
+
+
+class Solution:
+    def numUniqueEmails(self, emails):
+        s = set()
+        for email in emails:
+            local, domain = email.split('@')
+            if '+' in local:
+                local = local[:local.index('+')]
+            local = local.replace('.', '')
+            s.add(local + '@' + domain)
+        return len(s)
