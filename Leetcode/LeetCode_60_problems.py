@@ -179,3 +179,27 @@ class Solution:
             local = local.replace('.', '')
             s.add(local + '@' + domain)
         return len(s)
+
+
+class Solution:
+    def subarraySum(self, nums, k):
+        prefix = {0: 1}
+        curr = 0
+        count = 0
+        for n in nums:
+            curr += n
+            if curr - k in prefix:
+                count += prefix[curr - k]
+            prefix[curr] = prefix.get(curr, 0) + 1
+        return count
+
+
+class Solution:
+    def firstUniqChar(self, s):
+        count = {}
+        for c in s:
+            count[c] = count.get(c, 0) + 1
+        for i, c in enumerate(s):
+            if count[c] == 1:
+                return i
+        return -1
