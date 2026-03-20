@@ -266,3 +266,26 @@ class Solution:
                         wordSet.remove(newWord)
                         q.append((newWord, level + 1))
         return 0
+
+
+class Solution:
+    def mergeTrees(self, root1, root2):
+        if not root1:
+            return root2
+        if not root2:
+            return root1
+        root1.val += root2.val
+        root1.left = self.mergeTrees(root1.left, root2.left)
+        root1.right = self.mergeTrees(root1.right, root2.right)
+        return root1
+
+
+class Solution:
+    def sortedArrayToBST(self, nums):
+        if not nums:
+            return None
+        mid = len(nums) // 2
+        root = TreeNode(nums[mid])
+        root.left = self.sortedArrayToBST(nums[:mid])
+        root.right = self.sortedArrayToBST(nums[mid+1:])
+        return root
