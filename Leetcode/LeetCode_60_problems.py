@@ -289,3 +289,55 @@ class Solution:
         root.left = self.sortedArrayToBST(nums[:mid])
         root.right = self.sortedArrayToBST(nums[mid+1:])
         return root
+
+
+from collections import deque
+class Solution:
+    def zigzagLevelOrder(self, root):
+        if not root:
+            return []
+        q = deque([root])
+        res = []
+        left = True
+        while q:
+            level = deque()
+            for _ in range(len(q)):
+                node = q.popleft()
+                if left:
+                    level.append(node.val)
+                else:
+                    level.appendleft(node.val)
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+            res.append(list(level))
+            left = not left
+        return res
+
+
+class Solution:
+    def isValidBST(self, root):
+        def dfs(node, low, high):
+            if not node:
+                return True
+            if not (low < node.val < high):
+                return False
+            return dfs(node.left, low, node.val) and dfs(node.right, node.val, high)
+        return dfs(root, float('-inf'), float('inf'))
+
+
+class Solution:
+    def buildTree(self, preorder, inorder):
+        idx = {v:i for i,v in enumerate(inorder)}
+        it = iter(preorder)
+        def dfs(l, r):
+            if l > r:
+                return None
+            val = next(it)
+            node = TreeNode(val)
+            m = idx[val]
+            node.left = dfs(l, m-1)
+            node.right = dfs(m+1, r)
+            return node
+        return dfs(0, len(inorder)-1)
