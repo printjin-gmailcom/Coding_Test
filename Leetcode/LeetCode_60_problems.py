@@ -341,3 +341,24 @@ class Solution:
             node.right = dfs(m+1, r)
             return node
         return dfs(0, len(inorder)-1)
+
+
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        n = len(nums)
+        dp = [1] * n
+        for i in range(n):
+            for j in range(i):
+                if nums[j] < nums[i]:
+                    dp[i] = max(dp[i], dp[j] + 1)
+        return max(dp)
+
+
+class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        current = nums[0]
+        max_sum = nums[0]
+        for i in range(1, len(nums)):
+            current = max(nums[i], current + nums[i])
+            max_sum = max(max_sum, current)
+        return max_sum
