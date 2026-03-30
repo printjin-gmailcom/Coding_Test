@@ -392,3 +392,52 @@ class Solution:
             for j in range(1, n):
                 dp[i][j] = dp[i-1][j] + dp[i][j-1]
         return dp[m-1][n-1]
+
+
+class Solution:
+    def rob(self, nums):
+        if not nums:
+            return 0
+        if len(nums) == 1:
+            return nums[0
+        prev2 = nums[0]
+        prev1 = max(nums[0], nums[1])
+        for i in range(2, len(nums)):
+            cur = max(prev1, prev2 + nums[i])
+            prev2 = prev1
+            prev1 = cur
+        return prev1
+
+
+class Solution:
+    def rob(self, nums):
+        if len(nums) == 1:
+            return nums[0]
+        def rob_line(arr):
+            prev2 = 0
+            prev1 = 0
+            for n in arr:
+                cur = max(prev1, prev2 + n)
+                prev2 = prev1
+                prev1 = cur
+            return prev1
+        return max(rob_line(nums[:-1]), rob_line(nums[1:]))
+
+
+class Solution:
+    def maxProfit(self, prices):
+        min_price = float('inf')
+        max_profit = 0
+        for price in prices:
+            min_price = min(min_price, price)
+            max_profit = max(max_profit, price - min_price)
+        return max_profit
+
+
+class Solution:
+    def maxProfit(self, prices):
+        profit = 0
+        for i in range(1, len(prices)):
+            if prices[i] > prices[i-1]:
+                profit += prices[i] - prices[i-1]
+        return profit
