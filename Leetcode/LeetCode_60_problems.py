@@ -441,3 +441,27 @@ class Solution:
             if prices[i] > prices[i-1]:
                 profit += prices[i] - prices[i-1]
         return profit
+
+
+class Solution:
+    def wordBreak(self, s, wordDict):
+        wordSet = set(wordDict)
+        dp = [False] * (len(s) + 1)
+        dp[0] = True
+        for i in range(1, len(s) + 1):
+            for j in range(i):
+                if dp[j] and s[j:i] in wordSet:
+                    dp[i] = True
+                    break
+        return dp[len(s)]
+
+
+class Solution:
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [amount + 1] * (amount + 1)
+        dp[0] = 0
+        for i in range(1, amount + 1):
+            for coin in coins:
+                if i - coin >= 0:
+                    dp[i] = min(dp[i], dp[i - coin] + 1)
+        return dp[amount] if dp[amount] != amount + 1 else -1
