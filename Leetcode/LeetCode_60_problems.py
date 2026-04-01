@@ -1,5 +1,5 @@
 class Solution:
-    def hasCycle(self, head: Optional[ListNode]) -> bool:
+    def hasCycle(self, head):
         slow = head
         fast = head
         while fast and fast.next:
@@ -11,7 +11,7 @@ class Solution:
 
 
 class Solution:
-    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:
+    def detectCycle(self, head):
         slow = head
         fast = head
         while fast and fast.next:
@@ -74,7 +74,7 @@ class Solution:
 
 
 class Solution:
-    def isValid(self, s: str) -> bool:
+    def isValid(self, s):
         stack = []
         pairs = {')':'(', '}':'{', ']':'['}
         for c in s:
@@ -88,7 +88,7 @@ class Solution:
 
 
 class Solution:
-    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+    def reverseList(self, head):
         prev = None
         curr = head
         while curr:
@@ -117,7 +117,7 @@ class KthLargest:
 from collections import Counter
 import heapq
 class Solution:
-    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+    def topKFrequent(self, nums, k):
         count = Counter(nums)
         heap = []
         for num, freq in count.items():
@@ -146,7 +146,7 @@ class Solution:
 
 from collections import defaultdict
 class Solution:
-    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+    def groupAnagrams(self, strs):
         groups = defaultdict(list)
         for s in strs:
             key = "".join(sorted(s))
@@ -155,7 +155,7 @@ class Solution:
 
 
 class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
+    def twoSum(self, nums, target):
         seen = {}
         for i, num in enumerate(nums):
             diff = target - num
@@ -344,7 +344,7 @@ class Solution:
 
 
 class Solution:
-    def lengthOfLIS(self, nums: List[int]) -> int:
+    def lengthOfLIS(self, nums):
         n = len(nums)
         dp = [1] * n
         for i in range(n):
@@ -355,7 +355,7 @@ class Solution:
 
 
 class Solution:
-    def maxSubArray(self, nums: List[int]) -> int:
+    def maxSubArray(self, nums):
         current = nums[0]
         max_sum = nums[0]
         for i in range(1, len(nums)):
@@ -386,7 +386,7 @@ class Solution:
 
 
 class Solution:
-    def uniquePaths(self, m: int, n: int) -> int:
+    def uniquePaths(self, m, n):
         dp = [[1] * n for _ in range(m)]
         for i in range(1, m):
             for j in range(1, n):
@@ -457,7 +457,7 @@ class Solution:
 
 
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def coinChange(self, coins, amount):
         dp = [amount + 1] * (amount + 1)
         dp[0] = 0
         for i in range(1, amount + 1):
@@ -468,7 +468,7 @@ class Solution:
 
 
 class Solution:
-    def findMin(self, nums: List[int]) -> int:
+    def findMin(self, nums):
         left, right = 0, len(nums) - 1
         while left < right:
             mid = (left + right) // 2
@@ -479,7 +479,7 @@ class Solution:
 
 
 class Solution:
-    def searchInsert(self, nums: List[int], target: int) -> int:
+    def searchInsert(self, nums, target):
         left, right = 0, len(nums)
         while left < right:
             mid = (left + right) // 2
@@ -489,3 +489,44 @@ class Solution:
                 right = mid
         return left
         return nums[left]
+
+
+class Solution:
+    def search(self, nums, target):
+        left, right = 0, len(nums) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] == target:
+                return mid
+            if nums[left] <= nums[mid]:
+                if nums[left] <= target < nums[mid]:
+                    right = mid - 1
+                else:
+                    left = mid + 1
+            else:
+                if nums[mid] < target <= nums[right]:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+        return -1
+
+
+class Solution:
+    def shipWithinDays(self, weights, days):
+        def can(cap):
+            d = 1
+            cur = 0
+            for w in weights:
+                if cur + w > cap:
+                    d += 1
+                    cur = 0
+                cur += w
+            return d <= days
+        left, right = max(weights), sum(weights)
+        while left < right:
+            mid = (left + right) // 2
+            if can(mid):
+                right = mid
+            else:
+                left = mid + 1
+        return left
