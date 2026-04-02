@@ -530,3 +530,30 @@ class Solution:
             else:
                 left = mid + 1
         return left
+
+
+class Solution:
+    def kthGrammar(self, n, k):
+        if n == 1:
+            return 0
+        parent = self.kthGrammar(n - 1, (k + 1) // 2)
+        if k % 2 == 1:
+            return parent
+        else:
+            return 1 - parent
+
+
+class Solution:
+    def myPow(self, x, n):
+        def fast_pow(x, n):
+            if n == 0:
+                return 1
+            half = fast_pow(x, n // 2)
+            if n % 2 == 0:
+                return half * half
+            else:
+                return half * half * x
+        if n < 0:
+            x = 1 / x
+            n = -n
+        return fast_pow(x, n)
