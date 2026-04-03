@@ -557,3 +557,31 @@ class Solution:
             x = 1 / x
             n = -n
         return fast_pow(x, n)
+
+
+class Solution:
+    def lengthOfLongestSubstring(self, s):
+        char_set = set()
+        left = 0
+        max_len = 0
+        for right in range(len(s)):
+            while s[right] in char_set:
+                char_set.remove(s[left])
+                left += 1
+            char_set.add(s[right])
+            max_len = max(max_len, right - left + 1)
+        return max_len
+
+
+class Solution:
+    def minSubArrayLen(self, target, nums):
+        left = 0
+        total = 0
+        min_len = float('inf')
+        for right in range(len(nums)):
+            total += nums[right]
+            while total >= target:
+                min_len = min(min_len, right - left + 1)
+                total -= nums[left]
+                left += 1
+        return 0 if min_len == float('inf') else min_len
