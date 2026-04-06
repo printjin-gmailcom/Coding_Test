@@ -658,3 +658,13 @@ class Solution:
             if nums[i] != 0:
                 nums[j], nums[i] = nums[i], nums[j]
                 j += 1
+
+
+class Solution:
+    def isSubsequence(self, s, t):
+        i, j = 0, 0
+        while i < len(s) and j < len(t):
+            if s[i] == t[j]:
+                i += 1
+            j += 1
+        return i == len(s)
