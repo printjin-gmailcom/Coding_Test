@@ -5287,3 +5287,20 @@ for a,b,c in sorted([tuple(map(int,input().split())) for _ in range(e)],key=lamb
         p[b]=a
         r+=c
 print(r)
+
+
+n = int(input())
+arr = list(map(int, input().split()))
+l, r = 0, n - 1
+ans = (arr[l], arr[r])
+min_val = abs(arr[l] + arr[r])
+while l < r:
+    s = arr[l] + arr[r
+    if abs(s) < min_val:
+        min_val = abs(s)
+        ans = (arr[l], arr[r])
+    if s > 0:
+        r -= 1
+    else:
+        l += 1
+print(*ans)
