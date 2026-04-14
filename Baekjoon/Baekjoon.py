@@ -5269,3 +5269,21 @@ for c in bags:
     if heap:
         result += -heapq.heappop(heap) 
 print(result)
+
+
+import sys
+input=sys.stdin.readline
+v,e=map(int,input().split())
+p=list(range(v+1))
+def f(x):
+    while p[x]!=x:
+        p[x]=p[p[x]]
+        x=p[x]
+    return x
+r=0
+for a,b,c in sorted([tuple(map(int,input().split())) for _ in range(e)],key=lambda x:x[2]):
+    a,b=f(a),f(b)
+    if a!=b:
+        p[b]=a
+        r+=c
+print(r)
