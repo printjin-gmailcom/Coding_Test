@@ -5317,3 +5317,29 @@ for i in range(n):
     area += x1 * y2 - x2 * y1
 area = abs(area) / 2
 print(f"{area:.1f}")
+
+
+import sys
+from collections import deque
+input = sys.stdin.readline
+N, M = map(int, input().split())
+graph = [[] for _ in range(N + 1)]
+indegree = [0] * (N + 1
+
+for _ in range(M):
+    A, B = map(int, input().split())
+    graph[A].append(B)
+    indegree[B] += 1
+queue = deque()
+for i in range(1, N + 1):
+    if indegree[i] == 0:
+        queue.append(i)
+result = []
+while queue:
+    cur = queue.popleft()
+    result.append(cur)
+    for nxt in graph[cur]:
+        indegree[nxt] -= 1
+        if indegree[nxt] == 0:
+            queue.append(nxt)
+print(*result)
