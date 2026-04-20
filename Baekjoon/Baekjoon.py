@@ -5343,3 +5343,32 @@ while queue:
         if indegree[nxt] == 0:
             queue.append(nxt)
 print(*result)
+
+
+import sys
+input = sys.stdin.readline
+C, N = map(int, input().split())
+cities = [tuple(map(int, input().split())) for _ in range(N)]
+INF = 1e9
+dp = [INF] * (C + 101)
+dp[0] = 0
+for cost, customer in cities:
+    for i in range(customer, C + 101):
+        dp[i] = min(dp[i], dp[i - customer] + cost)
+print(min(dp[C:]))
+
+
+import sys
+input = sys.stdin.readline
+N, S = map(int, input().split())
+arr = list(map(int, input().split()))
+left = 0
+total = 0
+answer = N + 1
+for right in range(N):
+    total += arr[right]
+    while total >= S:
+        answer = min(answer, right - left + 1)
+        total -= arr[left]
+        left += 1
+print(0 if answer == N + 1 else answer)
