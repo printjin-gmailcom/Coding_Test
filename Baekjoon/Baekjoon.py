@@ -5372,3 +5372,70 @@ for right in range(N):
         total -= arr[left]
         left += 1
 print(0 if answer == N + 1 else answer)
+
+
+import sys
+input = sys.stdin.readline
+
+board = [list(map(int, input().strip())) for _ in range(9)]
+
+row = [0]*9
+col = [0]*9
+box = [0]*9
+empty = []
+
+for i in range(9):
+    for j in range(9):
+        if board[i][j] == 0:
+            empty.append((i, j))
+        else:
+            num = board[i][j]
+            bit = 1 << num
+            row[i] |= bit
+            col[j] |= bit
+            box[(i//3)*3 + j//3] |= bit
+
+def dfs(idx):
+    if idx == len(empty):
+        for r in board:
+            print("".join(map(str, r)))
+        sys.exit()
+    x, y = empty[idx]
+    b = (x//3)*3 + y//3
+    for num in range(1, 10):
+        bit = 1 << num
+        if row[x] & bit or col[y] & bit or box[b] & bit:
+            continue
+        board[x][y] = num
+        row[x] |= bit
+        col[y] |= bit
+        box[b] |= bit
+        dfs(idx+1)
+        board[x][y] = 0
+        row[x] ^= bit
+        col[y] ^= bit
+        box[b] ^= bit
+dfs(0)
+
+
+import sys
+input = sys.stdin.readline
+n = int(input())
+arr = list(map(int, input().split()))
+dp = [[0]*n for _ in range(n)]
+for i in range(n):
+    dp[i][i] = 1
+for i in range(n-1):
+    if arr[i] == arr[i+1]:
+        dp[i][i+1] = 1
+for length in range(3, n+1):
+    for i in range(n - length + 1):
+        j = i + length - 1
+        if arr[i] == arr[j] and dp[i+1][j-1]:
+            dp[i][j] = 1
+m = int(input())
+out = []
+for _ in range(m):
+    s, e = map(int, input().split())
+    out.append(str(dp[s-1][e-1]))
+print("\n".join(out))
