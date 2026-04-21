@@ -5439,3 +5439,54 @@ for _ in range(m):
     s, e = map(int, input().split())
     out.append(str(dp[s-1][e-1]))
 print("\n".join(out))
+
+
+import sys
+input = sys.stdin.readline
+n = int(input())
+arr = list(map(int, input().split()))
+arr.sort()
+best = float('inf')
+ans = (0, 0, 0)
+for i in range(n - 2):
+    l, r = i + 1, n - 1
+    while l < r:
+        s = arr[i] + arr[l] + arr[r]
+        if abs(s) < best:
+            best = abs(s)
+            ans = (arr[i], arr[l], arr[r])
+        if s < 0:
+            l += 1
+        else:
+            r -= 1
+print(*ans)
+
+
+import sys
+sys.setrecursionlimit(10**7)
+input = sys.stdin.readline
+def dfs(x):
+    global cnt
+    visited[x] = 1
+    cycle.append(x)
+    nxt = arr[x]
+    if visited[nxt] == 0:
+        dfs(nxt)
+    elif visited[nxt] == 1:
+        for i in range(len(cycle)):
+            if cycle[i] == nxt:
+                cnt += len(cycle) - i
+                break
+    visited[x] = 2
+    cycle.pop()
+T = int(input())
+for _ in range(T):
+    n = int(input())
+    arr = [0] + list(map(int, input().split()))
+    visited = [0] * (n + 1)
+    cnt = 0
+    for i in range(1, n + 1):
+        if visited[i] == 0:
+            cycle = []
+            dfs(i)
+    print(n - cnt)
