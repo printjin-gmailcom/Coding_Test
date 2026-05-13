@@ -2072,3 +2072,22 @@ def solution(n, infection, edges, k):
     return answer
 
 
+from math import gcd
+from functools import reduce
+def lcm(a, b):
+    return a * b // gcd(a, b)
+def solution(signals):
+    period = 1
+    for g, y, r in signals:
+        period = lcm(period, g + y + r)
+    for t in range(1, period + 1):
+        ok = True
+        for g, y, r in signals:
+            p = g + y + r
+            pos = (t - 1) % p + 1
+            if not (g < pos <= g + y):
+                ok = False
+                break
+        if ok:
+            return t
+    return -1
