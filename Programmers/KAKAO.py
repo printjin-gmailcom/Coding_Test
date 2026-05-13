@@ -2035,3 +2035,40 @@ def solution(k, num, links):
             lo = mid + 1
     return ans
 
+
+from collections import deque
+def solution(n, infection, edges, k):
+    graph = [[] for _ in range(4)]
+    for u, v, t in edges:
+        graph[t].append((u, v))
+        graph[t].append((v, u))
+    def spread(state, t):
+        visited = set(state)
+        q = deque(state)
+        adj = [[] for _ in range(n + 1)]
+        for u, v in graph[t]:
+            adj[u].append(v)
+        while q:
+            cur = q.popleft()
+            for nxt in adj[cur]:
+                if nxt not in visited:
+                    visited.add(nxt)
+                    q.append(nxt)
+        return frozenset(visited)
+    start = frozenset([infection])
+    q = deque([(start, 0)])
+    visited = set([(start, 0)])
+    answer = 1
+    while q:
+        state, step = q.popleft()
+        answer = max(answer, len(state))
+        if step == k:
+            continue
+        for t in range(1, 4):
+            nxt = spread(state, t)
+            if (nxt, step + 1) not in visited:
+                visited.add((nxt, step + 1))
+                q.append((nxt, step + 1))
+    return answer
+
+
