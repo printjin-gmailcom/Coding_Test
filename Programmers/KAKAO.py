@@ -2091,3 +2091,36 @@ def solution(signals):
         if ok:
             return t
     return -1
+
+
+def solution(cost, hint):
+    n = len(cost)
+    m = n - 1
+    bundle_price = [0] * m
+    bundle_add = [[0] * n for _ in range(m)]
+    for i in range(m):
+        bundle_price[i] = hint[i][0]
+        for x in hint[i][1:]:
+            bundle_add[i][x - 1] += 1
+    size = 1 << m
+    hint_cnt = [[0] * n for _ in range(size)]
+    bundle_sum = [0] * size
+    for mask in range(1, size):
+        lsb = mask & -mask
+        b = lsb.bit_length() - 1
+        prev = mask ^ lsb
+        bundle_sum[mask] = bundle_sum[prev] + bundle_price[b]
+        row_prev = hint_cnt[prev]
+        row_cur = hint_cnt[mask]
+        for s in range(n):
+            row_cur[s] = row_prev[s] + bundle_add[b][s]
+    answer = float('inf')
+    for mask in range(size):
+        total = bundle_sum[mask]
+        for s in range(n):
+            c = hint_cnt[mask][s]
+            if c >= n:
+                c = n - 1
+            total += cost[s][c]
+        answer = min(answer, total)
+    return answer
