@@ -2124,3 +2124,43 @@ def solution(cost, hint):
             total += cost[s][c]
         answer = min(answer, total)
     return answer
+
+
+from collections import deque
+def solution(m, n, h, w, drops):
+    INF = len(drops) + 1
+    rain = [[INF] * n for _ in range(m)]
+    for t, (r, c) in enumerate(drops, start=1):
+        rain[r][c] = t
+    rows = m - h + 1
+    cols = n - w + 1
+    row_min = [[0] * cols for _ in range(m)]
+    for r in range(m):
+        dq = deque()
+        for c in range(n):
+            while dq and rain[r][dq[-1]] >= rain[r][c]:
+                dq.pop()
+            dq.append(c)
+            while dq[0] <= c - w:
+                dq.popleft()
+            if c >= w - 1:
+                row_min[r][c - w + 1] = rain[r][dq[0]]
+    best_time = -1
+    best_r = 0
+    best_c = 0
+    for c in range(cols):
+        dq = deque()
+        for r in range(m):
+            while dq and row_min[dq[-1]][c] >= row_min[r][c]:
+                dq.pop()
+            dq.append(r)
+            while dq[0] <= r - h:
+                dq.popleft()
+            if r >= h - 1:
+                cur = row_min[dq[0]][c]
+                top = r - h + 1
+                if cur > best_time:
+                    best_time = cur
+                    best_r = top
+                    best_c = c
+    return [best_r, best_c]
