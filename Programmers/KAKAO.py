@@ -2164,3 +2164,93 @@ def solution(m, n, h, w, drops):
                     best_r = top
                     best_c = c
     return [best_r, best_c]
+
+
+from collections import deque
+
+INF = 10**18
+
+
+def solution(h, grid, panels, seqs):
+    n = len(grid)
+    m = len(grid[0])
+    er = ec = -1
+    for r in range(n):
+        for c in range(m):
+            if grid[r][c] == '@':
+                er, ec = r, c
+    dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+    def bfs(sr, sc):
+        dist = [[-1] * m for _ in range(n)]
+        q = deque()
+        q.append((sr, sc))
+        dist[sr][sc] = 0
+        while q:
+            r, c = q.popleft()
+            for dr, dc in dirs:
+                nr = r + dr
+                nc = c + dc
+                if nr < 0 or nr >= n or nc < 0 or nc >= m:
+                    continue
+                if grid[nr][nc] == '#':
+                    continue
+                if dist[nr][nc] != -1:
+                    continue
+                dist[nr][nc] = dist[r][c] + 1
+                q.append((nr, nc))
+        return dist
+    start = (panels[0][0] - 1, panels[0][1] - 1, panels[0][2] - 1)
+    nodes = [start]
+    for f, r, c in panels:
+        nodes.append((f - 1, r - 1, c - 1))
+    bfs_points = set()
+    for _, r, c in nodes:
+        bfs_points.add((r, c))
+    bfs_points.add((er, ec))
+    bfs_result = {}
+    for r, c in bfs_points:
+        bfs_result[(r, c)] = bfs(r, c)
+    k = len(panels)
+    dist = [[INF] * (k + 1) for _ in range(k + 1)]
+    for i in range(k + 1):
+        fi, ri, ci = nodes[i]
+        for j in range(k + 1):
+            fj, rj, cj = nodes[j]
+            best = INF
+            if fi == fj:
+                d = bfs_result[(ri, ci)][rj][cj]
+                if d != -1:
+                    best = min(best, d)
+            d1 = bfs_result[(ri, ci)][er][ec]
+            d2 = bfs_result[(er, ec)][rj][cj]
+            if d1 != -1 and d2 != -1:
+                best = min(best, d1 + abs(fi - fj) + d2)
+            dist[i][j] = best
+    pre = [0] * k
+    for a, b in seqs:
+        pre[b - 1] |= (1 << (a - 1))
+    SIZE = 1 << k
+    dp = [[INF] * (k + 1) for _ in range(SIZE)]
+    dp[0][0] = 0
+    for mask in range(SIZE):
+        for last in range(k + 1):
+            cur = dp[mask][last]
+            if cur == INF:
+                continue
+            for nxt in range(k):
+                if mask & (1 << nxt):
+                    continue
+                if (pre[nxt] & mask) != pre[nxt]:
+                    continue
+                nmask = mask | (1 << nxt)
+                nd = dist[last][nxt + 1]
+                if nd == INF:
+                    continue
+                value = cur + nd
+                if value < dp[nmask][nxt + 1]:
+                    dp[nmask][nxt + 1] = value
+    full = (1 << k) - 1
+    answer = INF
+    for i in range(k + 1):
+        answer = min(answer, dp[full][i])
+    return answer
