@@ -2286,3 +2286,63 @@ def solution(depth, money, excavate):
             r = k - 1
         else:
             l = k + 1
+
+
+from bisect import bisect_left
+def solution(arr, l, r):
+    n = len(arr)
+    P = [0]
+    Q = [0]
+    for x in arr:
+        P.append(P[-1] + x)
+        Q.append(Q[-1] + x * x)
+    M = P[-1]
+    L = r - l + 1
+    def prefix_sum(pos):
+        if pos <= 0:
+            return 0
+        idx = bisect_left(P, pos)
+        used = pos - P[idx - 1]
+        return Q[idx - 1] + used * arr[idx - 1]
+    def value_at(pos):
+        idx = bisect_left(P, pos)
+        return arr[idx - 1]
+    K = prefix_sum(r) - prefix_sum(l - 1)
+    W = M - L + 1
+    if W == 1:
+        return [K, 1]
+    events = {1, W + 1}
+    for i in range(1, n):
+        s = P[i] + 1
+        if 1 < s <= W:
+            events.add(s)
+        t = s - L
+        if 1 < t <= W:
+            events.add(t)
+    events = sorted(events)
+    cur_s = 1
+    cur_val = prefix_sum(L)
+    count = 0
+    for i in range(len(events) - 1):
+        start = events[i]
+        end = events[i + 1] - 1
+        length = end - start + 1
+        if start > W:
+            break
+        if start == W:
+            if cur_val == K:
+                count += 1
+            break
+        d = value_at(start + L) - value_at(start)
+        if d == 0:
+            if cur_val == K:
+                count += length
+        else:
+            t = K - cur_val
+            if t % d == 0:
+                k = t // d
+                if 0 <= k < length:
+                    count += 1
+        cur_val += d * length
+    return [K, count]
+    
