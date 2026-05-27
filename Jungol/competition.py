@@ -205,3 +205,30 @@ for _ in range(Q):
     else:
         _, i = query
         print(w[i] + add[parity[i]])
+
+
+import sys
+from functools import lru_cache
+input = sys.stdin.readline
+patterns = []
+for a in range(4):
+    for b in range(3):
+        for c in range(2):
+            if 3*a + 5*b + 7*c <= 10:
+                patterns.append((a,b,c,a+b+c))
+def dp(a,b,c,k):
+    if k == 0:
+        return 0
+    best = 0
+    for x,y,z,val in patterns:
+        if a >= x and b >= y and c >= z:
+            best = max(best, val + dp(a-x, b-y, c-z, k-1))
+    return best
+T = int(input())
+for _ in range(T):
+    A,B,C = map(int,input().split())
+    print(dp(A,B,C,5))
+
+
+
+
