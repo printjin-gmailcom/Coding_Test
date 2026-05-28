@@ -230,5 +230,52 @@ for _ in range(T):
     print(dp(A,B,C,5))
 
 
-
+import sys
+from collections import deque
+input = sys.stdin.readline
+MOD = 10**9 + 7
+N, M = map(int, input().split())
+dir_graph = [[] for _ in range(N + 1)]
+undir_graph = [[] for _ in range(N + 1)]
+indegree = [0] * (N + 1)
+for _ in range(M):
+    A, B, C = map(int, input().split())
+    dir_graph[A].append(C)
+    dir_graph[B].append(C)
+    indegree[C] += 2
+    undir_graph[A].append(B)
+    undir_graph[B].append(A)
+q = deque()
+for i in range(1, N + 1):
+    if indegree[i] == 0:
+        q.append(i)
+cnt = 0
+while q:
+    x = q.popleft()
+    cnt += 1
+    for nxt in dir_graph[x]:
+        indegree[nxt] -= 1
+        if indegree[nxt] == 0:
+            q.append(nxt)
+if cnt != N:
+    print(0)
+    sys.exit()
+color = [-1] * (N + 1)
+components = 0
+for i in range(1, N + 1):
+    if color[i] != -1:
+        continue
+    components += 1
+    q = deque([i])
+    color[i] = 0
+    while q:
+        x = q.popleft()
+        for nxt in undir_graph[x]:
+            if color[nxt] == -1:
+                color[nxt] = color[x] ^ 1
+                q.append(nxt)
+            elif color[nxt] == color[x]:
+                print(0)
+                sys.exit()
+print(pow(2, components, MOD))
 
