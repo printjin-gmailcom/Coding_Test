@@ -710,3 +710,20 @@ d = r + k - rank_union
 exp = n - r + d
 print((pow(2, exp, MOD) - 1) % MOD)
 
+
+n = int(input())
+if n % 2 == 1:
+    m = (n + 1) // 2
+    ans = []
+    for k in range(1, m):
+        ans.extend([-k, k])
+    ans.append(0)
+else:
+    m = n // 2
+    ans = []
+    for k in range(1, m):
+        ans.extend([-k, k])
+    ans.extend([0, -m])
+print(*ans)
+
+
