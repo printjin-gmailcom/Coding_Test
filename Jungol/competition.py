@@ -727,3 +727,67 @@ else:
 print(*ans)
 
 
+def is_prime(x):
+    if x < 2:
+        return False
+    d = 2
+    while d * d <= x:
+        if x % d == 0:
+            return False
+        d += 1
+    return True
+n = int(input())
+p = n
+while not is_prime(p):
+    p += 1
+ans = []
+prev = 0
+for i in range(1, n + 1):
+    cur = 2 * p * i + (i * i) % p
+    ans.append(cur - prev)
+    prev = cur
+print(*ans)
+
+
+import sys
+input=sys.stdin.readline
+N=int(input())
+A=[list(map(int,input().split())) for _ in range(N)]
+B=[list(map(int,input().split())) for _ in range(N)]
+M=2*N-1
+c00=[0]*(M-1)
+c01=[0]*(M-1)
+c10=[0]*(M-1)
+c11=[0]*(M-1)
+for i in range(N):
+    for j in range(N):
+        s=i+j
+        x0=A[i][j]
+        x1=B[i][j]
+        if j+1<N:
+            y0=A[i][j+1]
+            y1=B[i][j+1]
+            c00[s]+=x0*y0
+            c01[s]+=x0*y1
+            c10[s]+=x1*y0
+            c11[s]+=x1*y1
+        if i+1<N:
+            y0=A[i+1][j]
+            y1=B[i+1][j]
+            c00[s]+=x0*y0
+            c01[s]+=x0*y1
+            c10[s]+=x1*y0
+            c11[s]+=x1*y1
+dp0=0
+dp1=0
+for s in range(M-1):
+    a=dp0+c00[s]
+    b=dp1+c10[s]
+    ndp0=a if a>b else b
+    a=dp0+c01[s]
+    b=dp1+c11[s]
+    ndp1=a if a>b else b
+    dp0,dp1=ndp0,ndp1
+print(dp0 if dp0>dp1 else dp1)
+
+
