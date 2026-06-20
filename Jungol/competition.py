@@ -791,3 +791,68 @@ for s in range(M-1):
 print(dp0 if dp0>dp1 else dp1)
 
 
+import sys
+input = sys.stdin.readline
+MAXX = 200000
+class Fenwick:
+    def __init__(self, n):
+        self.n = n
+        self.bit = [0] * (n + 1)
+    def add(self, idx, val):
+        n = self.n
+        while idx <= n:
+            self.bit[idx] += val
+            idx += idx & -idx
+    def sum(self, idx):
+        res = 0
+        while idx > 0:
+            res += self.bit[idx]
+            idx -= idx & -idx
+        return res
+    def range_sum(self, l, r):
+        if l > r:
+            return 0
+        return self.sum(r) - self.sum(l - 1)
+size = MAXX + 2
+cnt_bit = Fenwick(size)
+sum_bit = Fenwick(size)
+def add_point(x, v):
+    idx = x + 1
+    cnt_bit.add(idx, v)
+    sum_bit.add(idx, v * x)
+N, K = map(int, input().split())
+A = list(map(int, input().split()))
+for a in A:
+    add_point(a, 1)
+Q = int(input())
+out = []
+for _ in range(Q):
+    t, x = map(int, input().split())
+    if t == 1:
+        add_point(x, 1)
+    elif t == 2:
+        add_point(x, -1)
+    else:
+        idx = x + 1
+        total_cnt = cnt_bit.sum(size)
+        total_sum = sum_bit.sum(size)
+        left_cnt = cnt_bit.sum(idx)
+        left_sum = sum_bit.sum(idx)
+        total_abs = (
+            x * left_cnt - left_sum
+            + (total_sum - left_sum) - x * (total_cnt - left_cnt)
+        )
+        L = max(0, x - K)
+        R = min(MAXX, x + K)
+        left_in_cnt = cnt_bit.range_sum(L + 1, x + 1)
+        left_in_sum = sum_bit.range_sum(L + 1, x + 1)
+        right_in_cnt = cnt_bit.range_sum(x + 2, R + 1)
+        right_in_sum = sum_bit.range_sum(x + 2, R + 1)
+        inside_abs = (
+            x * left_in_cnt - left_in_sum
+            + right_in_sum - x * right_in_cnt
+        )
+        out.append(str(total_abs - inside_abs))
+sys.stdout.write("\n".join(out))
+
+
