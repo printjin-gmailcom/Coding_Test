@@ -856,3 +856,53 @@ for _ in range(Q):
 sys.stdout.write("\n".join(out))
 
 
+import sys
+import math
+from collections import defaultdic
+def solve():
+    input = sys.stdin.read
+    data = input().split()
+    if not data:
+        return
+    n = int(data[0])
+    points = []
+    w_total = 0
+    b_total = 0
+    idx = 1
+    for _ in range(n):
+        x = int(data[idx])
+        y = int(data[idx+1])
+        c = int(data[idx+2])
+        points.append((x, y, c))
+        if c == 0:
+            w_total += 1
+        else:
+            b_total += 1
+        idx += 3
+    ans = (w_total * (w_total - 1) // 2) * b_total + w_total * (b_total * (b_total - 1) // 2)
+    invalid_line_triplets_tripled = 0
+    for i in range(n):
+        x1, y1, c1 = points[i]
+        lines = defaultdict(lambda: [0, 0])
+        for j in range(n):
+            if i == j:
+                continue
+            x2, y2, c2 = points[j]
+            dx = x2 - x1
+            dy = y2 - y1
+            g = math.gcd(dx, dy)
+            dx //= g
+            dy //= g
+            if dx < 0 or (dx == 0 and dy < 0):
+                dx = -dx
+                dy = -dy
+            lines[(dx, dy)][c2] += 1
+        for slope, counts in lines.items():
+            w, b = counts[0], counts[1]
+            if c1 == 0:
+                invalid_line_triplets_tripled += w * b + (b * (b - 1) // 2)
+            else:
+                invalid_line_triplets_tripled += w * b + (w * (w - 1) // 2)
+    ans -= invalid_line_triplets_tripled // 3
+    print(ans)
+
