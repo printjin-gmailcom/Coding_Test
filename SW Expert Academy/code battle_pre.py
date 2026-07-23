@@ -190,3 +190,88 @@ for _ in range(TC):
         ans += nonlocal_ans[0] - 1
     print(ans)
     
+
+import sys
+import math
+input = sys.stdin.readline
+def fft(a, invert):
+    n = len(a)
+    j = 0
+    for i in range(1, n):
+        bit = n >> 1
+        while j & bit:
+            j ^= bit
+            bit >>= 1
+        j ^= bit
+        if i < j:
+            a[i], a[j] = a[j], a[i]
+    length = 2
+    while length <= n:
+        ang = 2 * math.pi / length
+        if invert:
+            ang = -ang
+        wlen = complex(math.cos(ang), math.sin(ang))
+        for i in range(0, n, length):
+            w = 1
+            half = length // 2
+            for j in range(i, i + half):
+                u = a[j]
+                v = a[j + half] * w
+                a[j] = u + v
+                a[j + half] = u - v
+                w *= wlen
+        length *= 2
+    if invert:
+        for i in range(n):
+            a[i] /= n
+def multiply(a, b):
+    n = 1
+    while n < len(a) + len(b):
+        n <<= 1
+    fa = list(map(complex, a)) + [0] * (n - len(a))
+    fb = list(map(complex, b)) + [0] * (n - len(b))
+    fft(fa, False)
+    fft(fb, False)
+    for i in range(n):
+        fa[i] *= fb[i]
+    fft(fa, True)
+    return [int(round(x.real)) for x in fa]
+TC = int(input())
+OFFSET = 30000
+SIZE = 60001
+answer = []
+for _ in range(TC):
+    N = int(input())
+    A = list(map(int, input().split()))
+    M = int(input())
+    B = list(map(int, input().split()))
+    K = int(input())
+    C = list(map(int, input().split()))
+    freqA = [0] * SIZE
+    freqC = [0] * SIZE
+    for x in A:
+        freqA[x + OFFSET] += 1
+    for x in C:
+        freqC[x + OFFSET] += 1
+    conv = multiply(freqA, freqC)
+    result = 0
+    for b in B:
+        target = 2 * b
+        idx = target + 60000
+        if 0 <= idx < len(conv):
+            result += conv[idx]
+    answer.append(str(result))
+print("\n".join(answer))
+
+
+import sys
+input = sys.stdin.readline
+TC = int(input())
+for _ in range(TC):
+    N = int(input())
+    A = list(map(int, input().split()))
+    ans = 0
+    for i in range(N):
+        for j in range(i + 1, N):
+            ans = max(ans, (j - i) * (A[i] + A[j]))
+    print(ans)
