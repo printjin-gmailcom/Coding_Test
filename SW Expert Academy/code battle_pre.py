@@ -275,3 +275,138 @@ for _ in range(TC):
         for j in range(i + 1, N):
             ans = max(ans, (j - i) * (A[i] + A[j]))
     print(ans)
+
+
+import sys
+from functools import lru_cache
+input = sys.stdin.readline
+TC = int(input())
+masks = [i for i in range(1, 16)]
+idx = {m: i for i, m in enumerate(masks)}
+adj = [0] * 15
+for i, a in enumerate(masks):
+    for j, b in enumerate(masks):
+        if a & b:
+            adj[i] |= 1 << j
+independent = [False] * (1 << 15)
+independent[0] = True
+for s in range(1, 1 << 15):
+    b = (s & -s).bit_length() - 1
+    t = s ^ (1 << b)
+    independent[s] = independent[t] and ((adj[b] & t) == 0)
+for _ in range(TC):
+    while True:
+        line = input().strip()
+        if line:
+            break
+    N, K = map(int, line.split())
+    belong = [0] * (N + 1)
+    for i in range(K):
+        arr = list(map(int, input().split()))
+        for v in arr[1:]:
+            belong[v] |= 1 << i
+    w = [0] * 15
+    for v in range(1, N + 1):
+        if belong[v]:
+            w[idx[belong[v]]] += 1
+    @lru_cache(None)
+    def solve(state):
+        if state == tuple(w):
+            return 0
+        rem = []
+        mask = 0
+        for i in range(15):
+            if state[i] < w[i]:
+                rem.append(i)
+                mask |= 1 << i
+        ans = 10 ** 9
+        sub = mask
+        while sub:
+            if independent[sub]:
+                nxt = list(state)
+                x = sub
+                while x:
+                    b = (x & -x).bit_length() - 1
+                    nxt[b] += 1
+                    x ^= 1 << b
+                ans = min(ans, 1 + solve(tuple(nxt)))
+            sub = (sub - 1) & mask
+        return ans
+    print(solve((0,) * 15))
+
+
+###
+import sys
+from collections import defaultdict
+input = sys.stdin.buffer.readline
+class DSU:
+    def __init__(self, n):
+        self.p = list(range(n))
+    def find(self, x):
+        while self.p[x] != x:
+            self.p[x] = self.p[self.p[x]]
+            x = self.p[x]
+        return x
+    def union(self, a, b):
+        a = self.find(a)
+        b = self.find(b)
+        if a != b:
+            self.p[b] = a
+def solve():
+    N = int(input())
+    pos = []
+    for _ in range(N):
+        x, y, z = map(int, input().split())
+        pos.append([x, y, z])
+    M = int(input())
+    edges = []
+    adj = [[] for _ in range(N)]
+    for i in range(M):
+        u, v, w = map(int, input().split())
+        u -= 1
+        v -= 1
+        edges.append([u, v, w, 0]) 
+        adj[u].append(i)
+        adj[v].append(i)
+    K = int(input())
+    weather = []
+    for _ in range(K):
+        v, d = map(int, input().split())
+        weather.append((v - 1, d))
+    alive = [True] * M
+    def check(e):
+        u, v, w, _ = edges[e]
+        dx = pos[u][0] - pos[v][0]
+        dy = pos[u][1] - pos[v][1]
+        dz = pos[u][2] - pos[v][2]
+        return dx*dx + dy*dy + dz*dz <= w*w
+    removed = defaultdict(list)
+    for day, (v, d) in enumerate(weather, 1):
+        pos[v][2] += d
+        for ei in adj[v]:
+            if alive[ei] and not check(ei):
+                alive[ei] = False
+                edges[ei][3] = day
+                removed[day].append(ei)
+    Q = int(input())
+    queries = []
+    for i in range(Q):
+        a, b = map(int, input().split())
+        queries.append((a-1, b-1))
+    ans = []
+    states = []
+    for day in range(K + 1):
+        dsu = DSU(N)
+        for idx, (u, v, w, dead) in enumerate(edges):
+            if dead == 0 or dead > day:
+                dsu.union(u, v)
+        states.append(dsu)
+    for a, b in queries:
+        ret = K
+        for day in range(K + 1):
+            if states[day].find(a) != states[day].find(b):
+                ret = day - 1
+                break
+        ans.append(str(ret))
+    print("\n".join(ans))
+
