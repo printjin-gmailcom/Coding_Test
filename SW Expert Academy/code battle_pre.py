@@ -410,3 +410,31 @@ def solve():
         ans.append(str(ret))
     print("\n".join(ans))
 
+
+T = int(input())
+for _ in range(T):
+    while True:
+        line = input().strip()
+        if line:
+            X, Y = map(int, line.split())
+            break
+    A = (X + Y) // 2
+    B = (X - Y) // 2
+    print(A, B)
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    works = []
+    for _ in range(N):
+        t, d = map(int, input().split())
+        works.append((t, d))
+    works.sort(key=lambda x: x[1], reverse=True)
+    cur = 10**18
+    for t, d in works:
+        cur = min(cur, d)
+        cur -= t
+    print(cur)
