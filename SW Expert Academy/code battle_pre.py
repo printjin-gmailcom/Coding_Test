@@ -438,3 +438,140 @@ for _ in range(T):
         cur = min(cur, d)
         cur -= t
     print(cur)
+
+
+import sys
+from bisect import bisect_left
+input = sys.stdin.readline
+class Fenwick:
+    def __init__(self, n):
+        self.n = n
+        self.bit = [0] * (n + 2)
+    def add(self, idx, val):
+        n = self.n
+        bit = self.bit
+        while idx <= n:
+            bit[idx] += val
+            idx += idx & -idx
+    def sum(self, idx):
+        s = 0
+        bit = self.bit
+        while idx:
+            s += bit[idx]
+            idx -= idx & -idx
+        return s
+TC = int(input())
+for _ in range(TC):
+    n, m = map(int, input().split())
+    liquids = []
+    prices = []
+    for _ in range(n):
+        d, p, l = map(int, input().split())
+        liquids.append((d, p, l))
+        prices.append(p)
+    queries = []
+    for i in range(m):
+        g, L = map(int, input().split())
+        queries.append((g, L))
+    prices = sorted(set(prices))
+    P = len(prices)
+    liquids.sort(reverse=True)
+    tastes = sorted({d for d, _, _ in liquids})
+    # parallel binary search
+    lo = [-1] * m
+    hi = [len(tastes)] * m
+    while True:
+        bucket = [[] for _ in range(len(tastes))]
+        active = False
+        for i in range(m):
+            if lo[i] + 1 < hi[i]:
+                active = True
+                mid = (lo[i] + hi[i]) // 2
+                bucket[mid].append(i)
+        if not active:
+            break
+        bitAmt = Fenwick(P)
+        bitCost = Fenwick(P)
+        ptr = 0
+        for idx in range(len(tastes) - 1, -1, -1):
+            needTaste = tastes[idx]
+            while ptr < n and liquids[ptr][0] >= needTaste:
+                d, p, l = liquids[ptr]
+                k = bisect_left(prices, p) + 1
+                bitAmt.add(k, l)
+                bitCost.add(k, l * p)
+                ptr += 1
+            totalAmt = bitAmt.sum(P)
+            for qi in bucket[idx]:
+                g, L = queries[qi]
+                if totalAmt < L:
+                    lo[qi] = idx
+                    continue
+                left = 1
+                right = P
+                while left < right:
+                    mid = (left + right) // 2
+                    if bitAmt.sum(mid) >= L:
+                        right = mid
+                    else:
+                        left = mid + 1
+                pos = left
+                amtBefore = bitAmt.sum(pos - 1)
+                costBefore = bitCost.sum(pos - 1)
+                remain = L - amtBefore
+                price = prices[pos - 1]
+                cost = costBefore + remain * price
+                if cost <= g:
+                    hi[qi] = idx
+                else:
+                    lo[qi] = idx
+    ans = []
+    for i in range(m):
+        if hi[i] == len(tastes):
+            ans.append("-1")
+        else:
+            ans.append(str(tastes[hi[i]]))
+    print(" ".join(ans))
+
+
+from itertools import combinations
+INF = 10**18
+T = int(input())
+for _ in range(T):
+    n, m, d = map(int, input().split())
+    keys = []
+    for _ in range(m):
+        tmp = list(map(int, input().split()))
+        c = tmp[0]
+        s = tmp[1] - 1
+        k = tmp[2]
+        mask = 0
+        for x in tmp[3:]:
+            mask |= 1 << (x - 1)
+        keys.append((c, s, mask))
+    b = [int(input()) for _ in range(d)]
+    ALL = (1 << n) - 1
+    ans = INF
+    for r in range(1, m + 1):
+        for comb in combinations(range(m), r):
+            cover = 0
+            cost = 0
+            cnt = [0] * d
+            ok = True
+            for idx in comb:
+                c, s, mask = keys[idx]
+                cost += c
+                cover |= mask
+                cnt[s] += 1
+                if cnt[s] > b[s]:
+                    ok = False
+                    break
+            if not ok:
+                continue
+            if cover == ALL:
+                ans = min(ans, cost)
+    if ans == INF:
+        print(-1)
+    else:
+        print(ans)
+
