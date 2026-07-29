@@ -575,3 +575,45 @@ for _ in range(T):
     else:
         print(ans)
 
+
+T = int(input())
+for tc in range(1, T + 1):
+    N = int(input())
+    points = []
+    for _ in range(N):
+        x, y = map(int, input().split())
+        points.append((x, y))
+    ans = 0
+    for i in range(N):
+        x1, y1 = points[i]
+        max_dx = 0
+        max_dy = 0
+        for j in range(N):
+            if i == j:
+                continue
+            x2, y2 = points[j]
+            if x1 == x2:
+                max_dy = max(max_dy, abs(y1 - y2))
+            if y1 == y2:
+                max_dx = max(max_dx, abs(x1 - x2))
+        ans = max(ans, max_dx * max_dy)
+    print(ans)
+
+
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    M = N * (N - 1) // 2
+    w = list(map(int, input().split()))
+    w.sort()
+    mn = sum(w[:N - 1])
+    mx = 0
+    idx = 0
+    comp = N
+    while comp > 1:
+        mx += w[idx]
+        idx += comp - 1
+        comp -= 1
+    print(mn, mx)
+
+
