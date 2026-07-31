@@ -617,3 +617,71 @@ for _ in range(T):
     print(mn, mx)
 
 
+MOD = 998244353
+def swap_row(A, i, j):
+    A[i], A[j] = A[j], A[i]
+def swap_col(A, i, j):
+    for r in range(len(A)):
+        A[r][i], A[r][j] = A[r][j], A[r][i]
+def hessenberg(A):
+    n = len(A)
+    for c in range(n-2):
+        p = -1
+        for i in range(c+1, n):
+            if A[i][c]:
+                p = i
+                break
+        if p == -1:
+            continue
+        if p != c+1:
+            swap_row(A, p, c+1)
+            swap_col(A, p, c+1)
+        inv = pow(A[c+1][c], MOD-2, MOD)
+        for i in range(c+2, n):
+            if A[i][c] == 0:
+                continue
+            k = A[i][c] * inv % MOD
+            for j in range(c, n):
+                A[i][j] = (A[i][j] - k*A[c+1][j]) % MOD
+            for j in range(n):
+                A[j][c+1] = (A[j][c+1] + k*A[j][i]) % MOD
+    return A
+def mul(a, b):
+    c = [0]*(len(a)+len(b)-1)
+    for i,x in enumerate(a):
+        for j,y in enumerate(b):
+            c[i+j] = (c[i+j] + x*y) % MOD
+    return c
+def characteristic_polynomial(A):
+    n = len(A)
+    poly = [1]
+    for i in range(n):
+        poly = mul(poly, [(-A[i][i])%MOD, 1])
+    return poly
+def convert(poly):
+    n = len(poly)-1
+    res = [0]*(n+1)
+    for i,c in enumerate(poly):
+        res[n-i] = c
+    return res
+def horner(poly, x):
+    ans = 0
+    for c in poly:
+        ans = (ans*x+c)%MOD
+    return ans
+H = hessenberg(A)
+poly = characteristic_polynomial(H)
+poly = convert(poly)
+
+
+import sys
+input = sys.stdin.readline
+TC = int(input())
+for _ in range(TC):
+    n = int(input())
+    p = list(map(int, input().split()))
+    ans = [0] * (n + 1)
+    for i, station in enumerate(p):
+        ans[station] = i % 24 + 1
+    print(*ans[1:])
+    
