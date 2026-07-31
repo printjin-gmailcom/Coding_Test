@@ -685,3 +685,43 @@ for _ in range(TC):
         ans[station] = i % 24 + 1
     print(*ans[1:])
     
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    while True:
+        s = input().strip()
+        if s:
+            break
+    n = s.count('N')
+    s_cnt = s.count('S')
+    e = s.count('E')
+    w = s.count('W')
+    ok = True
+    if (n == 0) != (s_cnt == 0):
+        ok = False
+    if (e == 0) != (w == 0):
+        ok = False
+    print("Yes" if ok else "No")
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    while True:
+        line = input().strip()
+        if line:
+            break
+    n = int(line)
+    deg = [0] * (n + 1)
+    for _ in range(n - 1):
+        u, v = map(int, input().split())
+        deg[u] += 1
+        deg[v] += 1
+    ans = 0
+    for i in range(1, n + 1):
+        if deg[i] > 2:
+            ans += deg[i] - 2
+    print(ans)
