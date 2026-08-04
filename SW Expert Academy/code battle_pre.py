@@ -725,3 +725,67 @@ for _ in range(T):
         if deg[i] > 2:
             ans += deg[i] - 2
     print(ans)
+
+
+import sys
+input = sys.stdin.readline
+TC = int(input())
+for _ in range(TC):
+    N, x = map(int, input().split())
+    A = list(map(int, input().split()))
+    total = 0
+    for i in range(N):
+        total += A[i] << i
+    ans = 0
+    for v in range(total // x + 1):
+        carry = 0
+        ok = True
+        for i in range(61):
+            have = carry
+            if i < N:
+                have += A[i]
+            need = x if ((v >> i) & 1) else 0
+            if have < need:
+                ok = False
+                break
+            have -= need
+            carry = have // 2
+        if ok:
+            ans += 1
+    print(ans)
+
+
+MOD = 998244353
+def solve_color(lengths):
+    m = len(lengths)
+    dp = [[0] * (m + 1) for _ in range(m + 1)]
+    dp[0][0] = 1
+    for i in range(m):
+        for j in range(i + 1):
+            dp[i + 1][j] = (dp[i + 1][j] + dp[i][j]) % MOD
+            if lengths[i] > j:
+                dp[i + 1][j + 1] = (
+                    dp[i + 1][j + 1]
+                    + dp[i][j] * (lengths[i] - j)
+                ) % MOD
+    return dp[m]
+TC = int(input())
+for _ in range(TC):
+    N = int(input())
+    black = []
+    white = []
+    lens = [min(i + 1, 2 * N - 1 - i) for i in range(2 * N - 1)]
+    for i, l in enumerate(lens):
+        if i % 2 == 0:
+            black.append(l)
+        else:
+            white.append(l)
+    b = solve_color(black)
+    w = solve_color(white)
+    ans = []
+    for k in range(1, 2 * N):
+        cur = 0
+        for i in range(max(0, k - len(w)), min(k, len(b)) + 1):
+            cur = (cur + b[i] * w[k - i]) % MOD
+        ans.append(cur)
+    print(*ans)
