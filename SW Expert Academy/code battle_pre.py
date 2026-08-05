@@ -789,3 +789,39 @@ for _ in range(TC):
             cur = (cur + b[i] * w[k - i]) % MOD
         ans.append(cur)
     print(*ans)
+
+
+import sys
+input = sys.stdin.readline
+
+TC = int(input())
+
+for _ in range(TC):
+    A = input().strip()
+    n = A.count('N')
+    s = A.count('S')
+    e = A.count('E')
+    w = A.count('W')
+    if (n == 0) != (s == 0):
+        print("No")
+    elif (e == 0) != (w == 0):
+        print("No")
+    else:
+        print("Yes")
+
+
+import sys
+input = sys.stdin.readline
+TC = int(input())
+for _ in range(TC):
+    N = int(input())
+    deg = [0] * (N + 1)
+    for _ in range(N - 1):
+        u, v = map(int, input().split())
+        deg[u] += 1
+        deg[v] += 1
+    ans = 0
+    for i in range(1, N + 1):
+        if deg[i] > 2:
+            ans += deg[i] - 2
+    print(ans)
