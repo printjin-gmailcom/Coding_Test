@@ -825,3 +825,165 @@ for _ in range(TC):
         if deg[i] > 2:
             ans += deg[i] - 2
     print(ans)
+
+
+import sys
+input = sys.stdin.readline
+def solve():
+    N, M, K = map(int, input().split())
+    C = list(map(int, input().split()))
+    likes = [[] for _ in range(K)]
+    for worker in range(M):
+        data = list(map(int, input().split()))
+        for color in data[1:]:
+            likes[color].append(worker)
+    cnt = [0] * M
+    full = 0
+    for i in range(M):
+        offset = (-i) % M
+        for w in likes[C[i]]:
+            r = (w + offset) % M
+            if cnt[r] == M - 1:
+                full += 1
+            cnt[r] += 1
+    valid = [False] * (N - M + 1)
+    valid[0] = full > 0
+    for y in range(1, N - M + 1):
+        out_pos = y - 1
+        in_pos = y + M - 1
+        offset = (-out_pos) % M
+        for w in likes[C[out_pos]]:
+            r = (w + offset) % M
+            if cnt[r] == M:
+                full -= 1
+            cnt[r] -= 1
+        for w in likes[C[in_pos]]:
+            r = (w + offset) % M
+            if cnt[r] == M - 1:
+                full += 1
+            cnt[r] += 1
+        valid[y] = full > 0
+    answer = 0
+    pos = 0
+    last_valid = -1
+    for y in range(len(valid)):
+        if valid[y]:
+            last_valid = y
+        if y == pos:
+            if last_valid < pos:
+                return -1
+            answer += 1
+            pos = last_valid + M
+            if pos >= N:
+                return answer
+    return -1
+T = int(input())
+for _ in range(T):
+    print(solve())
+
+
+import sys
+input = sys.stdin.readline
+def solve():
+    N, M = map(int, input().split())
+    edges = [tuple(map(int, input().split())) for _ in range(M)]
+    edges.sort(key=lambda x: x[2])
+    total = N + M
+    parent = [-1] * total
+    deg = [0] * N
+    bad = [False] * total
+    head = [-1] * total
+    to = [0] * (2 * M)
+    nxt = [0] * (2 * M)
+    ecnt = 0
+    def add_edge(u, v):
+        nonlocal ecnt
+        to[ecnt] = v
+        nxt[ecnt] = head[u]
+        head[u] = ecnt
+        ecnt += 1
+    def find(x):
+        while parent[x] >= 0:
+            if parent[parent[x]] >= 0:
+                parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+    cur = N
+    for u, v, w in edges:
+        deg[u] += 1
+        deg[v] += 1
+        fu = find(u)
+        fv = find(v)
+        node = cur
+        cur += 1
+        if deg[u] >= 3 or deg[v] >= 3:
+            bad[node] = True
+        if bad[fu] or bad[fv] or fu == fv:
+            bad[node] = True
+        parent[node] = parent[fu]
+        if fu != fv:
+            parent[node] += parent[fv]
+        parent[fu] = node
+        parent[fv] = node
+        add_edge(node, fu)
+        if fu != fv:
+            add_edge(node, fv)
+    LOG = (total).bit_length()
+    up = [[0] * total for _ in range(LOG)]
+    depth = [0] * total
+    low_bad = [-1] * total
+    roots = [i for i in range(total) if parent[i] < 0]
+    stack = []
+    for root in roots:
+        up[0][root] = root
+        stack.append((root, -1, -1))
+        while stack:
+            u, p, last = stack.pop()
+            if bad[u]:
+                last = u
+            low_bad[u] = last
+            if p != -1:
+                up[0][u] = p
+                depth[u] = depth[p] + 1
+            e = head[u]
+            while e != -1:
+                v = to[e]
+                if v != p:
+                    stack.append((v, u, last))
+                e = nxt[e]
+    for k in range(1, LOG):
+        prev = up[k - 1]
+        cur_up = up[k]
+        for i in range(total):
+            cur_up[i] = prev[prev[i]]
+    def lca(a, b):
+        if depth[a] < depth[b]:
+            a, b = b, a
+        diff = depth[a] - depth[b]
+        bit = 0
+        while diff:
+            if diff & 1:
+                a = up[bit][a]
+            diff >>= 1
+            bit += 1
+        if a == b:
+            return a
+        for k in range(LOG - 1, -1, -1):
+            if up[k][a] != up[k][b]:
+                a = up[k][a]
+                b = up[k][b]
+        return up[0][a]
+    Q = int(input())
+    ans = []
+    for _ in range(Q):
+        x, y = map(int, input().split())
+        z = lca(x, y)
+        b = low_bad[z]
+        if b < N:
+            ans.append("-1")
+        else:
+            ans.append(str(edges[b - N][2]))
+    print(" ".join(ans))
+T = int(input())
+for _ in range(T):
+    solve()
