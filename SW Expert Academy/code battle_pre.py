@@ -987,3 +987,28 @@ def solve():
 T = int(input())
 for _ in range(T):
     solve()
+
+
+import math
+T = int(input())
+for _ in range(T):
+    S, P = map(int, input().split())
+    d = S * S - 4 * P
+    if d >= 0 and math.isqrt(d) ** 2 == d:
+        r = math.isqrt(d)
+        print("Yes" if (S + r) % 2 == 0 else "No")
+    else:
+        print("No")
+
+
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    S = input().strip()
+    stack = []
+    for c in S:
+        stack.append(c)
+        if len(stack) >= 3 and stack[-3:] == ['f', 'o', 'x']:
+            del stack[-3:]
+    print(len(stack))
+    
