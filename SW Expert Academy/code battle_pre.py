@@ -1012,3 +1012,71 @@ for _ in range(T):
             del stack[-3:]
     print(len(stack))
     
+
+import sys
+input = sys.stdin.readline
+def has_prime_1_mod_4(n):
+    p = 3
+    while p * p <= n:
+        if n % p == 0:
+            if p % 4 == 1:
+                return True
+            while n % p == 0:
+                n //= p
+        p += 2
+    return n > 1 and n % 4 == 1
+T = int(input())
+for _ in range(T):
+    X, Y, S = map(int, input().split())
+    odd = S
+    two = 1
+    while odd % 2 == 0:
+        odd //= 2
+        two *= 2
+    if has_prime_1_mod_4(odd):
+        g = two
+    else:
+        g = S
+    if X % g == 0 and Y % g == 0:
+        print("yes")
+    else:
+        print("no")
+
+
+import sys
+input = sys.stdin.readline
+def solve():
+    T = int(input())
+    for _ in range(T):
+        H, W = map(int, input().split())
+        board = [input().strip() for _ in range(H)]
+        forbidden = set()
+        for r1 in range(H):
+            for c1 in range(W):
+                for r2 in range(H):
+                    for c2 in range(W):
+                        if board[r1][c1] != board[r2][c2]:
+                            forbidden.add((r2 - r1, c2 - c1))
+        def valid(a, b, c):
+            for dy, dx in forbidden:
+                if dy % c != 0:
+                    continue
+                y = dy // c
+                if (dx - y * b) % a == 0:
+                    return False
+            return True
+        for area in range(1, H * W + 1):
+            found = False
+            for a in range(1, area + 1):
+                if area % a != 0:
+                    continue
+                c = area // a
+                for b in range(a):
+                    if valid(a, b, c):
+                        found = True
+                        break
+                if found:
+                    break
+            if found:
+                print(area)
+                break
