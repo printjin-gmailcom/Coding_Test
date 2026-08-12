@@ -1080,3 +1080,70 @@ def solve():
             if found:
                 print(area)
                 break
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    X, Y, Z = map(int, input().split())
+    M = max(X, Y, Z)
+    if (X == M) + (Y == M) + (Z == M) < 2:
+        print(-1, -1, -1)
+        continue
+    if X <= Y and X <= Z:
+        A = X
+        B = X
+        C = M
+    elif Y <= X and Y <= Z:
+        A = M
+        B = Y
+        C = Y
+    else:
+        A = Z
+        B = M
+        C = Z
+    print(A, B, C)
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    N, X = map(int, input().split())
+    d = list(map(int, input().split()))
+    X = abs(X)
+    if X == 0:
+        print(0)
+        continue
+    prefix = [0] * (N + 1)
+    max_val = 0
+    max_idx = -1
+    answer = -1
+    for i in range(N):
+        prefix[i + 1] = prefix[i] + d[i]
+        max_val = max(max_val, d[i])
+        if d[i] == max_val and max_idx == -1:
+            max_idx = i
+        S = prefix[i + 1]
+        M = max(d[:i + 1])
+        if S >= X and S >= 2 * M - X:
+            answer = i + 1
+            break
+    if answer != -1:
+        print(answer)
+        continue
+    M = max(d)
+    total = sum(d)
+    need = max(X, 2 * M - X)
+    q = max(0, (need - 1) // total)
+    base_sum = q * total
+    if base_sum >= need:
+        print(q * N)
+        continue
+    current = base_sum
+    for i in range(N):
+        current += d[i]
+        if current >= need:
+            print(q * N + i + 1)
+            break
