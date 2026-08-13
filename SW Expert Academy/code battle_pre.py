@@ -1147,3 +1147,169 @@ for _ in range(T):
         if current >= need:
             print(q * N + i + 1)
             break
+
+
+import sys
+from collections import deque
+input = sys.stdin.readline
+class DSU:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.size = [1] * n
+    def find(self, x):
+        while self.parent[x] != x:
+            self.parent[x] = self.parent[self.parent[x]]
+            x = self.parent[x]
+        return x
+    def union(self, a, b):
+        a = self.find(a)
+        b = self.find(b)
+        if a == b:
+            return
+        if self.size[a] < self.size[b]:
+            a, b = b, a
+        self.parent[b] = a
+        self.size[a] += self.size[b]
+T = int(input())
+for _ in range(T):
+    C = int(input())
+    dsu = DSU(26)
+    edges = []
+    for _ in range(C):
+        a, _, b, _, s = input().split()
+        u = ord(b) - ord('A')
+        v = ord(a) - ord('A')
+        s = s[1:-1]
+        edges.append((u, v, s))
+        if not s:
+            dsu.union(u, v)
+    possible = True
+    compressed_edges = []
+    for u, v, s in edges:
+        u = dsu.find(u)
+        v = dsu.find(v)
+        if u == v:
+            if s:
+                possible = False
+                break
+            continue
+        compressed_edges.append((u, v, s))
+    if not possible:
+        print(-1)
+        continue
+    group_id = {}
+    for i in range(26):
+        root = dsu.find(i)
+        if root not in group_id:
+            group_id[root] = len(group_id)
+    N = len(group_id)
+    graph = [[] for _ in range(N)]
+    indegree = [0] * N
+    for u, v, s in compressed_edges:
+        u = group_id[u]
+        v = group_id[v]
+        graph[u].append((v, s))
+        indegree[v] += 1
+    q = deque()
+    for i in range(N):
+        if indegree[i] == 0:
+            q.append(i)
+    order = []
+    while q:
+        u = q.popleft()
+        order.append(u)
+        for v, s in graph[u]:
+            indegree[v] -= 1
+            if indegree[v] == 0:
+                q.append(v)
+    if len(order) != N:
+        print(-1)
+        continue
+    value = [None] * N
+    for u in order:
+        if value[u] is None:
+            value[u] = ""
+        for v, s in graph[u]:
+            candidate = value[u] + s
+            if value[v] is None:
+                value[v] = candidate
+            elif value[v] != candidate:
+                possible = False
+                break
+        if not possible:
+            break
+    if not possible:
+        print(-1)
+        continue
+    answer = 0
+    for i in range(26):
+        root = dsu.find(i)
+        group = group_id[root]
+        answer += len(value[group])
+    print(answer)
+
+
+import sys
+input = sys.stdin.readline
+def can_match(graph, start, used, n):
+    match = [-1] * n
+    for g in used:
+        match[g] = -2
+    def dfs(child, visited):
+        for gift in graph[child]:
+            if gift in used or visited[gift]:
+                continue
+            visited[gift] = True
+            if match[gift] == -1 or dfs(match[gift], visited):
+                match[gift] = child
+                return True
+        return False
+    for child in range(start, n):
+        visited = [False] * n
+        if not dfs(child, visited):
+            return False
+    return True
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    A = []
+    for _ in range(N):
+        A.append([x - 1 for x in map(int, input().split())])
+    first = [A[i][0] for i in range(N)]
+    is_first = [False] * N
+    for gift in first:
+        is_first[gift] = True
+    second = [-1] * N
+    for i in range(N):
+        for gift in A[i]:
+            if not is_first[gift]:
+                second[i] = gift
+                break
+    graph = []
+    for i in range(N):
+        choices = [first[i]]
+        if second[i] != -1:
+            choices.append(second[i])
+        choices.sort()
+        graph.append(choices)
+    answer = [-1] * N
+    used = set()
+    possible = True
+    for i in range(N):
+        chosen = -1
+        for gift in graph[i]:
+            if gift in used:
+                continue
+            used.add(gift)
+            if can_match(graph, i + 1, used, N):
+                chosen = gift
+                break
+            used.remove(gift)
+        if chosen == -1:
+            possible = False
+            break
+        answer[i] = chosen
+    if possible:
+        print(*(x + 1 for x in answer))
+    else:
+        print(-1)
