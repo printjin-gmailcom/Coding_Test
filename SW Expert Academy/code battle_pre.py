@@ -1313,3 +1313,146 @@ for _ in range(T):
         print(*(x + 1 for x in answer))
     else:
         print(-1)
+
+
+import sys
+sys.setrecursionlimit(1_000_000)
+input = sys.stdin.readline
+def solve():
+    T = int(input())
+    for _ in range(T):
+        N = int(input())
+        graph = [[] for _ in range(N)]
+        for _ in range(N - 1):
+            u, v, c = map(int, input().split())
+            u -= 1
+            v -= 1
+            graph[u].append((v, c))
+            graph[v].append((u, c))
+        parent = [-1] * N
+        parent_edge = [0] * N
+        order = [0]
+        parent[0] = 0
+        for u in order:
+            for v, c in graph[u]:
+                if parent[v] != -1:
+                    continue
+                parent[v] = u
+                parent_edge[v] = c
+                order.append(v)
+        children = [[] for _ in range(N)]
+        for v in range(1, N):
+            children[parent[v]].append(v)
+        path = []
+        cur = N - 1
+        while cur != 0:
+            path.append(cur)
+            cur = parent[cur]
+        path.append(0)
+        path.reverse()
+        on_path = [False] * N
+        for x in path:
+            on_path[x] = True
+        def combine_any_order(dp1, dp2):
+            res = {}
+            for (r1, g1), cnt1 in dp1.items():
+                for (r2, g2), cnt2 in dp2.items():
+                    req_a = max(r1, r1 + r2 - g1)
+                    req_b = max(r2, r2 + r1 - g2)
+                    req = max(req_a, req_b)
+                    gain = g1 + g2
+                    key = (req, gain)
+                    res[key] = res.get(key, 0) + cnt1 * cnt2
+            return res
+        off_dp = [None] * N
+        for u in reversed(order):
+            curdp = {
+                (0, 0): 1,
+                (0, 1): 1,
+            }
+            for v in children[u]:
+                if on_path[u] and on_path[v]:
+                    continue
+                c = parent_edge[v]
+                child_dp = off_dp[v]
+                task_dp = {}
+                for (r, g), cnt in child_dp.items():
+                    nr = r + c
+                    ng = g - c
+                    key = (nr, ng)
+                    task_dp[key] = task_dp.get(key, 0) + cnt
+                curdp = combine_any_order(curdp, task_dp)
+            off_dp[u] = curdp
+        states = {(0, 0): 1}
+        for i, u in enumerate(path):
+            states = combine_any_order(states, off_dp[u])
+            if i + 1 < len(path):
+                v = path[i + 1]
+                c = 0
+                for to, cc in graph[u]:
+                    if to == v:
+                        c = cc
+                        break
+                new_states = {}
+                for (r, g), cnt in states.items():
+                    nr = r + c
+                    ng = g - c
+                    key = (nr, ng)
+                    new_states[key] = new_states.get(key, 0) + cnt
+                states = new_states
+        ans = 0
+        for (r, g), cnt in states.items():
+            if r == 0:
+                ans += cnt
+        print(ans)
+
+
+import sys
+input = sys.stdin.readline
+M = 70
+P5 = 5 ** M
+PERIOD = 4 * 5 ** (M - 1)
+P2 = 1 << M
+def discrete_log(y):
+    n = [0, 1, 3, 2][y % 5]
+    p4 = 4
+    for k in range(1, M):
+        mod = 5 ** (k + 1)
+        step = p4
+        cur = pow(2, n, mod)
+        target = y % mod
+        factor = pow(2, step, mod)
+        v = cur
+        for d in range(5):
+            if v == target:
+                n += d * step
+                break
+            v = v * factor % mod
+        p4 *= 5
+    return n
+def solve():
+    T = int(input())
+    out = []
+    for _ in range(T):
+        x = input().strip()
+        l = len(x)
+        k = M - l
+        a = int(x) * 10 ** k
+        r = (-a) % P2
+        limit = 10 ** k
+        while r >= limit:
+            r -= P2
+        if r < 0:
+            r += P2
+        t = 0
+        while r % 5 == 0:
+            r += P2
+            t += 1
+        y = a + r
+        n = discrete_log(y)
+        if n < M:
+            n += PERIOD
+        out.append(str(n))
+    sys.stdout.write("\n".join(out))
+solve()
+
