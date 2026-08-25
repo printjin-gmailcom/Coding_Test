@@ -1456,3 +1456,64 @@ def solve():
     sys.stdout.write("\n".join(out))
 solve()
 
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    S = input().strip()
+    right = 0
+    left = 0
+    cur = 0
+    for ch in S:
+        if ch == 'R':
+            cur += 1
+        elif ch == 'L':
+            cur -= 1
+        else: 
+            if cur >= 0:
+                cur += 1
+            else:
+                cur -= 1
+        right = max(right, cur)
+        left = min(left, cur)
+    print(max(abs(left), abs(right)))
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    A = list(map(int, input().split()))
+    dist = []
+    for a in A:
+        cur = {a}
+        d = {a: 0}
+        while cur:
+            nxt = set()
+            for x in cur:
+                if x == 1:
+                    continue
+                p = x // 2
+                q = x - p
+                if p not in d:
+                    d[p] = d[x] + 1
+                    nxt.add(p)
+                if q not in d:
+                    d[q] = d[x] + 1
+                    nxt.add(q)
+            cur = nxt
+        dist.append(d)
+    answer = float('inf')
+    for target in dist[0]:
+        total = 0
+        possible = True
+        for d in dist:
+            if target not in d:
+                possible = False
+                break
+            total += d[target]
+        if possible:
+            answer = min(answer, total)
+    print(answer)
