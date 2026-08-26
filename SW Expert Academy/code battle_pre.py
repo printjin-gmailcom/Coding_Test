@@ -1674,3 +1674,74 @@ for tc in range(1, T + 1):
             flow.add(u, v, m, 0)
     ans = flow.solve(source, sink, weights)
     print(f"#{tc} {ans}")
+
+
+T = int(input())
+for _ in range(T):
+    N, P = map(int, input().split())
+    s = N * (N + 1) // 2
+    if P > s:
+        print(s)
+    else:
+        x = s
+        for i in range(N, 0, -1):
+            if x - i != P:
+                x -= i
+                break
+        print(x)
+
+
+import sys
+MOD = 1000000007
+def mod_sqrt(n):
+    if n == 0:
+        return 0
+    if pow(n, (MOD - 1) // 2, MOD) != 1:
+        return -1
+    q = MOD - 1
+    s = 0
+    while q % 2 == 0:
+        q //= 2
+        s += 1
+    if s == 1:
+        return pow(n, (MOD + 1) // 4, MOD)
+    z = 2
+    while pow(z, (MOD - 1) // 2, MOD) != MOD - 1:
+        z += 1
+    c = pow(z, q, MOD)
+    x = pow(n, (q + 1) // 2, MOD)
+    t = pow(n, q, MOD)
+    m = s
+    while t != 1:
+        i = 1
+        v = t * t % MOD
+        while v != 1:
+            v = v * v % MOD
+            i += 1
+        b = pow(c, 1 << (m - i - 1), MOD)
+        x = x * b % MOD
+        c = b * b % MOD
+        t = t * c % MOD
+        m = i
+    return x
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    A, B, C = map(int, input().split())
+    A %= MOD
+    B %= MOD
+    C %= MOD
+    if A == 0:
+        if B == 0:
+            print(0 if C == 0 else -1)
+        else:
+            print((-C * pow(B, MOD - 2, MOD)) % MOD)
+        continue
+    D = (B * B - 4 * A * C) % MOD
+    r = mod_sqrt(D)
+    if r == -1:
+        print(-1)
+    else:
+        inv = pow(2 * A, MOD - 2, MOD)
+        x = (-B + r) * inv % MOD
+        print(x)
