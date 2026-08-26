@@ -1517,3 +1517,160 @@ for _ in range(T):
         if possible:
             answer = min(answer, total)
     print(answer)
+
+
+import sys
+MOD = 1000000007
+input = sys.stdin.readline
+T = int(input())
+for tc in range(1, T + 1):
+    N = int(input())
+    cards = [input().split() for _ in range(N)]
+    max_len = sum(max(len(a), len(b)) for a, b in cards)
+    pow10 = [1] * (max_len + 1)
+    for i in range(1, max_len + 1):
+        pow10[i] = pow10[i - 1] * 10 % MOD
+    vals = [[0, 0] for _ in range(N)]
+    lens = [[0, 0] for _ in range(N)]
+    for i in range(N):
+        for k in range(2):
+            s = cards[i][k]
+            lens[i][k] = len(s)
+            vals[i][k] = int(s) % MOD
+    ans = 0
+    for i in range(N):
+        for si in range(2):
+            cur = vals[i][si]
+            for j in range(N):
+                if i == j:
+                    continue
+                x = cards[i][si]
+                factor = 0
+                for sj in range(2):
+                    y = cards[j][sj]
+                    if y + x < x + y:
+                        factor += 1
+                    else:
+                        factor += pow10[lens[j][sj]]
+                cur = cur * factor % MOD
+            ans = (ans + cur) % MOD
+    print(f"#{tc} {ans}")
+
+
+import sys
+import heapq
+input = sys.stdin.readline
+INF = 10**30
+class MCF:
+    def __init__(self, n):
+        self.n = n
+        self.g = [[] for _ in range(n)]
+    def add(self, u, v, cap, cost):
+        a = [v, len(self.g[v]), cap, cost]
+        b = [u, len(self.g[u]), 0, -cost]
+        self.g[u].append(a)
+        self.g[v].append(b)
+    def solve(self, s, t, weights):
+        n = self.n
+        mx = max(weights)
+        pot = [-mx] * n
+        pot[s] = 0
+        ans = 0
+        while True:
+            dist = [INF] * n
+            prev_v = [-1] * n
+            prev_e = [-1] * n
+            dist[s] = 0
+            pq = [(0, s)]
+            while pq:
+                d, u = heapq.heappop(pq)
+                if d != dist[u]:
+                    continue
+                for ei, e in enumerate(self.g[u]):
+                    if e[2] <= 0:
+                        continue
+                    v = e[0]
+                    nd = d + e[3] + pot[u] - pot[v]
+                    if nd < dist[v]:
+                        dist[v] = nd
+                        prev_v[v] = u
+                        prev_e[v] = ei
+                        heapq.heappush(pq, (nd, v))
+            if dist[t] == INF:
+                break
+            path_cost = dist[t] + pot[t]
+            if path_cost >= 0:
+                break
+            for v in range(n):
+                if dist[v] < INF:
+                    pot[v] += dist[v]
+            v = t
+            while v != s:
+                u = prev_v[v]
+                e = self.g[u][prev_e[v]]
+                e[2] -= 1
+                self.g[v][e[1]][2] += 1
+                v = u
+            ans -= path_cost
+        return ans
+def get_path(n, tree_edges, edges, start, end):
+    adj = [[] for _ in range(n)]
+    for eid in tree_edges:
+        a, b, _ = edges[eid]
+        adj[a].append((b, eid))
+        adj[b].append((a, eid))
+    parent = [-1] * n
+    parent_edge = [-1] * n
+    parent[start] = start
+    stack = [start]
+    while stack:
+        u = stack.pop()
+        if u == end:
+            break
+        for v, eid in adj[u]:
+            if parent[v] != -1:
+                continue
+            parent[v] = u
+            parent_edge[v] = eid
+            stack.append(v)
+    path = []
+    cur = end
+    while cur != start:
+        path.append(parent_edge[cur])
+        cur = parent[cur]
+    return path
+T = int(input())
+for tc in range(1, T + 1):
+    n, m = map(int, input().split())
+    edges = []
+    weights = []
+    for _ in range(m):
+        a, b, w = map(int, input().split())
+        edges.append((a - 1, b - 1, w))
+        weights.append(w)
+    t1 = [x - 1 for x in map(int, input().split())]
+    t2 = [x - 1 for x in map(int, input().split())]
+    set1 = set(t1)
+    set2 = set(t2)
+    constraints = [[] for _ in range(m)]
+    for eid in range(m):
+        a, b, _ = edges[eid]
+        if eid not in set1:
+            path = get_path(n, t1, edges, a, b)
+            for f in path:
+                constraints[f].append(eid)
+        if eid not in set2:
+            path = get_path(n, t2, edges, a, b)
+            for f in path:
+                constraints[eid].append(f)
+    source = m
+    sink = m + 1
+    flow = MCF(m + 2)
+    for i, w in enumerate(weights):
+        flow.add(source, i, 1, -w)
+        flow.add(i, sink, 1, w)
+    for u in range(m):
+        for v in constraints[u]:
+            flow.add(u, v, m, 0)
+    ans = flow.solve(source, sink, weights)
+    print(f"#{tc} {ans}")
