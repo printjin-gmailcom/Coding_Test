@@ -1745,3 +1745,59 @@ for _ in range(T):
         inv = pow(2 * A, MOD - 2, MOD)
         x = (-B + r) * inv % MOD
         print(x)
+
+
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    A = list(map(int, input().split()))
+    B = list(map(int, input().split()))
+    result = [''] * N
+    selected = [False] * (N + 1)
+    a_idx = 0
+    b_idx = 0
+    for turn in range(N):
+        if turn % 2 == 0:
+            while selected[A[a_idx]]:
+                a_idx += 1
+            player = A[a_idx]
+            a_idx += 1
+            result[player - 1] = 'A'
+        else:
+            while selected[B[b_idx]]:
+                b_idx += 1
+            player = B[b_idx]
+            b_idx += 1
+            result[player - 1] = 'B'
+        selected[player] = True
+    print(''.join(result))
+
+
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    a = list(map(int, input().split()))
+    if any(a[i] == a[i + 1] for i in range(N - 1)):
+        print(-1)
+        continue
+    candidates = set()
+    for x in a:
+        candidates.add(2 * x)
+    for i in range(N):
+        for j in range(i + 1, N):
+            if a[i] != a[j]:
+                candidates.add(a[i] + a[j])
+    answer = 0
+    for y in candidates:
+        count = 0
+        for x in a:
+            if 2 * x == y:
+                count += 1
+        for i in range(N - 1):
+            low = min(2 * a[i], 2 * a[i + 1])
+            high = max(2 * a[i], 2 * a[i + 1])
+            if low < y < high:
+                count += 1
+        answer = max(answer, count)
+    print(answer)
+    
