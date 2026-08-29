@@ -1801,3 +1801,326 @@ for _ in range(T):
         answer = max(answer, count)
     print(answer)
     
+
+import sys
+from collections import deque
+input = sys.stdin.readline
+class Dinic:
+    def __init__(self, n):
+        self.n = n
+        self.g = [[] for _ in range(n)]
+    def add_edge(self, u, v, cap):
+        self.g[u].append([v, cap, len(self.g[v])])
+        self.g[v].append([u, 0, len(self.g[u]) - 1])
+    def bfs(self, s, t):
+        self.level = [-1] * self.n
+        self.level[s] = 0
+        q = deque([s])
+        while q:
+            u = q.popleft()
+            for v, cap, rev in self.g[u]:
+                if cap > 0 and self.level[v] == -1:
+                    self.level[v] = self.level[u] + 1
+                    q.append(v)
+        return self.level[t] != -1
+    def dfs(self, u, t, f):
+        if u == t:
+            return f
+        while self.it[u] < len(self.g[u]):
+            i = self.it[u]
+            v, cap, rev = self.g[u][i]
+            if cap > 0 and self.level[v] == self.level[u] + 1:
+                ret = self.dfs(v, t, min(f, cap))
+                if ret:
+                    self.g[u][i][1] -= ret
+                    self.g[v][rev][1] += ret
+                    return ret
+            self.it[u] += 1
+        return 0
+    def max_flow(self, s, t):
+        flow = 0
+        INF = 10**18
+        while self.bfs(s, t):
+            self.it = [0] * self.n
+            while True:
+                f = self.dfs(s, t, INF)
+                if not f:
+                    break
+                flow += f
+        return flow
+def solve():
+    T = int(input())
+    for _ in range(T):
+        N = int(input())
+        c = list(map(int, input().split()))
+        trees = []
+        for _ in range(2):
+            graph = [[] for _ in range(N)]
+            for _ in range(N - 1):
+                u, v = map(int, input().split())
+                u -= 1
+                v -= 1
+                graph[u].append(v)
+                graph[v].append(u)
+            trees.append(graph)
+        parents = []
+        for root in range(N):
+            root_parents = []
+            for graph in trees:
+                parent = [-1] * N
+                parent[root] = root
+                q = deque([root])
+                while q:
+                    u = q.popleft()
+                    for v in graph[u]:
+                        if parent[v] == -1:
+                            parent[v] = u
+                            q.append(v)
+                root_parents.append(parent)
+            parents.append(root_parents)
+        answer = 0
+        INF = 10**15
+        for root in range(N):
+            S = N
+            E = N + 1
+            dinic = Dinic(N + 2)
+            positive_sum = 0
+            for v in range(N):
+                if c[v] > 0:
+                    dinic.add_edge(S, v, c[v])
+                    positive_sum += c[v]
+                elif c[v] < 0:
+                    dinic.add_edge(v, E, -c[v])
+            for tree_idx in range(2):
+                parent = parents[root][tree_idx]
+                for v in range(N):
+                    if v != root:
+                        dinic.add_edge(v, parent[v], INF)
+            cut = dinic.max_flow(S, E)
+            answer = max(answer, positive_sum - cut)
+        print(answer)
+solve()
+
+
+import sys
+import math
+input = sys.stdin.readline
+def cross(a, b):
+    return a[0] * b[1] - a[1] * b[0]
+def poly_add(a, b):
+    n = max(len(a), len(b))
+    r = [0.0] * n
+    for i in range(n):
+        if i < len(a):
+            r[i] += a[i]
+        if i < len(b):
+            r[i] += b[i]
+    return r
+def poly_mul(a, b):
+    r = [0.0] * (len(a) + len(b) - 1)
+    for i, x in enumerate(a):
+        for j, y in enumerate(b):
+            r[i + j] += x * y
+    return r
+def poly_deriv(a):
+    if len(a) <= 1:
+        return [0.0]
+    return [a[i] * i for i in range(1, len(a))]
+def poly_eval(a, x):
+    res = 0.0
+    for v in reversed(a):
+        res = res * x + v
+    return res
+def trim(a):
+    while len(a) > 1 and abs(a[-1]) < 1e-14:
+        a.pop()
+    return a
+def bisect_root(p, l, r):
+    fl = poly_eval(p, l)
+    fr = poly_eval(p, r)
+    for _ in range(80):
+        m = (l + r) * 0.5
+        fm = poly_eval(p, m)
+        if abs(fm) < 1e-14:
+            return m
+        if fl * fm <= 0:
+            r = m
+            fr = fm
+        else:
+            l = m
+            fl = fm
+    return (l + r) * 0.5
+def real_roots(p, l, r):
+    p = trim(p[:])
+    if len(p) <= 1:
+        return []
+    scale = max(1.0, max(abs(x) for x in p))
+    eps = 1e-10 * scale
+    if len(p) == 2:
+        a, b = p
+        if abs(b) < 1e-15:
+            return []
+        x = -a / b
+        return [x] if l - 1e-10 <= x <= r + 1e-10 else []
+    dp = poly_deriv(p)
+    critical = real_roots(dp, l, r)
+    points = [l] + critical + [r]
+    points.sort()
+    roots = []
+    for x in points:
+        fx = poly_eval(p, x)
+        if abs(fx) <= eps:
+            roots.append(x)
+    for i in range(len(points) - 1):
+        a = points[i]
+        b = points[i + 1]
+        fa = poly_eval(p, a)
+        fb = poly_eval(p, b)
+        if fa * fb < 0:
+            roots.append(bisect_root(p, a, b))
+    roots.sort()
+    result = []
+    for x in roots:
+        if l - 1e-9 <= x <= r + 1e-9:
+            x = max(l, min(r, x))
+            if not result or abs(result[-1] - x) > 1e-7:
+                result.append(x)
+    return result
+def solve_case(n, pts):
+    x0, y0 = pts[0]
+    p = [(x - x0, y - y0) for x, y in pts]
+    edge = []
+    edge_cross = []
+    for i in range(n):
+        a = p[i]
+        b = p[(i + 1) % n]
+        u = (b[0] - a[0], b[1] - a[1])
+        edge.append(u)
+        edge_cross.append(cross(a, u))
+    prefix = [0.0] * (n + 1)
+    for i in range(n):
+        prefix[i + 1] = prefix[i] + cross(p[i], p[(i + 1) % n])
+    total2 = prefix[n]
+    target = total2 * 0.5
+    def H(i, t):
+        return prefix[i] + t * edge_cross[i]
+    def area_value(i, t, j, s):
+        a = (p[i][0] + edge[i][0] * t,
+             p[i][1] + edge[i][1] * t)
+        b = (p[j][0] + edge[j][0] * s,
+             p[j][1] + edge[j][1] * s)
+        return H(j, s) - H(i, t) - cross(a, b)
+    def get_s(i, t, j):
+        a = p[i]
+        u = edge[i]
+        b = p[j]
+        v = edge[j]
+        c0 = prefix[j] - prefix[i] - cross(a, b) - target
+        ct = -edge_cross[i] - cross(u, b)
+        cs = edge_cross[j] - cross(a, v)
+        cts = -cross(u, v)
+        den = cs + cts * t
+        num = -(c0 + ct * t)
+        if abs(den) < 1e-12:
+            if abs(num) < 1e-12:
+                return 0.0
+            return float('inf') if num > 0 else -float('inf')
+        return num / den
+    def distance2(i, t, j, s):
+        ax = p[i][0] + edge[i][0] * t
+        ay = p[i][1] + edge[i][1] * t
+        bx = p[j][0] + edge[j][0] * s
+        by = p[j][1] + edge[j][1] * s
+        dx = ax - bx
+        dy = ay - by
+        return dx * dx + dy * dy
+    answer_min = float('inf')
+    answer_max = 0.0
+    j = 1
+    s = 0.0
+    for i in range(n):
+        if j == i:
+            j = (j + 1) % n
+            s = 0.0
+        t = 0.0
+        while t < 1.0 - 1e-12:
+            while j != i and get_s(i, t, j) >= 1.0 - 1e-12:
+                j = (j + 1) % n
+                s = 0.0
+            if j == i:
+                break
+            s0 = get_s(i, t, j)
+            if s0 < -1e-9:
+                j = (j - 1 + n) % n
+                s0 = get_s(i, t, j)
+            s0 = max(0.0, min(1.0, s0))
+            s1 = get_s(i, 1.0, j)
+            if s1 <= 1.0 + 1e-10:
+                tend = 1.0
+            else:
+                a = p[i]
+                u = edge[i]
+                b = p[j]
+                v = edge[j]
+                c0 = prefix[j] - prefix[i] - cross(a, b) - target
+                ct = -edge_cross[i] - cross(u, b)
+                cs = edge_cross[j] - cross(a, v)
+                cts = -cross(u, v)
+                num = -(c0 + cs - target * 0.0)
+                den = ct + cts
+                if abs(den) < 1e-14:
+                    tend = 1.0
+                else:
+                    tend = -(c0 + cs) / (ct + cts)
+                tend = max(t + 1e-12, min(1.0, tend))
+            a = p[i]
+            u = edge[i]
+            b = p[j]
+            v = edge[j]
+            c0 = prefix[j] - prefix[i] - cross(a, b) - target
+            ct = -edge_cross[i] - cross(u, b)
+            cs = edge_cross[j] - cross(a, v)
+            cts = -cross(u, v)
+            den_poly = [cs, cts]
+            num_poly = [-c0, -ct]
+            xu = [
+                (a[0] - b[0]) * cs - v[0] * (-c0),
+                (u[0] * cs + (a[0] - b[0]) * cts) - v[0] * (-ct),
+                u[0] * cts
+            ]
+            yu = [
+                (a[1] - b[1]) * cs - v[1] * (-c0),
+                (u[1] * cs + (a[1] - b[1]) * cts) - v[1] * (-ct),
+                u[1] * cts
+            ]
+            f = poly_add(poly_mul(xu, xu), poly_mul(yu, yu))
+            fp = poly_deriv(f)
+            g = poly_add(
+                poly_mul(fp, den_poly),
+                [-2.0 * x for x in poly_mul(f, [cts])]
+            )
+            g = trim(g)
+            candidates = [t, tend]
+            candidates += real_roots(g, t, tend)
+            for tt in candidates:
+                if t - 1e-9 <= tt <= tend + 1e-9:
+                    ss = get_s(i, tt, j)
+                    if -1e-8 <= ss <= 1.0 + 1e-8:
+                        ss = max(0.0, min(1.0, ss))
+                        d = distance2(i, tt, j, ss)
+                        answer_min = min(answer_min, d)
+                        answer_max = max(answer_max, d)
+            if tend >= 1.0 - 1e-10:
+                break
+            t = tend
+            j = (j + 1) % n
+            s = 0.0
+    return math.sqrt(answer_min), math.sqrt(answer_max)
+def main():
+    T = int(input())
+    for _ in range(T):
+        n = int(input())
+        pts = [tuple(map(int, input().split())) for _ in range(n)]
+        mn, mx = solve_case(n, pts)
+        print(f"{mn:.10f} {mx:.10f}")
+
