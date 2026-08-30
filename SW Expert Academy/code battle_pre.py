@@ -2265,3 +2265,46 @@ for _ in range(T):
     print(best)
 
 
+T = int(input())
+for tc in range(1, T + 1):
+    s = input().strip()
+    n = len(s)
+    h = n // 2
+    a = s[:h]
+    b = s[-h:]
+    if s == s[::-1] and a == a[::-1] and b == b[::-1]:
+        print(f"#{tc} YES")
+    else:
+        print(f"#{tc} NO")
+
+
+T = int(input())
+MAX = 1500
+prime = [True] * (MAX + 1)
+prime[0] = prime[1] = False
+for i in range(2, int(MAX ** 0.5) + 1):
+    if prime[i]:
+        for j in range(i * i, MAX + 1, i):
+            prime[j] = False
+for tc in range(1, T + 1):
+    n = int(input())
+    m = n
+    while not prime[m]:
+        m += 1
+    x = 2 * (m - n)
+    if x > n:
+        print(f"#{tc} -1")
+        continue
+    edges = []
+    for i in range(1, n + 1):
+        edges.append((i, i % n + 1))
+    if x == 2:
+        edges.append((1, 3))
+    else:
+        k = x // 2
+        for i in range(1, k + 1):
+            edges.append((i, i + k))
+    print(f"#{tc} {len(edges)}")
+    for u, v in edges:
+        print(u, v)
+
