@@ -2124,3 +2124,144 @@ def main():
         mn, mx = solve_case(n, pts)
         print(f"{mn:.10f} {mx:.10f}")
 
+
+import sys
+input = sys.stdin.readline
+mex = [
+    [1, 2, 1],
+    [2, 0, 0],
+    [1, 0, 0]
+]
+def solve(n, top, left):
+    cnt = [0, 0, 0]
+    for x in top:
+        cnt[x] += 1
+    for x in left:
+        cnt[x] += 1
+    a = [0] + top[:]
+    b = [0] + [top[0]] + left[:]
+    if n <= 5:
+        for i in range(2, n + 1):
+            a[i - 1] = b[i]
+            for j in range(i, n + 1):
+                a[j] = mex[a[j - 1]][a[j]]
+                cnt[a[j]] += 1
+            b[i] = a[i]
+            for j in range(i + 1, n + 1):
+                b[j] = mex[b[j - 1]][b[j]]
+                cnt[b[j]] += 1
+        return cnt
+    for i in range(2, 6):
+        a[i - 1] = b[i]
+        for j in range(i, 6):
+            a[j] = mex[a[j - 1]][a[j]]
+            cnt[a[j]] += 1
+        b[i] = a[i]
+        for j in range(i + 1, 6):
+            b[j] = mex[b[j - 1]][b[j]]
+            cnt[b[j]] += 1
+    for i in range(5, n):
+        cnt[a[5]] += 1
+    for i in range(6, n):
+        cnt[b[5]] += 1
+    return cnt
+T = int(input())
+for _ in range(T):
+    n = int(input())
+    top = list(map(int, input().split()))
+    left = [int(input()) for _ in range(n - 1)]
+    ans = solve(n, top, left)
+    print(*ans)
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    people = [tuple(map(int, input().split())) for _ in range(N)]
+    total = sum(max(0, -c) for _, c in people)
+    if total == 0:
+        print(0)
+        continue
+    left = []
+    right = []
+    for x, c in people:
+        if x < 0:
+            left.append((x, c))
+        else:
+            right.append((x, c))
+    def calc(arr, start):
+        return sum(abs(arr[i][0] - arr[i - 1][0]) for i in range(1, len(arr))) + abs(arr[0][0] - start)
+    ans = float('inf')
+    for split in range(N + 1):
+        pass
+    pos = [x for x, c in people]
+    c = [v for x, v in people]
+    prefix = [0] * (N + 1)
+    for i in range(N):
+        prefix[i + 1] = prefix[i] + c[i]
+    for i in range(N + 1):
+        if prefix[i] >= 0 and prefix[N] - prefix[i] <= 0:
+            if i == 0:
+                cost = abs(pos[N - 1])
+            elif i == N:
+                cost = abs(pos[0])
+            else:
+                cost = abs(pos[i - 1]) + abs(pos[N - 1] - pos[i - 1])
+            ans = min(ans, cost)
+    def greedy(start_idx, end_idx, direction):
+        carry = 0
+        dist = 0
+        prev = 0
+        indices = range(start_idx, end_idx, direction)
+        for i in indices:
+            x, amount = people[i]
+            dist += abs(x - prev)
+            prev = x
+            if amount > 0:
+                carry += amount
+            else:
+                carry += amount
+        return dist
+    left_need = 0
+    right_need = 0
+    for x, c in people:
+        if x < 0:
+            left_need += -c
+        else:
+            right_need += -c
+    def solve_side(indices):
+        carry = 0
+        distance = 0
+        prev = 0
+        for i in indices:
+            x, c = people[i]
+            distance += abs(x - prev)
+            prev = x
+            carry += c
+        return distance
+    best = float('inf')
+    for first_right in [True, False]:
+        carry = 0
+        distance = 0
+        prev = 0
+        visited = set()
+        order = []
+        if first_right:
+            order.extend(range(N - 1, -1, -1))
+        else:
+            order.extend(range(N))
+        for i in order:
+            x, c = people[i]
+            if c < 0 and carry + c < 0:
+                continue
+            distance += abs(x - prev)
+            prev = x
+            carry += c
+            visited.add(i)
+        if len(visited) == N:
+            best = min(best, distance)
+    print(best)
+
+
