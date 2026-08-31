@@ -2308,3 +2308,45 @@ for tc in range(1, T + 1):
     for u, v in edges:
         print(u, v)
 
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    A = [list(map(int, input().split())) for _ in range(N)]
+    parity = 0
+    answer = 0
+    for i in range(1, N):
+        target = i + 1
+        if A[i][0] == target:
+            current = 0
+        else:
+            current = 1
+        if current != parity:
+            answer += 1
+            parity = current
+    print(answer)
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    A = [list(map(int, input().split())) for _ in range(N)]
+    parity = 0
+    answer = 0
+    for i in range(1, N):
+        target = i + 1
+        if A[i][0] == target:
+            current = 0
+        else:
+            current = 1
+        if current != parity:
+            answer += 1
+            parity = current
+    print(answer)
+
+
+```0
