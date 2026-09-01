@@ -2349,4 +2349,38 @@ for _ in range(T):
     print(answer)
 
 
-```0
+from math import gcd
+T = int(input())
+for tc in range(1, T + 1):
+    N, PD, PG = map(int, input().split())
+    if (PD == 0 and PG != 0) or (PD == 100 and PG != 100):
+        print(f"#{tc} Broken")
+        continue
+    g = gcd(PD, 100)
+    d = 100 // g
+    if d <= N:
+        print(f"#{tc} Possible")
+    else:
+        print(f"#{tc} Broken")
+
+
+T = int(input())
+for tc in range(1, T + 1):
+    N, M = map(int, input().split())
+    grid = [input() for _ in range(N)]
+    for i in range(N - 1):
+        for j in range(M - 1):
+            if grid[i][j] == '#':
+                if grid[i + 1][j] == '#' and grid[i][j + 1] == '#' and grid[i + 1][j + 1] == '#':
+                    grid[i] = grid[i][:j] + '.' + grid[i][j + 1:]
+                    grid[i + 1] = grid[i + 1][:j] + '.' + grid[i + 1][j + 1:]
+                else:
+                    break
+        else:
+            continue
+        break
+    else:
+        print(f"#{tc} YES")
+        continue
+    print(f"#{tc} NO")
+
