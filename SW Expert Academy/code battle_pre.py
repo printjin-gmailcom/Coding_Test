@@ -2384,3 +2384,92 @@ for tc in range(1, T + 1):
         continue
     print(f"#{tc} NO")
 
+
+T = int(input())
+for tc in range(1, T + 1):
+    s = input().strip()
+    n = len(s)
+    half = (n - 1) // 2
+    if s != s[::-1]:
+        print(f"#{tc} NO")
+        continue
+    left = s[:half]
+    right = s[n - half:]
+    if left == left[::-1] and right == right[::-1]:
+        print(f"#{tc} YES")
+    else:
+        print(f"#{tc} NO")
+
+
+def is_prime(x):
+    if x < 2:
+        return False
+    i = 2
+    while i * i <= x:
+        if x % i == 0:
+            return False
+        i += 1
+    return True
+
+
+def havel_hakimi(degrees):
+    n = len(degrees)
+    arr = [[degrees[i], i] for i in range(n)]
+    edges = []
+
+    while True:
+        arr.sort(reverse=True)
+
+        if arr[0][0] == 0:
+            return edges
+
+        d, v = arr[0]
+        arr = arr[1:]
+
+        if d > len(arr):
+            return None
+
+        for i in range(d):
+            if arr[i][0] <= 0:
+                return None
+
+            u = arr[i][1]
+            arr[i][0] -= 1
+            edges.append((v + 1, u + 1))
+
+
+T = int(input())
+for tc in range(1, T + 1):
+    n = int(input())
+    if n == 3:
+        print(f"#{tc} 3")
+        print("1 2")
+        print("2 3")
+        print("3 1")
+        continue
+    if n == 4:
+        print(f"#{tc} 5")
+        print("1 2")
+        print("1 3")
+        print("1 4")
+        print("2 3")
+        print("2 4")
+        continue
+    m = n
+    while not is_prime(m):
+        m += 1
+    while True:
+        x = m - n
+        if x <= n:
+            degrees = [4] * x + [2] * (n - x)
+            edges = havel_hakimi(degrees)
+            if edges is not None and len(edges) == m:
+                print(f"#{tc} {m}")
+                for u, v in edges:
+                    print(u, v)
+                break
+        m += 1
+        while not is_prime(m):
+            m += 1
+
+
