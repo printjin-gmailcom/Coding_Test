@@ -2473,3 +2473,58 @@ for tc in range(1, T + 1):
             m += 1
 
 
+T = int(input())
+for tc in range(1, T + 1):
+    S = input().strip()
+    answer = float('inf')
+    for i in range(1, len(S)):
+        a = int(S[:i])
+        b = int(S[i:])
+        answer = min(answer, a + b)
+    print(f"#{tc} {answer}")
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for tc in range(1, T + 1):
+    n = int(input())
+    a = list(map(int, input().split()))
+    q = int(input())
+    queries = list(map(int, input().split()))
+    max_x = max(queries)
+    if max_x <= n:
+        result = [a[x - 1] for x in queries]
+    else:
+        seq = a[:]
+        total = sum(seq)
+        seen = {}
+        i = n
+        while i < max_x:
+            state = tuple(seq[-n:])
+            if state in seen:
+                start, length = seen[state]
+                cycle_start = start
+                cycle_length = length
+                break
+            seen[state] = (i, 0)
+            value = total // n
+            seq.append(value)
+            total += value - seq[i - n]
+            i += 1
+            seen[state] = (seen[state][0], i - seen[state][0])
+        else:
+            cycle_start = cycle_length = 0
+        if cycle_length:
+            result = []
+            for x in queries:
+                if x <= n:
+                    result.append(a[x - 1])
+                elif x < cycle_start + 1:
+                    result.append(seq[x - 1])
+                else:
+                    idx = cycle_start + (x - cycle_start - 1) % cycle_length
+                    result.append(seq[idx])
+        else:
+            result = [seq[x - 1] for x in queries]
+    print(f"#{tc}", *result)
