@@ -2528,3 +2528,107 @@ for tc in range(1, T + 1):
         else:
             result = [seq[x - 1] for x in queries]
     print(f"#{tc}", *result)
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for tc in range(1, T + 1):
+    N, K = map(int, input().split())
+    points = [tuple(map(int, input().split())) for _ in range(N)]
+    if N <= 1:
+        print(f"#{tc} {N if 0 <= K else -1}")
+        continue
+    xs = sorted(x for x, y in points)
+    ys = sorted(y for x, y in points)
+    def pair_sum(arr):
+        n = len(arr)
+        prefix = 0
+        result = 0
+        for i, x in enumerate(arr):
+            result += x * i - prefix
+            prefix += x
+        return result
+    total = pair_sum(xs) + pair_sum(ys)
+    if total <= K:
+        print(f"#{tc} {N}")
+        continue
+    best = -1
+    sx = sum(xs)
+    sy = sum(ys)
+    for x, y in points:
+        pass
+    coords = [(x, y) for x, y in points]
+    total_x = pair_sum(xs)
+    total_y = pair_sum(ys)
+    for x, y in coords:
+        pass
+    dist_sum = [[0] * N for _ in range(N)]
+    for i in range(N):
+        xi, yi = points[i]
+        for j in range(i + 1, N):
+            xj, yj = points[j]
+            dist = abs(xi - xj) + abs(yi - yj)
+            dist_sum[i][j] = dist
+    for mask in range(1 << N):
+        if N > 20:
+            break
+        selected = []
+        unselected = []
+        for i in range(N):
+            if mask & (1 << i):
+                selected.append(i)
+            else:
+                unselected.append(i)
+        a = 0
+        for i in range(len(selected)):
+            for j in range(i + 1, len(selected)):
+                a += dist_sum[selected[i]][selected[j]]
+        b = 0
+        for i in range(len(unselected)):
+            for j in range(i + 1, len(unselected)):
+                b += dist_sum[unselected[i]][unselected[j]]
+        if a - b <= K:
+            best = max(best, len(selected))
+    print(f"#{tc} {best}")
+
+
+import sys
+input = sys.stdin.readline
+T = int(input())
+for tc in range(1, T + 1):
+    N = int(input())
+    V = list(map(int, input().split()))
+    ok = True
+    for i in range(N):
+        for j in range(N):
+            if V[i] != V[V[i] - 1]:
+                ok = False
+                break
+        if not ok:
+            break
+    if not ok:
+        print(f"#{tc} no")
+        continue
+    A = [[0] * N for _ in range(N)]
+    for i in range(N):
+        for j in range(N):
+            A[i][j] = max(V[i], V[j])
+    valid = True
+    for i in range(N):
+        for j in range(N):
+            for k in range(N):
+                if A[A[i][j] - 1][k] != A[i][A[j][k] - 1]:
+                    valid = False
+                    break
+            if not valid:
+                break
+        if not valid:
+            break
+    if not valid:
+        print(f"#{tc} no")
+    else:
+        print(f"#{tc} yes")
+        for row in A:
+            print(*row)
+
