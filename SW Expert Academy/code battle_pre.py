@@ -2730,3 +2730,48 @@ for tc in range(1, TC + 1):
     det = det * permutation_sign(order) % MOD
     print(f"#{tc} {det}")
 
+
+TC = int(input())
+for tc in range(1, TC + 1):
+    N = int(input())
+    print(f"#{tc} {'Alice' if N % 2 == 0 else 'Bob'}")
+
+
+import sys
+input = sys.stdin.readline
+TC = int(input())
+for tc in range(1, TC + 1):
+    N = int(input())
+    points = [tuple(map(int, input().split())) for _ in range(N)]
+    if N <= 3:
+        result = "TAK"
+    else:
+        p0 = points[0]
+        p1 = points[1]
+        idx = 2
+        while idx < N:
+            p2 = points[idx]
+            ax = p1[0] - p0[0]
+            ay = p1[1] - p0[1]
+            az = p1[2] - p0[2]
+            bx = p2[0] - p0[0]
+            by = p2[1] - p0[1]
+            bz = p2[2] - p0[2]
+            nx = ay * bz - az * by
+            ny = az * bx - ax * bz
+            nz = ax * by - ay * bx
+            if nx != 0 or ny != 0 or nz != 0:
+                break
+            idx += 1
+        if idx == N:
+            result = "TAK"
+        else:
+            result = "TAK"
+            for i in range(N):
+                x, y, z = points[i]
+                if nx * (x - p0[0]) + ny * (y - p0[1]) + nz * (z - p0[2]) != 0:
+                    result = "NIE"
+                    break
+    print(f"#{tc} {result}")
+
+
