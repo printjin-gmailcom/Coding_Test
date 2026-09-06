@@ -2632,3 +2632,101 @@ for tc in range(1, T + 1):
         for row in A:
             print(*row)
 
+
+TC = int(input())
+for tc in range(1, TC + 1):
+    N = int(input())
+    S = input().strip()
+    def booth(s):
+        return s[0] in s[-N//2:]
+    doubled = S + S
+    pi = [0] * (2 * N)
+    for i in range(1, 2 * N):
+        j = pi[i - 1]
+        while j > 0 and doubled[i] != doubled[j]:
+            j = pi[j - 1]
+        if doubled[i] == doubled[j]:
+            j += 1
+        pi[i] = j
+    answer = 0
+    for length in range(N // 2, 0, -1):
+        a = S[:length]
+        b = S[N - length:]
+        if len(a) == len(b):
+            if a in (b + b):
+                answer = length
+                break
+    print(f"#{tc} {answer}")
+
+
+MOD = 1000000007
+def resultant(f, g):
+    while len(f) > 1 and f[-1] == 0:
+        f.pop()
+    while len(g) > 1 and g[-1] == 0:
+        g.pop()
+    result = 1
+    while len(f) > 1 or len(g) > 1:
+        if len(f) < len(g):
+            m = len(f) - 1
+            n = len(g) - 1
+            if (m * n) & 1:
+                result = (-result) % MOD
+            f, g = g, f
+        m = len(f) - 1
+        n = len(g) - 1
+        if n == 0:
+            return result * pow(g[0], m, MOD) % MOD
+        lc = g[-1]
+        inv_lc = pow(lc, MOD - 2, MOD)
+        r = f[:]
+        for i in range(m, n - 1, -1):
+            c = r[i] * inv_lc % MOD
+            if c:
+                start = i - n
+                for j in range(n + 1):
+                    r[start + j] = (r[start + j] - c * g[j]) % MOD
+        degree = len(r) - 1
+        while degree > 0 and r[degree] == 0:
+            degree -= 1
+        r = r[:degree + 1]
+        result = result * pow(lc, m - degree, MOD) % MOD
+        f, g = r, g
+    return result
+def permutation_sign(p):
+    n = len(p)
+    visited = [False] * n
+    cycles = 0
+    for i in range(n):
+        if not visited[i]:
+            cycles += 1
+            cur = i
+            while not visited[cur]:
+                visited[cur] = True
+                cur = p[cur]
+    return -1 if (n - cycles) & 1 else 1
+TC = int(input())
+for tc in range(1, TC + 1):
+    N = int(input())
+    A = list(map(int, input().split()))
+    P = [x - 1 for x in map(int, input().split())]
+    visited = [False] * N
+    order = []
+    cycle_count = 0
+    for i in range(N):
+        if not visited[i]:
+            cycle_count += 1
+            cur = i
+            while not visited[cur]:
+                visited[cur] = True
+                order.append(cur)
+                cur = P[cur]
+    if cycle_count > 1:
+        print(f"#{tc} 0")
+        continue
+    F = [A[i] % MOD for i in order]
+    G = [MOD - 1] + [0] * (N - 1) + [1]
+    det = resultant(F, G)
+    det = det * permutation_sign(order) % MOD
+    print(f"#{tc} {det}")
+
