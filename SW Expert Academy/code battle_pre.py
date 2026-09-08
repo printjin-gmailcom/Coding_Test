@@ -2775,3 +2775,126 @@ for tc in range(1, TC + 1):
     print(f"#{tc} {result}")
 
 
+import sys
+input = sys.stdin.readline
+T = int(input())
+for tc in range(1, T + 1):
+N = int(input())
+A = [input().strip() for _ in range(N)]
+K = N.bit_length() - 1
+row_cnt = [row.count('#') for row in A]
+col_cnt = [sum(A[i][j] == '#' for i in range(N)) for j in range(N)]
+sr = [i for i in range(N) if row_cnt[i] == N // 2]
+sc = [j for j in range(N) if col_cnt[j] == N // 2]
+if len(sr) != K or len(sc) != K:
+    print(f"#{tc} no")
+    continue
+match = [-1] * K
+used = [False] * K
+ok = True
+for i, r in enumerate(sr):
+    found = -1
+    for j, c in enumerate(sc):
+        if A[r][c] == '#':
+            if found != -1:
+                ok = False
+                break
+            found = j
+    if not ok or found == -1 or used[found]:
+        ok = False
+        break
+    match[i] = found
+    used[found] = True
+if not ok:
+    print(f"#{tc} no")
+    continue
+ordered_sc = [0] * K
+for i in range(K):
+    ordered_sc[i] = sc[match[i]]
+row_mask = [0] * N
+for i in range(N):
+    mask = 0
+    for b in range(K):
+        if A[i][ordered_sc[b]] == '#':
+            mask |= 1 << b
+    row_mask[i] = mask
+col_mask = [0] * N
+for j in range(N):
+    mask = 0
+    for b in range(K):
+        if A[sr[b]][j] == '#':
+            mask |= 1 << b
+    col_mask[j] = mask
+if len(set(row_mask)) != N or len(set(col_mask)) != N:
+    print(f"#{tc} no")
+    continue
+if set(row_mask) != set(range(N)) or set(col_mask) != set(range(N)):
+    print(f"#{tc} no")
+    continue
+ok = True
+for i in range(N):
+    for j in range(N):
+        expected = (row_mask[i] & col_mask[j]) != 0
+        actual = A[i][j] == '#'
+        if expected != actual:
+            ok = False
+            break
+    if not ok:
+        break
+print(f"#{tc} {'yes' if ok else 'no'}")
+
+
+import sys
+from math import gcd
+input = sys.stdin.readline
+class DSU:
+def init(self, n):
+self.p = list(range(n))
+self.c = n
+def find(self, x):
+    while self.p[x] != x:
+        self.p[x] = self.p[self.p[x]]
+        x = self.p[x]
+    return x
+def union(self, a, b):
+    a = self.find(a)
+    b = self.find(b)
+    if a == b:
+        return
+    self.p[b] = a
+    self.c -= 1
+T = int(input())
+for tc in range(1, T + 1):
+N, K = map(int, input().split())
+S = list(map(int, input().split()))
+m = min(S)
+if m > N:
+    print(f"#{tc} {N}")
+    continue
+if N < 2 * m:
+    dsu = DSU(N)
+    for s in S:
+        for x in range(1, N - s + 1):
+            dsu.union(x - 1, x + s - 1)
+    print(f"#{tc} {dsu.c}")
+    continue
+g = 0
+for s in S:
+    g = gcd(g, s)
+if g == m:
+    print(f"#{tc} {m}")
+    continue
+vals = set(s // g for s in S)
+m //= g
+N //= g
+dsu = DSU(m)
+for s in vals:
+    step = s % m
+    if step == 0:
+        continue
+    for r in range(m):
+        dsu.union(r, (r + step) % m)
+print(f"#{tc} {dsu.c}")
+
+
+
