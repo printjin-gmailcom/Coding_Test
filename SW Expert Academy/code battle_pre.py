@@ -2941,3 +2941,83 @@ for tc in range(1, TC + 1):
             break
     print(f"#{tc} {'TAK' if possible else 'NIE'}")
 
+
+import sys
+from collections import deque
+input = sys.stdin.buffer.readline
+def solve(a, b):
+    n = len(a)
+    pos = [0] * (n + 1)
+    for i, x in enumerate(b):
+        pos[x] = i
+    na = [0] * (n + 1)
+    pa = [0] * (n + 1)
+    nb = [0] * (n + 1)
+    pb = [0] * (n + 1)
+    for i, x in enumerate(a):
+        na[x] = a[(i + 1) % n]
+        pa[x] = a[(i - 1) % n]
+    for i, x in enumerate(b):
+        nb[x] = b[(i + 1) % n]
+        pb[x] = b[(i - 1) % n]
+    active = [True] * (n + 1)
+    def get_common(v):
+        x1, x2 = na[v], pa[v]
+        y1, y2 = nb[v], pb[v]
+        if x1 == y1 or x1 == y2:
+            return x1
+        if x2 == y1 or x2 == y2:
+            return x2
+        return 0
+    q = deque()
+    for v in range(1, n + 1):
+        if get_common(v):
+            q.append(v)
+    remain = n
+    while remain > 2:
+        while q:
+            v = q.popleft()
+            if active[v]:
+                w = get_common(v)
+                if w:
+                    break
+        else:
+            return -1
+        active[v] = False
+        remain -= 1
+        la, ra = pa[v], na[v]
+        lb, rb = pb[v], nb[v]
+        pa[ra] = la
+        na[la] = ra
+        pb[rb] = lb
+        nb[lb] = rb
+        for x in (la, ra, lb, rb):
+            if active[x] and get_common(x):
+                q.append(x)
+    return 1
+def main():
+    t = int(input())
+    for tc in range(1, t + 1):
+        n = int(input())
+        a = list(map(int, input().split()))
+        b = list(map(int, input().split()))
+        print(f"#{tc} {solve(a, b)}")
+
+
+import sys
+input = sys.stdin.readline
+def solve(n, mod):
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    for i in range(1, n + 1):
+        s = 0
+        for j in range(i):
+            s += dp[j] * dp[i - 1 - j]
+        dp[i] = s % mod
+    return dp[n] % mod
+t = int(input())
+for tc in range(1, t + 1):
+    n, p = map(int, input().split())
+    print(f"#{tc} {solve(n, p)}")
+
+
