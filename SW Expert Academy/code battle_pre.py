@@ -2897,4 +2897,47 @@ for s in vals:
 print(f"#{tc} {dsu.c}")
 
 
+TC = int(input())
+for tc in range(1, TC + 1):
+    N = int(input())
+    winner = "Alice" if N % 2 == 1 else "Bob"
+    print(f"#{tc} {winner}")
+
+
+TC = int(input())
+for tc in range(1, TC + 1):
+    N = int(input())
+    points = [tuple(map(int, input().split())) for _ in range(N)]
+    if N <= 3:
+        print(f"#{tc} TAK")
+        continue
+    x0, y0, z0 = points[0]
+    x1, y1, z1 = points[1]
+    p2 = None
+    for i in range(2, N):
+        x2, y2, z2 = points[i]
+        ax = x1 - x0
+        ay = y1 - y0
+        az = z1 - z0
+        bx = x2 - x0
+        by = y2 - y0
+        bz = z2 - z0
+        nx = ay * bz - az * by
+        ny = az * bx - ax * bz
+        nz = ax * by - ay * bx
+        if nx != 0 or ny != 0 or nz != 0:
+            p2 = (x2, y2, z2)
+            break
+    if p2 is None:
+        print(f"#{tc} TAK")
+        continue
+    nx = (y1 - y0) * (p2[2] - z0) - (z1 - z0) * (p2[1] - y0)
+    ny = (z1 - z0) * (p2[0] - x0) - (x1 - x0) * (p2[2] - z0)
+    nz = (x1 - x0) * (p2[1] - y0) - (y1 - y0) * (p2[0] - x0)
+    possible = True
+    for x, y, z in points[2:]:
+        if nx * (x - x0) + ny * (y - y0) + nz * (z - z0) != 0:
+            possible = False
+            break
+    print(f"#{tc} {'TAK' if possible else 'NIE'}")
 
