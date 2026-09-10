@@ -3021,3 +3021,100 @@ for tc in range(1, t + 1):
     print(f"#{tc} {solve(n, p)}")
 
 
+import sys
+input = sys.stdin.readline
+T = int(input())
+for tc in range(1, T + 1):
+    N = int(input())
+    cams = [tuple(map(int, input().split())) for _ in range(N)]
+    ans = 0
+    for x in range(1, 1001):
+        events = [[] for _ in range(1002)]
+        for x1, y1, x2, y2 in cams:
+            if x1 <= x <= x2:
+                events[y1].append(1)
+                events[y2 + 1].append(-1)
+        active = 0
+        cnt = 0
+        for y in range(1, 1001):
+            for v in events[y]:
+                active += v
+            if active >= 3:
+                cnt += active * (active - 1) * (active - 2) // 6
+        ans += cnt
+    print(f"#{tc} {ans}")
+
+
+import sys
+input = sys.stdin.readline
+def scc(n, graph, rev):
+    visited = [False] * n
+    order = []
+    for start in range(n):
+        if visited[start]:
+            continue
+        stack = [(start, 0)]
+        visited[start] = True
+        while stack:
+            u, idx = stack[-1]
+            if idx < len(graph[u]):
+                v = graph[u][idx]
+                stack[-1] = (u, idx + 1)
+                if not visited[v]:
+                    visited[v] = True
+                    stack.append((v, 0))
+            else:
+                order.append(u)
+                stack.pop()
+    comp = [-1] * n
+    count = 0
+    for start in reversed(order):
+        if comp[start] != -1:
+            continue
+        stack = [start]
+        comp[start] = count
+        while stack:
+            u = stack.pop()
+            for v in rev[u]:
+                if comp[v] == -1:
+                    comp[v] = count
+                    stack.append(v)
+        count += 1
+    return comp, count
+def solve():
+    T = int(input())
+    for tc in range(1, T + 1):
+        n, m = map(int, input().split())
+        edges = []
+        graph = [[] for _ in range(n)]
+        rev = [[] for _ in range(n)]
+        for _ in range(m):
+            a, b = map(int, input().split())
+            a -= 1
+            b -= 1
+            edges.append((a, b))
+            graph[a].append(b)
+            rev[b].append(a)
+        q = int(input())
+        queries = [int(input()) - 1 for _ in range(q)]
+        alive = [True] * m
+        answer = []
+        for e in queries:
+            alive[e] = False
+            graph = [[] for _ in range(n)]
+            rev = [[] for _ in range(n)]
+            for i, (u, v) in enumerate(edges):
+                if alive[i]:
+                    graph[u].append(v)
+                    rev[v].append(u)
+            comp, cnt = scc(n, graph, rev)
+            indegree = [0] * cnt
+            for i, (u, v) in enumerate(edges):
+                if alive[i]:
+                    cu = comp[u]
+                    cv = comp[v]
+                    if cu != cv:
+                        indegree[cv] += 1
+            answer.append(str(sum(x == 0 for x in indegree)))
+        print(f"#{tc} {' '.join(answer)}")
+        
