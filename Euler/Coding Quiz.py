@@ -53,3 +53,24 @@ for money in inputs:
     print(read_money(n))
 
 
+W, H = 1920, 1080
+covered = bytearray(W * H)
+with open("boxes.txt", "r") as f:
+    for line in f:
+        x1, y1, x2, y2 = map(int, line.split())
+        for y in range(y1, y2):
+            start = y * W + x1
+            covered[start:start + (x2 - x1)] = b'\x01' * (x2 - x1)
+print(sum(covered))
+
+
+def column_name(n):
+    result = []
+    while n > 0:
+        n -= 1
+        result.append(chr(ord('A') + n % 26))
+        n //= 26
+    return ''.join(reversed(result))
+print(column_name(100_000_000))
+
+
