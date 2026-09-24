@@ -74,3 +74,34 @@ def column_name(n):
 print(column_name(100_000_000))
 
 
+import sys
+for line in sys.stdin:
+    nums = list(map(int, line.replace(',', ' ').split()))
+    if sum(x != 0 for x in nums) < 2:
+        print(-1)
+        continue
+    nums.sort()
+    a = [next(x for x in nums if x != 0)]
+    nums.remove(a[0])
+    b = [next(x for x in nums if x != 0)]
+    nums.remove(b[0])
+    for i, x in enumerate(nums):
+        if i % 2 == 0:
+            a.append(x)
+        else:
+            b.append(x)
+    a = int(''.join(map(str, a)))
+    b = int(''.join(map(str, b)))
+    print(a + b)
+
+
+a, b = 12345678999, 99987654321
+x, y = 1, 2
+total = 0
+while x <= b:
+    if x >= a:
+        total += x
+    x, y = y, x + y
+print(total)
+
+
