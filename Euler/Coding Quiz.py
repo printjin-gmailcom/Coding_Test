@@ -105,3 +105,56 @@ while x <= b:
 print(total)
 
 
+from itertools import permutations
+letters = "SYNAPOFTWU"
+total = 0
+for p in permutations(range(10)):
+    d = dict(zip(letters, p))
+    if d["S"] == 0 or d["W"] == 0 or d["Y"] == 0:
+        continue
+    synap = 10000*d["S"] + 1000*d["Y"] + 100*d["N"] + 10*d["A"] + d["P"]
+    soft = 1000*d["S"] + 100*d["O"] + 10*d["F"] + d["T"]
+    wants = 10000*d["W"] + 1000*d["A"] + 100*d["N"] + 10*d["T"] + d["S"]
+    you = 100*d["Y"] + 10*d["O"] + d["U"]
+    if synap + soft == wants + you:
+        total += synap + soft
+print(total)
+
+
+from itertools import permutations
+from urllib.request import urlopen
+url = "https://euler.synap.co.kr/project/resources/q008_words.txt"
+words = urlopen(url).read().decode().splitlines()
+def pattern(word):
+    mapping = {}
+    result = []
+    n = 0
+    for ch in word:
+        if ch not in mapping:
+            mapping[ch] = n
+            n += 1
+        result.append(mapping[ch])
+    return tuple(result)
+valid_patterns = set()
+for c, o, f, e in permutations(range(10), 4):
+    if c == 0:
+        continue
+    coffee = c * 100000 + o * 10000 + f * 1111 + e * 11
+    result = coffee * 3
+    if result < 1000000 or result > 9999999:
+        continue
+    digits = str(result)
+    if len(set(digits)) > 10:
+        continue
+    valid_patterns.add(pattern(digits))
+count = 0
+for word in words:
+    if len(word) != 7:
+        continue
+    if pattern(word) in valid_patterns:
+        count += 1
+        print(count, word)
+        if count == 78:
+            break
+
+
