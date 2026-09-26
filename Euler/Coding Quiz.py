@@ -158,3 +158,85 @@ for word in words:
             break
 
 
+import re
+def solve_cryptarithm(line):
+    left, right = line.split("=")
+    words = left.split("+")
+    letters = set("".join(words) + right)
+    letters = list(letters)
+    leading = {word[0] for word in words + [right]}
+    def value(word, mapping):
+        return sum(mapping[c] * (10 ** i) for i, c in enumerate(word[::-1]))
+    def backtrack(idx, mapping, used):
+        if idx == len(letters):
+            if sum(value(word, mapping) for word in words) == value(right, mapping):
+                return mapping.copy()
+            return None
+        c = letters[idx]
+        for digit in range(10):
+            if digit in used:
+                continue
+            if digit == 0 and c in leading:
+                continue
+            mapping[c] = digit
+            result = backtrack(idx + 1, mapping, used | {digit})
+            if result:
+                return result
+            del mapping[c]
+        return None
+    return backtrack(0, {}, set())
+lines = []
+while True:
+    try:
+        line = input().strip()
+        if line:
+            lines.append(line)
+    except EOFError:
+        break
+total = 0
+for line in lines:
+    left, right = line.split("=")
+    words = left.split("+")
+    letters = list(set("".join(words) + right))
+    leading = {word[0] for word in words + [right]}
+    def value(word, mapping):
+        return sum(mapping[c] * 10 ** i for i, c in enumerate(word[::-1]))
+    def search(idx, mapping, used):
+        if idx == len(letters):
+            if sum(value(word, mapping) for word in words) == value(right, mapping):
+                return mapping
+            return None
+        c = letters[idx]
+        for digit in range(10):
+            if digit in used or (digit == 0 and c in leading):
+                continue
+            mapping[c] = digit
+            result = search(idx + 1, mapping, used | {digit})
+            if result is not None:
+                return result
+            del mapping[c]
+        return None
+    mapping = search(0, {}, set())
+    if mapping:
+        total += value(left.replace("+", ""), mapping)
+print(total)
+
+
+import sympy as sp
+n, m = sp.symbols('n m')
+coins = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 50000]
+def count_ways(amount):
+    dp = [0] * (amount + 1)
+    dp[0] = 1
+    for coin in coins:
+        for i in range(coin, amount + 1):
+            dp[i] += dp[i - coin]
+    return dp[amount]
+values = [count_ways(50000 * i) for i in range(10)]
+poly = sp.interpolate([(i, values[i]) for i in range(10)], n)
+poly = sp.Poly(sp.expand(poly.subs(n, m / 50000)), m)
+coefficients = poly.all_coeffs()
+a9 = sp.Integer(1) / coefficients[0]
+a = [sp.simplify(c * a9) for c in coefficients[1:]]
+answer = sum(abs(int(x)) for x in a) % 10**10
+print(answer)
