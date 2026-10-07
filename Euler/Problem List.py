@@ -120,3 +120,66 @@ search([], primes, 0)
 print(best)
 
 
+polygonal = {}
+for s in range(3, 9):
+    n = 1
+    while True:
+        if s == 3:
+            x = n * (n + 1) // 2
+        elif s == 4:
+            x = n * n
+        elif s == 5:
+            x = n * (3 * n - 1) // 2
+        elif s == 6:
+            x = n * (2 * n - 1)
+        elif s == 7:
+            x = n * (5 * n - 3) // 2
+        else:
+            x = n * (3 * n - 2)
+        if x >= 1000:
+            if x >= 10000:
+                break
+            if x % 100 >= 10:
+                polygonal.setdefault(s, []).append(x)
+        n += 1
+types = list(range(3, 9))
+answer = 0
+def dfs(path, used):
+    global answer
+    if len(path) == 6:
+        if path[-1] % 100 == path[0] // 100:
+            answer = sum(path)
+        return
+    suffix = path[-1] % 100
+    if suffix < 10:
+        return
+    for t in types:
+        if t in used:
+            continue
+        for x in polygonal[t]:
+            if x // 100 == suffix:
+                dfs(path + [x], used | {t})
+                if answer:
+                    return
+for t in types:
+    for x in polygonal[t]:
+        dfs([x], {t})
+        if answer:
+            break
+    if answer:
+        break
+print(answer)
+
+
+cubes = {}
+n = 1
+while True:
+    cube = n ** 3
+    key = ''.join(sorted(str(cube)))
+    cubes.setdefault(key, []).append(cube)
+    if len(cubes[key]) >= 5:
+        print(min(cubes[key]))
+        break
+    n += 1
+
+
