@@ -183,3 +183,61 @@ while True:
     n += 1
 
 
+from math import isqrt
+count = 0
+for n in range(2, 10001):
+    a0 = isqrt(n)
+    if a0 * a0 == n:
+        continue
+    m = 0
+    d = 1
+    a = a0
+    period = 0
+    while True:
+        m = d * a - m
+        d = (n - m * m) // d
+        a = (a0 + m) // d
+        period += 1
+        if a == 2 * a0:
+            break
+    if period % 2 == 1:
+        count += 1
+print(count)
+
+
+from fractions import Fraction
+terms = [2]
+for k in range(1, 100):
+    if k % 3 == 2:
+        terms.append(2 * ((k + 1) // 3))
+    else:
+        terms.append(1)
+result = Fraction(terms[-1], 1)
+for a in reversed(terms[:-1]):
+    result = a + Fraction(1, result)
+print(sum(map(int, str(result.numerator))))
+
+
+from math import isqrt
+max_x = 0
+result = 0
+for D in range(2, 1001):
+    a0 = isqrt(D)
+    if a0 * a0 == D:
+        continue
+    m = 0
+    d = 1
+    a = a0
+    p_prev, p = 1, a
+    q_prev, q = 0, 1
+    while p * p - D * q * q != 1:
+        m = d * a - m
+        d = (D - m * m) // d
+        a = (a0 + m) // d
+        p_prev, p = p, a * p + p_prev
+        q_prev, q = q, a * q + q_prev
+    if p > max_x:
+        max_x = p
+        result = D
+print(result)
+
