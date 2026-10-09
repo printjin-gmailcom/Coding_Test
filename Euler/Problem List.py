@@ -241,3 +241,48 @@ for D in range(2, 1001):
         result = D
 print(result)
 
+
+from itertools import permutations
+answer = 0
+for inner in permutations(range(1, 11), 5):
+    if 10 not in inner:
+        continue
+    for outer in permutations(set(range(1, 11)) - set(inner)):
+        target = outer[0] + inner[0] + inner[1]
+        if any(
+            outer[i] + inner[i] + inner[(i + 1) % 5] != target
+            for i in range(5)
+        ):
+            continue
+        if outer.index(min(outer)) != 0:
+            continue
+        number = ''.join(
+            str(x)
+            for i in range(5)
+            for x in (outer[i], inner[i], inner[(i + 1) % 5])
+        )
+
+        if len(number) == 16:
+            answer = max(answer, int(number))
+print(answer)
+
+
+from math import isqrt
+limit = 10**7
+phi = list(range(limit))
+for i in range(2, limit):
+    if phi[i] == i:
+        for j in range(i, limit, i):
+            phi[j] -= phi[j] // i
+best_n = 0
+best_phi = 1
+best_ratio = float('inf')
+for n in range(2, limit):
+    p = phi[n]
+    if sorted(str(n)) == sorted(str(p)):
+        if n * best_phi < best_n * p or best_n == 0:
+            best_n = n
+            best_phi = p
+print(best_n)
+
+
