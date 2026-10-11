@@ -286,3 +286,60 @@ for n in range(2, limit):
 print(best_n)
 
 
+import math
+limit = 1500000
+counts = [0] * (limit + 1)
+m = 2
+while 2 * m * (m + 1) <= limit:
+    for n in range(1, m):
+        if (m - n) % 2 == 1 and math.gcd(m, n) == 1:
+            perimeter = 2 * m * (m + n)
+            for p in range(perimeter, limit + 1, perimeter):
+                counts[p] += 1
+    m += 1
+print(counts.count(1))
+
+
+limit = 1_000_000
+phi = list(range(limit + 1))
+for i in range(2, limit + 1):
+    if phi[i] == i:
+        for j in range(i, limit + 1, i):
+            phi[j] -= phi[j] // i
+print(sum(phi[2:]))
+
+
+from math import factorial
+facts = [factorial(i) for i in range(10)]
+lengths = {}
+def next_num(n):
+    return sum(facts[int(d)] for d in str(n))
+def chain_length(n):
+    if n in lengths:
+        return lengths[n]
+    seen = []
+    positions = {}
+    x = n
+    while x not in lengths and x not in positions:
+        positions[x] = len(seen)
+        seen.append(x)
+        x = next_num(x)
+    if x in positions:
+        loop_start = positions[x]
+        loop_len = len(seen) - loop_start
+        for i in range(loop_start, len(seen)):
+            lengths[seen[i]] = loop_len
+        for i in range(loop_start - 1, -1, -1):
+            lengths[seen[i]] = lengths[seen[i + 1]] + 1
+    else:
+        length = lengths[x]
+        for v in reversed(seen):
+            length += 1
+            lengths[v] = length
+    return lengths[n]
+count = 0
+for n in range(1, 1_000_000):
+    if chain_length(n) == 60:
+        count += 1
+print(count)
+
