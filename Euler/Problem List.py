@@ -396,3 +396,15 @@ for n in range(1, 101):
     total += sum(map(int, s))
 print(total)
 
+
+from decimal import Decimal, getcontext
+from math import isqrt
+getcontext().prec = 110
+total = 0
+for n in range(1, 101):
+    root = isqrt(n)
+    if root * root == n:
+        continue
+    s = str(Decimal(n).sqrt()).replace(".", "")[:100]
+    total += sum(int(digit) for digit in s)
+print(total)
