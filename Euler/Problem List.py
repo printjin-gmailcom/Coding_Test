@@ -343,3 +343,56 @@ for n in range(1, 1_000_000):
         count += 1
 print(count)
 
+
+from itertools import count
+primes = []
+n = 2
+while True:
+    if all(n % p != 0 for p in primes if p * p <= n):
+        primes.append(n)
+    n += 1
+    ways = [0] * n
+    ways[0] = 1
+    for p in primes:
+        if p >= n:
+            break
+        for i in range(p, n):
+            ways[i] += ways[i - p]
+    for i in range(2, n):
+        if ways[i] > 5000:
+            print(i)
+            raise SystemExit
+
+
+from itertools import count
+p = [1]
+for n in count(1):
+    total = 0
+    k = 1
+    while True:
+        g1 = k * (3 * k - 1) // 2
+        g2 = k * (3 * k + 1) // 2
+        if g1 > n:
+            break
+        sign = 1 if k % 2 else -1
+        total += sign * p[n - g1]
+        if g2 <= n:
+            total += sign * p[n - g2]
+        k += 1
+    p.append(total % 1_000_000)
+    if p[n] == 0:
+        print(n)
+        break
+
+
+from decimal import Decimal, getcontext
+from math import isqrt
+getcontext().prec = 110
+total = 0
+for n in range(1, 101):
+    if isqrt(n) ** 2 == n:
+        continue
+    s = str(Decimal(n).sqrt()).replace(".", "")[:100]
+    total += sum(map(int, s))
+print(total)
+
