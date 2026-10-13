@@ -408,3 +408,27 @@ for n in range(1, 101):
     s = str(Decimal(n).sqrt()).replace(".", "")[:100]
     total += sum(int(digit) for digit in s)
 print(total)
+
+
+
+def digit_sum(n):
+    return sum(map(int, str(n)))
+nums = set()
+for b in range(2, 200):
+    n = b * b
+    while n < 10**20:
+        if n >= 10 and digit_sum(n) == b:
+            nums.add(n)
+        n *= b
+ans = sorted(nums)
+print(ans[29])
+
+
+total = 0
+for a in range(3, 1001):
+    if a % 2 == 1:
+        r_max = a * (a - 1)
+    else:
+        r_max = a * (a - 2)
+    total += r_max
+print(total)
