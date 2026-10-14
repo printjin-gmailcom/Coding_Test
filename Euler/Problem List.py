@@ -432,3 +432,28 @@ for a in range(3, 1001):
         r_max = a * (a - 2)
     total += r_max
 print(total)
+
+
+limit = 10**8
+palindromes = set()
+for i in range(1, int(limit**0.5) + 1):
+    total = i * i
+    for j in range(i + 1, int(limit**0.5) + 1):
+        total += j * j
+        if total >= limit:
+            break
+        s = str(total)
+        if s == s[::-1]:
+            palindromes.add(total)
+print(sum(palindromes))
+
+
+limit = 100000
+rad = [1] * (limit + 1)
+for i in range(2, limit + 1):
+    if rad[i] == 1:
+        for j in range(i, limit + 1, i):
+            rad[j] *= i
+nums = sorted(range(1, limit + 1), key=lambda n: (rad[n], n))
+print(nums[9999])
+
