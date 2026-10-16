@@ -457,3 +457,27 @@ for i in range(2, limit + 1):
 nums = sorted(range(1, limit + 1), key=lambda n: (rad[n], n))
 print(nums[9999])
 
+
+LIMIT = 10_000_000
+divisor_count = [0] * (LIMIT + 1)
+for i in range(1, LIMIT + 1):
+    for j in range(i, LIMIT + 1, i):
+        divisor_count[j] += 1
+answer = 0
+for n in range(2, LIMIT):
+    if divisor_count[n] == divisor_count[n + 1]:
+        answer += 1
+print(answer)
+
+
+LIMIT = 1_000_000
+answer = 0
+k = 1
+while 4 * k * (k + 1) <= LIMIT:
+    n = 2 * k + 1
+    while 4 * k * (n - k) <= LIMIT:
+        answer += 1
+        n += 1
+    k += 1
+print(answer)
+
