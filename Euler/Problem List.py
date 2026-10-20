@@ -481,3 +481,58 @@ while 4 * k * (k + 1) <= LIMIT:
     k += 1
 print(answer)
 
+
+pattern = "UDDDUdddDDUDDddDdDddDDUDDdUUDd"
+mod = 1
+res = 0
+for c in pattern:
+    for n in range(mod):
+        x = 3 * n + res
+        if (c == "D" and x % 3 == 0) or (c == "U" and x % 3 == 1) or (c == "d" and x % 3 == 2):
+            res = x
+            break
+    mod *= 3
+n = 10**15 + 1
+while True:
+    x = n
+    valid = True
+    for c in pattern:
+        r = x % 3
+        if c == "D":
+            if r != 0:
+                valid = False
+                break
+            x //= 3
+        elif c == "U":
+            if r != 1:
+                valid = False
+                break
+            x = (4 * x + 2) // 3
+        else:
+            if r != 2:
+                valid = False
+                break
+            x = (2 * x - 1) // 3
+    if valid:
+        print(n)
+        break
+    n += 1
+
+
+from collections import deque
+def f(n):
+    q = deque([(0, 0)])
+    visited = [False] * n
+    while q:
+        r, v = q.popleft()
+        for d in (0, 1, 2):
+            nr = (r * 10 + d) % n
+            nv = v * 10 + d
+            if nr == 0 and nv > 0:
+                return nv
+            if not visited[nr]:
+                visited[nr] = True
+                q.append((nr, nv))
+ans = sum(f(n) // n for n in range(1, 100001))
+print(ans)
+
