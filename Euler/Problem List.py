@@ -536,3 +536,68 @@ def f(n):
 ans = sum(f(n) // n for n in range(1, 100001))
 print(ans)
 
+
+from math import isqrt
+def is_prime(n):
+    if n < 2:
+        return False
+    for p in (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37):
+        if n % p == 0:
+            return n == p
+    d = n - 1
+    s = 0
+    while d % 2 == 0:
+        d //= 2
+        s += 1
+    for a in (2, 3, 5, 7, 11):
+        if a >= n:
+            continue
+        x = pow(a, d, n)
+        if x in (1, n - 1):
+            continue
+        for _ in range(s - 1):
+            x = x * x % n
+            if x == n - 1:
+                break
+        else:
+            return False
+    return True
+for p in range(729809891, 724000000, -1000000):
+    pass
+for p in range(729999999 - (729999999 - 9891) % 100000, 724000000, -100000):
+    pass
+for p in range(729999999, 724000000, -1):
+    if p % 100000 != 9891:
+        continue
+    if not is_prime(p):
+        continue
+    if not (1 / 1.38e-9 < p < 1 / 1.37e-9):
+        continue
+    if pow(10, p - 1, p) != 1:
+        continue
+    if any(pow(10, (p - 1) // q, p) == 1
+           for q in (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31)):
+        continue
+    print(9 * (p - 1) // 2)
+    break
+
+
+from functools import lru_cache
+from math import isqrt
+MOD = 10**8
+N = 71328803586048
+@lru_cache(None)
+def p(f, r):
+    if f == 1:
+        return 2 * r - 1
+    if r == 1:
+        return (f - 1) ** 2 + 1
+    return p(f - 1, r + 1) + 2 * f - 3
+ans = 0
+for f in range(1, isqrt(N) + 1):
+    if N % f == 0:
+        r = N // f
+        ans = (ans + p(f, r)) % MOD
+        if f != r:
+            ans = (ans + p(r, f)) % MOD
+print(ans)
