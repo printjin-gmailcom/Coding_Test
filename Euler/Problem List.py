@@ -601,3 +601,55 @@ for f in range(1, isqrt(N) + 1):
         if f != r:
             ans = (ans + p(r, f)) % MOD
 print(ans)
+
+
+from math import isqrt
+TARGET = 47547
+def count_triangles(n):
+    count = 0
+    for d in range(1, isqrt(n * n) + 1):
+        if n * n % d == 0:
+            e = n * n // d
+            if d >= e:
+                break
+            if (e - d) % 2 == 0:
+                b = (e - d) // 2
+                c = (e + d) // 2
+                if b > 0 and c > n:
+                    count += 1
+    return count
+def solve():
+    n = 1
+    while True:
+        count = 0
+        for b in range(1, n + 1):
+            c2 = n * n + b * b
+            c = isqrt(c2)
+            if c * c == c2:
+                count += 1
+        if count == TARGET:
+            return n
+        n += 1
+print(solve())
+
+
+from fractions import Fraction
+p = 123456789
+q = 987654321
+g = __import__("math").gcd(p, q)
+p //= g
+q //= g
+runs = []
+while p != q:
+    if p > q:
+        k = (p - 1) // q
+        runs.append(k)
+        p -= k * q
+    else:
+        k = (q - 1) // p
+        runs.append(k)
+        q -= k * p
+runs.append(1)
+runs.reverse()
+print(",".join(map(str, runs)))
+
