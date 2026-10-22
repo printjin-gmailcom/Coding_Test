@@ -653,3 +653,56 @@ runs.append(1)
 runs.reverse()
 print(",".join(map(str, runs)))
 
+
+import math
+def probability(k):
+    total = 0.0
+    for i in range(1000):
+        a = (i + 0.5) / 1000
+        x = k * a + 1
+        for j in range(1000):
+            b = (j + 0.5) / 1000
+            y = k * b + 1
+            r = math.sqrt(x * x + y * y)
+            if round(r) == k:
+                total += 1
+    return total / 1000000
+ans = sum(k * probability(k) for k in range(1, 106))
+print(f"{ans:.5f}")
+
+
+def steady_squares(base, limit):
+    mod = 1
+    roots = [0, 1]
+    total = 1
+    for n in range(2, limit + 1):
+        mod *= base
+        new_roots = []
+        for x in roots:
+            for d in range(base):
+                y = x + d * (mod // base)
+                if (y * y - y) % mod == 0:
+                    new_roots.append(y)
+        roots = list(set(new_roots))
+        for x in roots:
+            if x >= mod // base and x * x % mod == x:
+                total += sum_digits(x, base)
+    return total
+def sum_digits(n, base):
+    s = 0
+    while n:
+        s += n % base
+        n //= base
+    return s
+def to_base(n, base):
+    if n == 0:
+        return "0"
+    digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+    result = ""
+    while n:
+        result = digits[n % base] + result
+        n //= base
+    return result
+print(to_base(steady_squares(14, 10000), 14))
+
+
