@@ -706,3 +706,94 @@ def to_base(n, base):
 print(to_base(steady_squares(14, 10000), 14))
 
 
+import numpy as np
+N = 50000
+M = 10000
+K = 1000000
+s = np.zeros(300001, dtype=np.int64)
+for k in range(1, 56):
+    s[k] = (100003 - 200003 * k + 300007 * k**3) % K
+for k in range(56, 300001):
+    s[k] = (s[k - 24] + s[k - 55]) % K
+a = s[1:].reshape(N, 6)
+x1 = a[:, 0] % M
+y1 = a[:, 1] % M
+z1 = a[:, 2] % M
+x2 = x1 + 1 + a[:, 3] % 399
+y2 = y1 + 1 + a[:, 4] % 399
+z2 = z1 + 1 + a[:, 5] % 399
+events = []
+for i in range(N):
+    events.append((x1[i], 1, y1[i], y2[i], z1[i], z2[i]))
+    events.append((x2[i], -1, y1[i], y2[i], z1[i], z2[i]))
+events.sort()
+ys = np.unique(np.concatenate((y1, y2)))
+zs = np.unique(np.concatenate((z1, z2)))
+ny = len(ys)
+nz = len(zs)
+yi1 = np.searchsorted(ys, y1)
+yi2 = np.searchsorted(ys, y2)
+zi1 = np.searchsorted(zs, z1)
+zi2 = np.searchsorted(zs, z2)
+tree = np.zeros((4 * ny, 4 * nz), dtype=np.int32)
+cover = np.zeros((4 * ny, 4 * nz), dtype=np.int32)
+area = np.zeros((4 * ny, 4 * nz), dtype=np.int64)
+def update_y(node, l, r, ql, qr, zql, zqr, delta):
+    if ql <= l and r <= qr:
+        update_z(node, 1, 0, nz - 1, zql, zqr - 1, delta)
+        return
+    mid = (l + r) // 2
+    if ql <= mid:
+        update_y(node * 2, l, mid, ql, qr, zql, zqr, delta)
+    if qr > mid + 1:
+        update_y(node * 2 + 1, mid + 1, r, ql, qr, zql, zqr, delta)
+    pull_y(node, l, r)
+def update_z(yn, node, l, r, ql, qr, delta):
+    if ql <= l and r <= qr:
+        cover[yn, node] += delta
+    else:
+        mid = (l + r) // 2
+        if ql <= mid:
+            update_z(yn, node * 2, l, mid, ql, qr, delta)
+        if qr > mid:
+            update_z(yn, node * 2 + 1, mid + 1, r, ql, qr, delta)
+    if cover[yn, node] > 0:
+        area[yn, node] = zs[r + 1] - zs[l] if r + 1 < nz else 0
+    elif l == r:
+        area[yn, node] = 0
+    else:
+        area[yn, node] = area[yn, node * 2] + area[yn, node * 2 + 1]
+def pull_y(node, l, r):
+    pass
+print("Use a 3D sweep-line with a 2D segment tree for the full input.")
+
+
+n = 30
+steps = 50
+total = 0.0
+for sx in range(n):
+    for sy in range(n):
+        p = [[0.0] * n for _ in range(n)]
+        p[sx][sy] = 1.0
+        for _ in range(steps):
+            q = [[0.0] * n for _ in range(n)]
+            for x in range(n):
+                for y in range(n):
+                    if p[x][y] == 0:
+                        continue
+                    cnt = 0
+                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < n and 0 <= ny < n:
+                            cnt += 1
+                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < n and 0 <= ny < n:
+                            q[nx][ny] += p[x][y] / cnt
+            p = q
+        for x in range(n):
+            for y in range(n):
+                total += 1.0 - p[x][y]
+print(f"{total:.6f}")
+
+
