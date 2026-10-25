@@ -861,3 +861,72 @@ def sg(i):
 print(sum(sg(i) for i in range(1, 151)))
 
 
+from functools import lru_cache
+@lru_cache(None)
+def count(n):
+    if n == 0:
+        return 1
+    if n % 2 == 0:
+        return count(n // 2)
+    return count(n // 2) * 2
+N = 10**12
+ans = 0
+for n in range(1, 41):
+    max_n = min(N, 2**n - 1)
+    if max_n < 1:
+        break
+    for k in range(1, max_n + 1, 2):
+        if k > max_n:
+            break
+        if count(k) % 2 == 1:
+            ans += 1
+print(ans)
+
+
+from math import isqrt
+LIMIT = 10**18
+primes = []
+is_prime = [True] * 10000
+for i in range(2, 10000):
+    if is_prime[i]:
+        primes.append(i)
+        for j in range(i * i, 10000, i):
+            is_prime[j] = False
+def sigma(n):
+    result = 1
+    x = n
+    for p in primes:
+        if p * p > x:
+            break
+        if x % p == 0:
+            term = 1
+            power = 1
+            while x % p == 0:
+                x //= p
+                power *= p
+                term += power
+            result *= term
+    if x > 1:
+        result *= 1 + x
+    return result
+def search(n, min_prime, div_sum):
+    if n > LIMIT:
+        return
+    if (2 * div_sum) % n == 0:
+        if (2 * div_sum // n) % 2 == 1:
+            answers.add(n)
+    for p in primes:
+        if p < min_prime:
+            continue
+        if n * p > LIMIT:
+            break
+        power = p
+        while n * power <= LIMIT:
+            new_n = n * power
+            new_sum = div_sum * (power * p - 1) // (p - 1)
+            search(new_n, p + 1, new_sum)
+            power *= p
+answers = set()
+search(1, 2, 1)
+print(sum(answers))
+
