@@ -797,3 +797,67 @@ for sx in range(n):
 print(f"{total:.6f}")
 
 
+from decimal import Decimal, ROUND_HALF_UP
+def iterations(n):
+    d = len(str(n))
+    x = 2 * 10 ** ((d - 1) // 2) if d % 2 else 7 * 10 ** ((d - 2) // 2)
+    count = 0
+    while True:
+        y = (x + (n + x - 1) // x) // 2
+        count += 1
+        if y == x:
+            return count
+        x = y
+total = 0
+for n in range(10**13, 10**14):
+    total += iterations(n)
+avg = Decimal(total) / Decimal(9 * 10**13)
+print(avg.quantize(Decimal("0.0000000001"), rounding=ROUND_HALF_UP))
+
+
+from functools import lru_cache
+from math import factorial
+def solve(n):
+    dp = {(0, 0): 1}
+    for i in range(1, n + 1):
+        ndp = {}
+        for (segments, maximum), count in dp.items():
+            for s, m, c in (
+                (segments + 1, max(maximum, segments + 1), 1),
+                (max(0, segments - 1), maximum, segments),
+            ):
+                key = (s, m)
+                ndp[key] = ndp.get(key, 0) + count * c
+        dp = ndp
+    total = sum(dp.values())
+    return sum(m * c for (s, m), c in dp.items()) / total
+print(f"{solve(40):.6f}")
+
+
+from math import factorial
+F = [factorial(i) for i in range(10)]
+def sf(n):
+    return sum(map(int, str(sum(F[int(d)] for d in str(n)))))
+def solve(i):
+    target = i
+    digits = []
+    while target > 0:
+        digits.append(9)
+        target -= 9
+    digits = digits[:-1] + [target + 9] if digits else []
+    return digits
+def g(i):
+    best = None
+    length = 1
+    while best is None:
+        for n in range(10**(length-1) if length > 1 else 1, 10**length):
+            if sf(n) == i:
+                best = n
+                break
+        length += 1
+    return best
+def sg(i):
+    return sum(map(int, str(g(i))))
+print(sum(sg(i) for i in range(1, 151)))
+
+
