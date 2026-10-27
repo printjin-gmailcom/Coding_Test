@@ -930,3 +930,57 @@ answers = set()
 search(1, 2, 1)
 print(sum(answers))
 
+
+from math import isqrt
+def solve():
+    r = 10**9
+    q = r // 4
+    ans = 0
+    for x in range(-q, q + 1):
+        y_max = r - abs(x)
+        if y_max < 0:
+            continue
+        dot_ob_oc = x + y
+        break
+
+
+from functools import lru_cache
+MOD = 315
+N = 47
+@lru_cache(None)
+def dp(pos, diff, started):
+    if pos == N:
+        return (1, 0) if started and diff == 0 else (0, 0)
+    count = 0
+    total = 0
+    for d in range(10):
+        if pos == 0 and d == 0:
+            continue
+        ndiff = diff + d * (1 if pos < (pos + 1) // 2 else -1)
+        c, s = dp(pos + 1, ndiff, True)
+        count = (count + c) % MOD
+        total = (total + s + d * pow(10, N - pos - 1, MOD) * c) % MOD
+    return count, total
+def solve():
+    ans = 0
+    for length in range(1, N + 1):
+        @lru_cache(None)
+        def calc(pos, diff):
+            if pos == length:
+                return (1, 0) if diff == 0 else (0, 0)
+            count = 0
+            total = 0
+            half = (length + 1) // 2
+            for d in range(10):
+                if pos == 0 and d == 0:
+                    continue
+                ndiff = diff + d * (1 if pos < half else -1)
+                c, s = calc(pos + 1, ndiff)
+                count = (count + c) % MOD
+                total = (total + s + d * pow(10, length - pos - 1, MOD) * c) % MOD
+            return count, total
+        ans = (ans + calc(0, 0)[1]) % MOD
+    print(ans)
+solve()
+
+
