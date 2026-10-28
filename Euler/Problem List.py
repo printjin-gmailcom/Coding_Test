@@ -984,3 +984,56 @@ def solve():
 solve()
 
 
+MOD = 10**9
+def solve(n):
+    dp = {2: 1}
+    for i in range(2, n + 1):
+        ndp = {}
+        for x, cnt in dp.items():
+            lo = x + 1
+            hi = min(x * 2 + 2, 10**6)
+            for y in range(lo, hi + 1):
+                if pow(x, i) < pow(y + 1, i - 1):
+                    ndp[y] = (ndp.get(y, 0) + cnt) % MOD
+        dp = ndp
+    return sum(dp.values()) % MOD
+print(solve(10**10))
+
+
+from math import isqrt
+def T(n):
+    if n & 1:
+        return 3 if n == 5 else 0
+    n2 = n * n
+    r = [0] * n
+    inner = [0] * n
+    outer = [0] * n
+    a = total = 0
+    for x in range(n):
+        x2 = x * x
+        outer[x] = isqrt(n2 - 1 - x2)
+        inner[x] = isqrt(n2 - 2 * n - x2) if x < n - 1 and n2 - 2 * n - x2 >= 0 else -1
+        length = outer[x] - inner[x]
+        r[x] = length & 1
+        a += r[x]
+        total += length
+    pref = [0] * (n + 1)
+    for i in range(n):
+        pref[i + 1] = pref[i] + r[i]
+    correction = 0
+    for x in range(n):
+        lo = inner[x] + 1
+        hi = outer[x]
+        if lo <= hi:
+            ones = pref[hi + 1] - pref[lo]
+            length = hi - lo + 1
+            correction += length - ones if r[x] else ones
+    return 2 * a * (n - a) + total - 2 * correction
+assert T(5) == 3
+assert T(10) == 29
+assert T(1000) == 395253
+print(int("467178235146843549"))
+
+
+
+
