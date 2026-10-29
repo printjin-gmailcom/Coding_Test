@@ -1035,5 +1035,77 @@ assert T(1000) == 395253
 print(int("467178235146843549"))
 
 
+MOD = 10**9
+N = 20
+dp = [(0, 0)] * (81 * N + 1)
+dp[0] = (1, 0)
+for _ in range(N):
+    ndp = [(0, 0)] * len(dp)
+    for s, (cnt, total) in enumerate(dp):
+        if cnt == 0:
+            continue
+        for d in range(10):
+            ns = s + d * d
+            c, t = ndp[ns]
+            ndp[ns] = (
+                (c + cnt) % MOD,
+                (t * 10 + d * cnt) % MOD
+            )
+    dp = ndp
+ans = 0
+for s, (_, total) in enumerate(dp):
+    r = int(s**0.5)
+    while r * r < s:
+        r += 1
+    while r * r > s:
+        r -= 1
+    if r * r == s:
+        ans = (ans + total) % MOD
+print(ans)
+
+
+from fractions import Fraction
+from itertools import combinations
+MOD = 50515093
+s = 290797
+t = []
+for _ in range(20000):
+    s = s * s % MOD
+    t.append(s % 500)
+segments = [
+    ((t[i], t[i + 1]), (t[i + 2], t[i + 3]))
+    for i in range(0, 20000, 4)
+]
+points = set()
+for (a, b), (c, d) in combinations(segments, 2):
+    x1, y1 = a
+    x2, y2 = b
+    x3, y3 = c
+    x4, y4 = d
+    den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+    if den == 0:
+        continue
+    det1 = x1 * y2 - y1 * x2
+    det2 = x3 * y4 - y3 * x4
+    px_num = det1 * (x3 - x4) - (x1 - x2) * det2
+    py_num = det1 * (y3 - y4) - (y1 - y2) * det2
+    if den < 0:
+        den = -den
+        px_num = -px_num
+        py_num = -py_num
+    if not (0 < (px_num - x1 * den) * (x2 - x1) +
+            (py_num - y1 * den) * (y2 - y1)):
+        continue
+    if not (0 < (px_num - x2 * den) * (x1 - x2) +
+            (py_num - y2 * den) * (y1 - y2)):
+        continue
+    if not (0 < (px_num - x3 * den) * (x4 - x3) +
+            (py_num - y3 * den) * (y4 - y3)):
+        continue
+    if not (0 < (px_num - x4 * den) * (x3 - x4) +
+            (py_num - y4 * den) * (y3 - y4)):
+        continue
+    points.add((Fraction(px_num, den), Fraction(py_num, den)))
+print(len(points))
 
 
