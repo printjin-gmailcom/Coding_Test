@@ -1109,3 +1109,51 @@ for (a, b), (c, d) in combinations(segments, 2):
 print(len(points))
 
 
+from math import isqrt
+N = 10**10
+limit = isqrt(2 * N * N)
+ans = 0
+for k in range(1, limit + 1):
+    for m in range(1, k + 1):
+        a = (k - m + k) * (m + 1) * (2 * k - m + 1) // 6
+        b = k * (m + 1) * (2 * k + m + 1) // 6
+        if a > N * N:
+            break
+        for n in range(k, limit + 1):
+            c = m * (n + 1) * (2 * n + m + 1) // 6
+            if c == a:
+                ans += k
+                break
+            if c > a:
+                break
+print(ans)
+
+
+import numpy as np
+from scipy.optimize import minimize, minimize_scalar
+from scipy.integrate import quad
+from scipy.interpolate import RegularGridInterpolator
+def h(x, y):
+    return (5000 - 0.005 * (x*x + y*y + x*y) + 12.5 * (x+y)) * np.exp(
+        -abs(0.000001 * (x*x+y*y) - 0.0015*(x+y) + 0.7)
+    )
+N = 1601
+xs = np.linspace(0, 1600, N)
+ys = np.linspace(0, 1600, N)
+X, Y = np.meshgrid(xs, ys)
+H = h(X, Y)
+from scipy.ndimage import maximum_filter
+obstacle = maximum_filter(H, size=3)
+fmin = 0.0
+for _ in range(50):
+    mid = (fmin + obstacle.max()) / 2
+    mask = H <= mid
+    from scipy.ndimage import label
+    labels, count = label(mask)
+    if labels[200, 200] == labels[1400, 1400] and labels[200, 200] != 0:
+        fmin = mid
+    else:
+        break
+print(fmin)
+
+
