@@ -1308,3 +1308,36 @@ def main():
 main()
 
 
+from itertools import permutations
+digits = "0123456789"
+answer = 0
+for p in permutations(digits):
+    s = ''.join(p)
+    for i in range(1, 6):
+        a = int(s[:i])
+        remaining = s[i:]
+        for j in range(1, len(remaining)):
+            b = int(remaining[:j])
+            c = int(remaining[j:])
+            if a == 0 or b == 0 or c == 0:
+                continue
+            x = a * b
+            y = a * c
+            result = str(x) + str(y)
+            if len(result) == 10 and sorted(result) == sorted(digits):
+                if sorted(str(a) + str(b) + str(c)) == sorted(digits):
+                    answer = max(answer, int(result))
+print(answer)
+
+
+limit = 10**7
+divisors = [0] * (limit + 1)
+for i in range(1, limit + 1):
+    for j in range(i, limit + 1, i):
+        divisors[j] += 1
+answer = 0
+for n in range(2, limit):
+    if divisors[n] == divisors[n + 1]:
+        answer += 1
+print(answer)
+
