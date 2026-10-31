@@ -1157,3 +1157,154 @@ for _ in range(50):
 print(fmin)
 
 
+from math import comb
+def count_valuations(n, p):
+    total = 0
+    while n:
+        n //= p
+        total += n
+    return total
+def solve(m, n):
+    a = count_valuations(m - 1, 2) - count_valuations(n, 2)
+    b = count_valuations(m - 1, 5) - count_valuations(n, 5)
+    dp = [0] * (m.bit_length() + 1)
+    return a, b
+def count_nonzero(n, p):
+    result = 0
+    while n:
+        result += n // p
+        n //= p
+    return result
+def solve(m, n):
+    limit = m - 1
+    count = 0
+    for i in range(n, limit + 1):
+        if count_nonzero(i, 2) - count_nonzero(n, 2) > count_nonzero(i - n, 2):
+            pass
+    return count
+print(solve(10**18, 10**12 - 10))
+
+
+import math
+import numpy as np
+from numba import njit
+N = 250
+NEG = -1e300
+dist = np.empty((N + 1, N + 1))
+for i in range(N + 1):
+    for j in range(N + 1):
+        dist[i, j] = math.hypot(i, j)
+def intersect(a, sa, b, sb, dx, r):
+    k = b - a
+    ds = sb - sa
+    if ds >= 0:
+        return b
+    if ds + r * k <= 0:
+        return N + 1
+    c = (sa - sb) / r
+    aa = k * k - c * c
+    u = (-k + c * math.sqrt(1 + 4 * dx * dx / aa)) * 0.5
+    j = max(b, int(b + u))
+    while j <= N:
+        fb = sb - r * dist[dx, j - b]
+        fa = sa - r * dist[dx, j - a)
+        if fb >= fa - 1e-13:
+            break
+        j += 1
+    return j
+def solve(r):
+    dp = np.full((N + 1, N + 1), NEG)
+    parx = np.full((N + 1, N + 1), -1, dtype=np.int16)
+    pary = np.full((N + 1, N + 1), -1, dtype=np.int16)
+    for y in range(N + 1):
+        dp[0, y] = -r * y
+    sites = np.empty(N + 1, dtype=np.int16)
+    starts = np.empty(N + 1, dtype=np.int16)
+    vals = np.empty(N + 1)
+    best = np.empty(N + 1)
+    best_px = np.empty(N + 1, dtype=np.int16)
+    best_py = np.empty(N + 1, dtype=np.int16)
+    for i in range(1, N + 1):
+        best[:] = NEG
+        best_px[:] = -1
+        best_py[:] = -1
+        for x in range(i):
+            dx = i - x
+            half = 0.5 * dx
+            m = 0
+            for y in range(N + 1):
+                v = dp[x, y]
+                if v <= NEG / 2:
+                    continue
+                sy = v + half * y
+                while m > 0:
+                    last = sites[m - 1]
+                    j0 = intersect(last, vals[m - 1], y, sy, dx, r)
+
+                    if j0 <= starts[m - 1]:
+                        m -= 1
+                    else:
+                        break
+                if m == 0:
+                    sites[0] = y
+                    vals[0] = sy
+                    starts[0] = y
+                    m = 1
+                else:
+                    sites[m] = y
+                    vals[m] = sy
+                    starts[m] = j0
+                    m += 1
+            idx = 0
+            for j in range(N + 1):
+                while idx + 1 < m and j >= starts[idx + 1]:
+                    idx += 1
+                yb = sites[idx]
+                if yb > j:
+                    continue
+                score = vals[idx] - r * dist[dx, j - yb] + half * j
+                if score > best[j]:
+                    best[j] = score
+                    best_px[j] = x
+                    best_py[j] = yb
+        dp[i] = best
+        parx[i] = best_px
+        pary[i] = best_py
+    px = np.empty(N + 2, dtype=np.int16)
+    py = np.empty(N + 2, dtype=np.int16)
+    k = 0
+    cx, cy = N, N
+    while cx != 0:
+        px[k] = cx
+        py[k] = cy
+        nx = parx[cx, cy]
+        ny = pary[cx, cy]
+        cx, cy = nx, ny
+        k += 1
+    px[k] = 0
+    py[k] = cy
+    k += 1
+    for t in range(k // 2):
+        px[t], px[k - 1 - t] = px[k - 1 - t], px[t]
+        py[t], py[k - 1 - t] = py[k - 1 - t], py[t]
+    area = 0.0
+    perimeter = float(py[0])
+    for t in range(k - 1):
+        dx = px[t + 1] - px[t]
+        dy = abs(py[t + 1] - py[t])
+        area += (py[t] + py[t + 1]) * dx * 0.5
+        perimeter += dist[dx, dy]
+    return area, perimeter
+def main():
+    r = (250000 - 4 * 75 * 75 / 2) / (1400 + 300 * math.sqrt(2))
+    for _ in range(12):
+        area, perimeter = solve(r)
+        new_r = area / perimeter
+        if abs(new_r - r) < 5e-13:
+            r = new_r
+            break
+        r = new_r
+    print(f"{r:.8f}")
+main()
+
+
