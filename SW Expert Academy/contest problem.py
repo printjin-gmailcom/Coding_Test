@@ -316,3 +316,25 @@ for case in range(1, T + 1):
 print("\n".join(results))
 
 
+import sys
+import math
+input = sys.stdin.readline
+T = int(input())
+for tc in range(1, T + 1):
+    N, px, py = map(int, input().split())
+    points = [tuple(map(int, input().split())) for _ in range(N)]
+    ans = float('inf')
+    for s in range(N):
+        route = [(px, py)]
+        for i in range(N):
+            route.append(points[(s + i) % N])
+        route.append((px, py))
+        dist = 0
+        for i in range(len(route) - 1):
+            x1, y1 = route[i]
+            x2, y2 = route[i + 1]
+            dist += math.hypot(x2 - x1, y2 - y1)
+        ans = min(ans, dist)
+    print(f"#{tc} {ans:.2f}")
+
+
