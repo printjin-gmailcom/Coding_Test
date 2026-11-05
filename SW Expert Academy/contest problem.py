@@ -338,3 +338,115 @@ for tc in range(1, T + 1):
     print(f"#{tc} {ans:.2f}")
 
 
+import sys
+import math
+import heapq
+input = sys.stdin.readline
+T = int(input())
+for tc in range(1, T + 1):
+    N, M = map(int, input().split())
+    pos = []
+    holes = []
+    for _ in range(N):
+        x, y, z, k = map(int, input().split())
+        pos.append((x, y, z))
+        holes.append(k)
+    edges = []
+    for _ in range(M):
+        a, b = map(int, input().split())
+        edges.append((a - 1, b - 1))
+    dist = [[0.0] * N for _ in range(N)]
+    for i in range(N):
+        for j in range(i + 1, N):
+            dx = pos[i][0] - pos[j][0]
+            dy = pos[i][1] - pos[j][1]
+            dz = pos[i][2] - pos[j][2]
+            d = math.sqrt(dx * dx + dy * dy + dz * dz)
+            dist[i][j] = dist[j][i] = d
+    answer = float('inf')
+    heights = sorted(set(p[2] for p in pos if p[2] >= max(pos[0][2], pos[N - 1][2])))
+    for H in heights:
+        parent = list(range(N))
+        size = [1] * N
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]
+                x = parent[x]
+            return x
+        def union(a, b):
+            a = find(a)
+            b = find(b)
+            if a == b:
+                return
+            if size[a] < size[b]:
+                a, b = b, a
+            parent[b] = a
+            size[a] += size[b]
+        active = [pos[i][2] <= H for i in range(N)]
+        for a, b in edges:
+            if active[a] and active[b]:
+                union(a, b)
+        roots = {}
+        for i in range(N):
+            if active[i]:
+                r = find(i)
+                if r not in roots:
+                    roots[r] = len(roots)
+        C = len(roots)
+        comp = [-1] * N
+        cnt = [0] * C
+        for i in range(N):
+            if active[i]:
+                c = roots[find(i)]
+                comp[i] = c
+                cnt[c] += holes[i]
+        s = comp[0]
+        t = comp[N - 1]
+        if s == t:
+            answer = min(answer, cnt[s] * 0.5)
+            continue
+        if cnt[s] == 0 or cnt[t] == 0:
+            continue
+        graph = [[float('inf')] * C for _ in range(C)]
+        for i in range(N):
+            if comp[i] == -1 or holes[i] == 0:
+                continue
+            for j in range(i + 1, N):
+                if comp[j] == -1 or holes[j] == 0:
+                    continue
+                a = comp[i]
+                b = comp[j]
+                if a == b:
+                    continue
+                w = dist[i][j] - 1.0
+                if w < graph[a][b]:
+                    graph[a][b] = w
+                    graph[b][a] = w
+        dp = [float('inf')] * C
+        dp[s] = cnt[s] * 0.5
+        pq = [(dp[s], s)]
+        while pq:
+            cost, u = heapq.heappop(pq)
+            if cost != dp[u]:
+                continue
+            if u == t:
+                break
+            for v in range(C):
+                if v == u or graph[u][v] == float('inf'):
+                    continue
+                if v != t and cnt[v] < 2:
+                    continue
+                if v == t and cnt[v] < 1:
+                    continue
+                nc = cost + graph[u][v] + cnt[v] * 0.5
+                if nc < dp[v]:
+                    dp[v] = nc
+                    heapq.heappush(pq, (nc, v))
+        answer = min(answer, dp[t])
+    if answer == float('inf'):
+        print(f"#{tc} impossible")
+    else:
+        print(f"#{tc} {answer:.4f}")
+
+
+
